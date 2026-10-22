@@ -1,0 +1,33 @@
+# Claude #
+######################
+.claude/usage.json
+.claude/settings.local.json
+
+# Logs and databases #
+######################
+*.log
+*.sql
+*.sqlite
+*.dat
+
+# OS generated files #
+######################
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Icon?
+ehthumbs.db
+Thumbs.db
+.AppleDouble
+.LSOverride
+
+# Compiled source #
+###################
+*.class
+*.dll
+*.exe
+*.o
+*.so
+*.py[cod]
