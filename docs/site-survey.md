@@ -36,7 +36,7 @@
 
 ## 4. Network and Home Assistant
 - Wi-Fi signal strength at the fan location (RSSI from a phone or an existing ESP node):
-- ESPHome nodes already in the shop?
+- ESP32 nodes already in the shop?
 - Notification channel you want for alerts (HA mobile app, SMS, other):
 - Any existing HA naming conventions for entities, areas or devices:
 

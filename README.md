@@ -1,6 +1,6 @@
 # Shop Exhaust Fan Controller
 
-An ESP32 and ESPHome controller for the woodshop exhaust fan. It runs the fan from particulate sensing and dust collector activity, with local physical controls and Home Assistant reporting. This is the pilot for a Claude-led design process; a dust collector controller follows it.
+An ESP32 (ESP-IDF) controller for the woodshop exhaust fan. It runs the fan from particulate sensing and dust collector activity, with local physical controls and Home Assistant reporting. This is the pilot for a Claude-led design process; a dust collector controller follows it.
 
 ## Getting started
 1. `git init`, then commit this skeleton.
@@ -14,7 +14,7 @@ Claude follows `CLAUDE.md`: it keeps `STATE.md` current, batches questions, and 
 | Path | Purpose |
 |------|---------|
 | `CLAUDE.md` | Operating instructions for Claude (process, gates, safety rules, conventions) |
-| `STATE.md` | Current phase, next actions, blockers, usage vs. budget |
+| `STATE.md` | Current phase, next actions, blockers |
 | `docs/context.md` | Kickoff brief: design thinking already done |
 | `docs/site-survey.md` | Your inputs about the shop, fan and preferences |
 | `docs/requirements.md` | Requirements with IDs and acceptance criteria |
@@ -24,4 +24,4 @@ Claude follows `CLAUDE.md`: it keeps `STATE.md` current, batches questions, and 
 | `docs/process-notes.md` | Lessons for the DC project |
 | `.claude/agents/` | Subagent definitions: `reviewer` (independent gate reviews), `sourcing` (parts research) |
 | `bom.csv` | Bill of materials |
-| `sim/`, `firmware/`, `electrical/`, `mech/`, `reviews/`, `sourcing/` | Created as phases begin |
+| `firmware/`, `pcb/`, `electrical/`, `mech/`, `reviews/`, `sourcing/` | Created as phases begin |
