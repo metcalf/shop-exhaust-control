@@ -38,7 +38,7 @@ Template:
 - Status: Accepted (Andrew)
 - Context: Andrew doesn't want to pull out a phone at the bench.
 - Decision: Physical controls and indicators in the shop. Need not be analog: a small display is fine, resistive touch possible but physical controls preferred. Not presumed to be a fixed mode list; the interaction model is in `docs/requirements.md` §2. Home Assistant handles logging, notifications and remote viewing, and may trigger the same actions as the panel.
-- Consequences: Precedence between panel and Home Assistant is decided at G2 (`docs/interfaces.md` §4).
+- Consequences: Precedence between panel and Home Assistant is decided at G2 (`docs/interfaces.md` §4). *Update 2026-10-24:* HA control dropped for v1 (FR-16); HA is read-only, so no precedence rule is needed yet.
 
 ## D-007: Bare ESP-IDF firmware, reusing the hvac_control network stack
 - Date: 2026-10-23
@@ -59,6 +59,16 @@ Template:
   - Dev board plus modules: no layout risk, but more wiring and a bigger enclosure. Kept as the fallback on the same pinout.
   - Low-voltage-only board (initial draft): simpler review, but rules out an on-board supply or relay that may make the build smaller. Remains an option at G2.
 - Consequences: Phase 3 adds a KiCad project with ERC/DRC and fab/PCBA outputs; G3 review covers the board. The PCB order is a purchase, approved at G4. Claude's layout needs Andrew's review in KiCad. Mains layout is the highest-risk part of Claude's weakest area, so Andrew reviews it at G3 against `pcb/SAFETY.md`.
+
+## D-009: Occupancy-based Auto; encoder plus configurable buttons
+- Date: 2026-10-24
+- Status: Accepted (Andrew, direction); floor level and thresholds set at commissioning
+- Context: Requirements review. Spraying is infrequent and doesn't justify a dedicated button. Andrew expects the sensors to do most of the work, with manual overrides rare.
+- Decision: In Auto, an occupied shop always gets a low ventilation floor; the fan turns off only when the shop is vacant and the air is clear. Panel: encoder with push (multi-step hold entry, defaulting to the last values) plus about 4 unlit buttons whose assignments are configuration (initially Auto, Quiet, Boost, spare). Scenes stay as an extensible concept; Spray is a scene, not a button. No backlit buttons; state is shown on the display and the ambient indicator.
+- Alternatives considered:
+  - Sensor-only on/off (previous FR-02): no baseline ventilation while working.
+  - Dedicated Spray button, or one press per action with no menus: optimizes for rare actions.
+- Consequences: The occupancy input moves from S to M (FR-07); it's trusted as correct, with no failure handling (Q-17), and the display shows occupancy. PCB routes about 4 button inputs with no LED drivers. Button mapping lives in config, not in the state machine.
 
 ---
 

@@ -2,34 +2,28 @@
 
 **For Andrew to fill in (phase 0).** Answer inline. "Unknown" and "don't care" are valid answers. Put photos in `docs/site/` and reference them by filename. Items marked ★ block requirements; the rest can follow.
 
+Already known, so not asked here: fan model and motor (Q-01), DC recirculates (Q-02), aerosol-only finishing (Q-04), occupancy from the 24 VAC lighting signal (Q-06), panel hardware and Auto behavior (D-009), tool list (`docs/context.md`). Questions with a default live in `docs/open-questions.md` and aren't repeated here: fuel-burning appliances (Q-05, ★), DC boost semantics (Q-03), panel and indicator location (Q-10), budget (Q-11), interim `DC_RUNNING` source (Q-12), the 24 VAC signal (Q-16).
+
 ---
 
 ## 1. The shop space
-- ★ Interior dimensions (L × W × ceiling height):
-- Rough air volume, if you know it:
+- ★ Ceiling height (plan is ~11' × 33'; correct it if that's off):
 - Doors and windows: how many, and are they usually open while working?
-- ★ Makeup air path when the exhaust runs (door undercut, louver, open window, none):
-- ★ Any fuel-burning appliances in or connected to the shop's air (water heater, furnace, gas dryer)? Location and type:
+- ★ Makeup air path when the exhaust runs: what is the inlet at the DC end (louver, door undercut, open window)? Any others?
 - Heating or cooling in the shop? (Exhaust running in winter costs heat. Is that a concern?)
 - Typical occupancy pattern (days and hours):
-- What's a reliable occupancy signal? (Shop lights on a switch? Existing motion sensor in Home Assistant? Anything else?)
 
 ## 2. Exhaust fan
-- ★ Make and model, and photo of the nameplate:
-- ★ Motor type (shaded-pole, PSC, EC/ECM, three-phase with VFD, unknown):
-- ★ Voltage, rated current or wattage:
-- ★ How is speed controlled today? (single speed, multi-tap switch, wall dimmer or triac, 0–10 V input, PWM input, VFD, none)
+- ★ What's plugged into the S6's control port today (stock AC Infinity controller, nothing), and where is it?
 - How is it switched today, and where is that switch?
-- Is the motor in the airstream?
-- Rated airflow (CFM), if known:
 - Ducting to outside: length, diameter, bends. Backdraft damper (gravity or motorized)?
 - ★ Plenum: dimensions and photos, mesh opening size and material, distance from mesh to fan.
 - How dirty does the mesh or plenum get, and how often do you clean it?
-- Noise: acceptable at full speed for long periods, or should normal running be low speed?
+- Noise: acceptable at full speed for long periods, or should normal running be low speed? (Informs the occupied ventilation floor.)
 
 ## 3. Electrical
 - ★ Circuit feeding the fan: breaker size, other loads on it, receptacle or hardwired?
-- Distance from the fan to where you'd want the control panel or indicators:
+- Distance from the fan to the main work area (table saw / miter saw), for panel and indicator wiring:
 - Is there an existing 24 VDC or 12 VDC supply nearby?
 - Room on the wall near the fan for an enclosure (dimensions)?
 - Do you want the mains wiring changes done by you or an electrician?
@@ -38,39 +32,25 @@
 - Wi-Fi signal strength at the fan location (RSSI from a phone or an existing ESP node):
 - ESP32 nodes already in the shop?
 - Notification channel you want for alerts (HA mobile app, SMS, other):
-- Any existing HA naming conventions for entities, areas or devices:
+- Any existing HA naming conventions for entities, areas or devices (proposed prefix `shop_exhaust_`):
 
 ## 5. Dust sources and activities
-- Machines in regular use, and which are dust-collected (table saw, miter saw, sander, router table, bandsaw, other):
+- Which machines are dust-collected, and which aren't?
 - Hand sanding and power sanding: how often, and for how long?
-- ★ Spray finishing:
-  - Which products? Waterborne, solvent lacquer, shellac, oil-based?
-  - How often, and for how long per session?
-  - Where in the shop do you spray, relative to the fan?
+- Aerosol finishing: how often, how long per session, and where in the shop relative to the fan?
 - Any metal grinding or cutting in this space (sparks near the plenum)?
 - Other fumes or odors (glue, epoxy, soldering, welding)?
 
-## 6. Dust collector (for the interface)
-- ★ Does the Lobo vent outdoors, or recirculate filtered air into the shop?
-- Location relative to the exhaust fan:
-- Is a "DC running" signal easy to get today (contactor auxiliary contact, current clamp, smart plug)? Or will it come from the future DC controller?
-- What should "boost" mean? (Full speed whenever the DC runs? Only after it has run N minutes? Stay on after the DC stops, and for how long?)
-
-## 7. Preferences and constraints
-- ★ Physical controls you want at the fan or entry: e.g. an Off / Auto / On / Spray switch, a speed knob, an indicator LED, a small display:
-- Where should those controls live?
-- Should the system ever run the fan when you're not in the shop (e.g. overnight clear-down after finishing)?
-- Budget range for v1:
-- Enclosure and aesthetics (DIN-rail box, wood panel you build, 3D-printed, don't care):
-- Fabrication you're happy doing (metal brackets, 3D printing, PCB soldering):
+## 6. Preferences and constraints
+- Enclosure material and look (3D-printed, wood, sheet metal, don't care):
+- 3D printer available? (Welding, woodworking and SMD reflow are already assumed.)
 - Hard no's:
 
-## 8. Photos and measurements checklist
-- [ ] Fan nameplate
+## 7. Photos and measurements checklist
 - [ ] Fan, plenum and mesh, from the room side
 - [ ] Inside the plenum, if accessible
-- [ ] Current fan switch and wiring
+- [ ] Current fan switch, control port connection and wiring
 - [ ] Wall area where the control panel would go
 - [ ] Exterior duct termination
 - [ ] DC location, with nameplate
-- [ ] Rough floor-plan sketch (fan, DC, spray area, door, makeup air)
+- [ ] Rough floor-plan sketch (fan, DC, saws, spray area, doors, makeup air, 24 VAC signal location)

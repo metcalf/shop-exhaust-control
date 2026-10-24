@@ -29,7 +29,7 @@ Boost behavior (how long the DC must run first, the boost level, and what happen
 | Coarse dust sensor | In | Analog + pulsed LED drive | 5 V | | | Optional (Q-08), e.g. Sharp GP2Y1014 |
 | VOC sensor | Bidir | I²C | 3.3 V | | | SGP41-class |
 | Panel: encoder | In | Quadrature + push | 3.3 V | | | |
-| Panel: scene buttons | In/Out | Momentary + LED backlight | 3.3 V | | | 3–4 plus Auto/cancel |
+| Panel: buttons | In | Momentary, unlit | 3.3 V | | | About 4; assignments are config (initially Auto, Quiet, Boost, spare) (D-009) |
 | Panel: display | Out | SPI | 3.3 V | | | ~2" IPS (ST7789-class) |
 | Ambient indicator | Out | Addressable LED data | 5 V | | | Level-shifted; may be remote from the panel (Q-10) |
 
@@ -49,13 +49,14 @@ Illustrative only. Finalize at G2 to match the design, including VOC, the option
 | `sensor.shop_exhaust_pm10` | sensor | |
 | `binary_sensor.shop_exhaust_fan_running` | binary_sensor | |
 | `sensor.shop_exhaust_fan_speed` | sensor | % or step |
-| `select.shop_exhaust_scene` | select | Auto or an active scene/hold; can start one (FR-16) |
+| `sensor.shop_exhaust_state` | sensor | Auto, or the active scene/hold, with time remaining (FR-12). Read-only in v1 (FR-16 dropped) |
+| `binary_sensor.shop_exhaust_occupied` | binary_sensor | Occupancy input (FR-07) |
 | `binary_sensor.shop_exhaust_dc_running` | binary_sensor | |
 | `sensor.shop_exhaust_run_hours` | sensor | |
 | `binary_sensor.shop_exhaust_fault` | binary_sensor | Plus a fault-reason text sensor |
 | `sensor.shop_exhaust_sensor_duty` | sensor | Diagnostic |
 
-**Precedence rule (proposed):** last command wins, from the panel or Home Assistant; the panel is always available and can cancel anything. Decide at G2.
+**Control from Home Assistant:** none in v1 (FR-16 dropped 2026-10-24); the panel is the only command source, so no precedence rule is needed. If HA control returns, decide precedence then.
 
 ## 5. Mechanical interfaces
 - Sensor mount relative to the plenum and mesh: ‹TBD, see context: Mounting›

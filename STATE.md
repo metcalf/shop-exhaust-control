@@ -16,3 +16,4 @@
 ## Log
 - 2026-10-22: Repo created from the kickoff conversation. See `docs/context.md`.
 - 2026-10-23: Setup review with Andrew. Firmware moved to bare ESP-IDF; network stack extracted to `metcalf/esp-iot-core` and adopted in hvac_control (D-007). Custom PCB with third-party assembly, mains allowed under documented rules (D-008). Interaction model proposed: Auto, timed holds and scenes on a physical panel plus ambient indicator. Dropped phase budgets, BOM alternates, HVLP assumptions; pruned decision log. Fan identified (CLOUDLINE PRO S6).
+- 2026-10-24: Pruned `site-survey.md` and `open-questions.md` of items already answered in the repo (Q-02, Q-06 closed from context/D-009) and de-duplicated the two, so each question is answered in one place. KiCad not installed on this Mac (Q-14 updated).
