@@ -81,13 +81,29 @@ Template:
   - **Layout:** Claude scripts placement (pcbnew/IPC API): board outline, edge connectors, antenna keepout, mains zone with slots, net classes. Mains section is pre-routed and locked. From the same locked placement, generate one candidate with Freerouting and one with Quilter (free tier, KiCad in/out); both must pass our DRC; Andrew picks one and touches it up.
   - **Outputs:** KiBot/KiKit for Gerber/BOM/CPL; InteractiveHtmlBom for hand-placed parts.
   - **Off-board wiring:** WireViz (YAML) in `electrical/`.
-  - **Mechanical fit:** `kicad-cli pcb export step` into the CadQuery enclosure assembly for interference checks.
+  - **Mechanical fit:** `kicad-cli pcb export step` into the build123d enclosure assembly (D-011) for interference checks.
 - Alternatives considered:
   - Hand-written `.kicad_sch`: works but unreadable placement, no structure for checks.
   - SKiDL/atopile (circuit-as-code): good netlists, but no schematic sheet for Andrew to review. Reconsider for the DC controller.
   - Flux: browser platform with its own format; conflicts with the repo/KiCad/`kicad-cli` workflow.
   - DeepPCB: overlaps Quilter; try only if Quilter disappoints. JITX: commercial, overkill.
 - Consequences: Phase 3 needs KiCad 9 (`kicad-cli`, creepage DRC) on the working machine (Q-14), plus Python deps (`kiutils`, `easyeda2kicad`) and Freerouting (Java). Quilter is a cloud upload and its creepage/slot handling is unverified, hence our DRC as the gate. The Freerouting-vs-Quilter comparison is recorded in `docs/process-notes.md` for the DC project.
+
+## D-011: Mechanical toolchain: build123d, checked by renders and geometry tests; outsourced PA12 enclosure
+- Date: 2026-10-24
+- Status: Proposed — needs Andrew (build123d choice accepted in principle by Andrew 2026-10-24; enclosure material tied to Q-18)
+- Context: Claude's mechanical errors are mostly orientation/selector mistakes, assembly fit, and manufacturability, not the parametric geometry itself. Andrew expects to outsource SLS printing of the enclosure.
+- Decision:
+  - **CAD:** build123d (FOSS, OCCT kernel, STEP export) instead of CadQuery. Explicit objects, `Location`s and named faces replace chained string selectors (`>Z`), the main source of silent orientation errors. No mechanical code existed yet, so switching is free.
+  - **Single source of truth:** connector, mounting-hole, display and encoder positions are read from the `.kicad_pcb` file via pcbnew Python, never retyped. The KiCad STEP export goes into the assembly.
+  - **Checks:** headless renders (iso, six orthographic views, section cuts) via PyVista/trimesh for Claude to review; pytest assertions for bounding boxes, minimum wall thickness, boss/insert clearances, and zero pairwise interference volume across the assembly (PCB included); trimesh watertight/manifold checks on exported meshes.
+  - **Fabrication outputs:** STEP for Fusion; dimensioned drawings via FreeCAD headless (TechDraw) for anything Andrew cuts or welds (mounts, brackets); 1:1 PDF templates for cutouts and hole patterns, checked on the real parts before cutting.
+  - **Enclosure process:** outsourced PA12 powder-bed nylon. Default MJF PA12 at JLC3DP, ordered with the PCB; SLS if the vendor or finish demands it. Design rules: ≥2 mm walls, brass heat-set inserts in bosses, ~0.3 mm clearance on mating fits, powder-escape holes for closed voids, gasketed lid if needed for dust.
+- Alternatives considered:
+  - CadQuery: same kernel and fine, but its selector API produces wrong-face errors that build without complaint.
+  - Zoo (KCL/text-to-CAD): commercial; duplicates code-CAD with more lock-in.
+  - SLA resin: brittle for a shop enclosure. FDM: fine if Andrew prints, but slower to dial in remotely. Off-the-shelf listed enclosure with machined cutouts plus a printed bezel: the fallback if mains ends up inside (Q-18).
+- Consequences: Phase 3 mech needs Python deps (`build123d`, `pyvista` or `trimesh`, `pytest`) and FreeCAD for drawings. Standard PA12 is not flame-rated (typically UL94 HB), so it can't be the fire enclosure around mains; Q-18 resolves this at G2. CLAUDE.md updated from CadQuery to build123d.
 
 ---
 

@@ -21,7 +21,7 @@ This is the **pilot** project. A dust collector (DC) controller follows it and w
 | 0 | Site survey | `docs/site-survey.md` completed by Andrew, plus photos in `docs/site/` | Survey complete enough to write requirements |
 | 1 | Requirements | `docs/requirements.md` with IDs and acceptance criteria | **G1: Requirements sign-off** |
 | 2 | Architecture | Block diagram, `docs/interfaces.md`, control-logic spec | **G2: Architecture sign-off** |
-| 3 | Detailed design | Wiring diagrams, PCB (KiCad, ERC/DRC clean, fab and PCBA outputs), firmware (ESP-IDF, logic host-tested), mechanical (CadQuery to STEP) | **G3: Mains/safety review** before anything on line voltage is final |
+| 3 | Detailed design | Wiring diagrams, PCB (KiCad, ERC/DRC clean, fab and PCBA outputs), firmware (ESP-IDF, logic host-tested), mechanical (build123d to STEP) | **G3: Mains/safety review** before anything on line voltage is final |
 | 4 | Sourcing | `bom.csv` with part numbers, stock and lead time | **G4: Approve BOM.** Andrew orders; you never purchase. |
 | 5 | Build and bring-up | Bring-up and test plan, flashing, log review | **G5: First power-up plan approved** |
 | 6 | Commissioning | Threshold tuning, acceptance tests against requirements | Andrew accepts |
@@ -55,7 +55,7 @@ Subagents start with no context, so each one has to rebuild what you already kno
 - **Firmware:** bare ESP-IDF in C++, matching Andrew's other projects. Use the shared network stack `metcalf/esp-iot-core` (Wi-Fi, OTA, remote logging, `BaseMqttClient`, `NetworkTaskManager`) as a git submodule at `components/esp-iot-core`, the same way hvac_control does (D-007). Fix it upstream rather than forking it. Talk to Home Assistant over MQTT with discovery, following `MqttHomeClient` (`hvac_control/controller/components/hass`) and `MqttZCHomeClient` (`hvac_control/zone_controller/components/zc_app`). All control logic runs on the node and must work with Wi-Fi, the broker and Home Assistant down.
 - **Electronics v1:** a custom PCB (D-008): ESP32 module, power, sensor and control connectors, isolated `DC_RUNNING` input, outputs. Mains on the board is allowed when it earns its place (e.g. on-board supply or relay); whether the contactor lives on or off the board is an architecture decision. Any mains section follows the line-voltage rules below. Design in KiCad for third-party PCBA (JLCPCB by default): prefer parts the assembler stocks, so Andrew only hand-solders or hotplate-reflows what it can't place. Enclosure and mounting are ours to design; no DIN-rail constraint.
 - **Aerosol finishing:** Andrew occasionally uses aerosol cans in the shop; no spray guns. Spray mode is full exhaust that never waits on a sensor, with a longer run-on after. Keep the controller electronics out of the exhaust airstream. If spray-gun finishing is ever added, revisit flammable-vapor suitability of the fan and anything in the airstream.
-- **Mechanical:** CadQuery source in `mech/`, exported to STEP for Andrew to import into Fusion 360. Use parametric dimensions from measurements in the site survey, never guessed ones.
+- **Mechanical:** build123d source in `mech/` (D-011), exported to STEP for Andrew to import into Fusion 360. Use parametric dimensions from measurements in the site survey and positions read from the KiCad board, never guessed or retyped ones. Every model ships with rendered views and pytest geometry checks (fit, interference, wall thickness).
 - **BOM (`bom.csv`):** PCB parts carry the assembler's part number (LCSC for JLCPCB) plus a DigiKey or Mouser equivalent; off-board parts prefer DigiKey or Mouser part numbers. No alternates (these are one-offs). Bias toward parts in stock now over marginally better ones that aren't, and record stock and lead time with the date checked.
 
 ## Safety rules (non-negotiable)
@@ -65,7 +65,7 @@ Subagents start with no context, so each one has to rebuild what you already kno
 
 ## What you can't do, and how to work around it
 - **You can't see the shop.** Rely on the site survey, photos and measurements, and ask for anything missing.
-- **You can't drive Fusion 360 or the KiCad GUI.** Produce CadQuery and STEP files, and KiCad projects checked with `kicad-cli` (ERC, DRC, Gerber/BOM/CPL export). PCB layout is your weakest area: keep the board 2-layer and simple, and expect Andrew to review and touch up the layout in KiCad.
+- **You can't drive Fusion 360 or the KiCad GUI.** Produce build123d and STEP files, and KiCad projects checked with `kicad-cli` (ERC, DRC, Gerber/BOM/CPL export). PCB layout is your weakest area: keep the board 2-layer and simple, and expect Andrew to review and touch up the layout in KiCad.
 - **You can't touch hardware from the cloud.** For bring-up, Andrew runs Claude Code on a machine in the shop so it can flash the firmware and read logs.
 - **You can't buy anything.** Produce the BOM; Andrew orders.
 
