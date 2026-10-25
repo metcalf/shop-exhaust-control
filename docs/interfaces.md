@@ -55,6 +55,7 @@ Illustrative only. Finalize at G2 to match the design, including VOC, the option
 | `binary_sensor.shop_exhaust_dc_running` | binary_sensor | |
 | `sensor.shop_exhaust_run_hours` | sensor | |
 | `binary_sensor.shop_exhaust_fault` | binary_sensor | Plus a fault-reason text sensor |
+| `binary_sensor.shop_exhaust_cleardown_incomplete` | binary_sensor | Vacant limit (FR-19) hit with PM/VOC still high |
 | `sensor.shop_exhaust_sensor_duty` | sensor | Diagnostic |
 
 **Control from Home Assistant:** none in v1 (FR-16 dropped 2026-10-24); the panel is the only command source, so no precedence rule is needed. If HA control returns, decide precedence then.

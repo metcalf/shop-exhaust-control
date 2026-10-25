@@ -40,7 +40,7 @@ Automatically control the shop exhaust fan (AC Infinity CLOUDLINE PRO S6) based 
 | ID | Requirement | Pri | Status | Source |
 |----|-------------|-----|--------|--------|
 | FR-01 | Local physical controls provide Auto, timed holds at a chosen level, and scenes (§3). A button-assigned action takes one press. A hold that reuses the last level and duration takes at most three presses. Button-to-action assignments are configuration, separate from the control logic. | M | Proposed | D-009 |
-| FR-02 | **Auto.** While occupied, the fan runs at no less than the ventilation floor (P-01) from the moment occupancy begins. Quick walk-ins run the floor for the 15-min Lutron timeout, which is acceptable (Andrew, 2026-10-25). Speed rises above the floor as PM rises above the on-threshold (P-03), reaching full speed at P-05, and falls back as PM drops below the off-threshold (P-04). While vacant, the same thresholds decide between running and off. Speed changes don't chatter on noisy readings; the mechanism (hysteresis, debouncing, ramped or decaying speed) is a design choice tuned against recorded traces. | M | Proposed | context, D-009, survey §1–2 |
+| FR-02 | **Auto.** While occupied, the fan runs at no less than the ventilation floor (P-01) from the moment occupancy begins. Quick walk-ins run the floor for the 15-min Lutron timeout, which is acceptable (Andrew, 2026-10-25). Speed rises above the floor as PM rises above the on-threshold (P-03), reaching full speed at P-05, and falls back as PM drops below the off-threshold (P-04). While vacant, the same thresholds decide between running and off, within the vacant limits of FR-19. Speed changes don't chatter on noisy readings; the mechanism (hysteresis, debouncing, ramped or decaying speed) is a design choice tuned against recorded traces. | M | Proposed | context, D-009, survey §1–2 |
 | FR-03 | *Dropped 2026-10-24:* folded into FR-02. | — | Dropped | |
 | FR-04 | The PM sensor duty cycle adapts to concentration: continuous at low levels, sparse at high levels (P-07), with each sample preceded by at least the settling time (P-06). | M | Proposed | Andrew's design |
 | FR-05 | During clear-down, the sample interval shortens as readings fall so the fan doesn't overrun by a whole interval. *Could:* predict the off-threshold crossing from a fitted decay rate. The fitted rate is reported (FR-12), since it also measures delivered airflow. | S | Proposed | context |
@@ -56,6 +56,7 @@ Automatically control the shop exhaust fan (AC Infinity CLOUDLINE PRO S6) based 
 | FR-15 | An ambient indicator, located with the panel above the miter station, shows the air-quality band (good / elevated / high, P-15) and is readable from anywhere in the shop. It flashes red for an active fault while occupied (Q-07), and is dark while vacant. | S | Proposed | context, Q-07, Q-10 |
 | FR-16 | *Dropped 2026-10-24:* Home Assistant control of scenes and holds. HA is read-only for v1. | — | Dropped | |
 | FR-17 | If a continuously running coarse dust sensor is fitted, the PM sensor is suspended while the coarse reading is high and resumes once it falls to near zero; Auto treats a high coarse reading as "high". | C | Proposed | Andrew, 2026-10-24 |
+| FR-19 | **Vacant limits.** While vacant, Auto (including PM, VOC and DC demand) runs the fan no faster than P-22 and for no longer than P-21 after vacancy begins, then turns it off until the next occupancy. If the limit cuts the fan off while PM or VOC is still above its off-threshold, a "clear-down incomplete" notice is raised on the panel and in HA (it points to a fouled sensor or a persistent source). Spray keeps full speed through P-09 even when vacant; any VOC/PM-gated extension past P-09 counts against P-21. Explicit holds aren't limited: they have their own duration. | M | Proposed | Andrew, 2026-10-25 |
 | FR-18 | The fan's tach is monitored (square wave, ~30 Hz at level 1, ~75 Hz at level 4, ~144 Hz at level 10; Q-15). A **fan fault** is raised when the fan is commanded on and the tach frequency is zero, or far below the expected frequency for the command, for P-16. | S | Proposed | Q-15 |
 
 ## 5. Non-functional requirements
@@ -125,6 +126,8 @@ Initial values let the logic be host-tested now; commissioning replaces them. Al
 | P-18 | PM sensor fault debounce | 60 s | Placeholder |
 | P-19 | Fallback speed on PM sensor fault | Max(P-01, 30 %) | Q-07 ("low speed") |
 | P-20 | *(dropped 2026-10-25: vacant → off on PM sensor fault, Q-20)* | | |
+| P-21 | Max Auto runtime while vacant | 2 h after vacancy | About 2× the 35–70 min full-shop clear-down estimate (§10); vacancy already lags last motion by 15 min |
+| P-22 | Max Auto speed while vacant | 60 % | Placeholder: quieter for the house overnight while still clearing; tune from FR-05 decay data |
 
 ## 9. Acceptance criteria
 Format: test method, then pass condition. "Sim" = host unit test of the control logic on synthetic or recorded traces. "Bench" = assembled node off-site. "In-situ" = installed in the shop.
@@ -151,6 +154,7 @@ Format: test method, then pass condition. "Sim" = host unit test of the control 
 | AC-18 | NFR-07, SR-08 | Bench: power-cycle and forced watchdog reset during a hold; scope the speed line (node side of the isolation) through reset; remove node power | Returns to Auto; speed line held low from power-up through boot; fan at full speed with the node unpowered |
 | AC-26 | SR-09 | G2/G3 design review; bench hipot or insulation-resistance check of the isolation barrier if no isolated part is certified | Fan-side circuits have no galvanic connection to node ground, panel or USB; barrier part ratings documented |
 | AC-19 | NFR-10, NFR-11 | Bench | Changing a P-nn from the panel or HA takes effect and survives power-cycle; OTA update succeeds |
+| AC-27 | FR-19 | Sim: vacant with PM pinned high; vacant Spray with VOC pinned high; vacant hold | Speed ≤ P-22 while vacant in Auto; off at P-21 with "clear-down incomplete" raised; Spray full through P-09 then off at P-21; hold runs its full duration; limits reset on next occupancy |
 | AC-20 | SR-04 | Sim; bench by unplugging the PM sensor | Fault shown within P-18 + 5 s; ≥ P-19 while occupied, off when vacant |
 | AC-21 | SR-01, SR-01a, SR-07 | G3 review | Listed parts for all mains; `pcb/SAFETY.md` complete if any on-board mains; electrician checkpoints flagged |
 | AC-22 | IR-01, IR-02 | Bench: dry contact and MQTT fallback | Both assert boost; contact wiring tolerant of 35 ft run without false triggers with the DC motor running (in-situ, once the DC controller exists) |
