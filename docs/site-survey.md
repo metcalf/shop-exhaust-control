@@ -23,7 +23,7 @@ Already known, so not asked here: fan model and motor (Q-01), DC recirculates (Q
 
 ## 3. Electrical
 - ★ Circuit feeding the fan: breaker size, other loads on it, receptacle or hardwired? It's on the 20A circuit from the range hood but it's a pretty low powered fan so should be minimal issues with circuit sizing here.
-- Distance from the fan to the main work area (table saw / miter saw), for panel and indicator wiring: About 18' horizontally. Wire would run up to ceiling (~3') and down to operating height (~4').
+- Distance from the fan to the main work area (table saw / miter saw), for panel and indicator wiring: About 18' horizontally. Wire would run up to ceiling (~3') and down to operating height (~4'). AC Infinity says you can use up to 40' of extension wire to their controllers, which I believe is basic USB-C cable.
 - Is there an existing 24 VDC or 12 VDC supply nearby? Not that I can think of and I think having a dedicated supply makes more sense anyway.
 - Room on the wall near the fan for an enclosure (dimensions)? Fan is inside a cabinet with room for an enclosure.
 - Do you want the mains wiring changes done by you or an electrician? By me.
@@ -47,10 +47,15 @@ Already known, so not asked here: fan model and motor (Q-01), DC recirculates (Q
 - Hard no's:
 
 ## 7. Photos and measurements checklist
-- [ ] Fan, plenum and mesh, from the room side
+- [X] Fan, plenum and mesh, from the room side
 - [ ] Inside the plenum, if accessible -- skipping since we're not going to put sensors in the plenum space
-- [ ] Current fan switch, control port connection and wiring
-- [ ] Wall area where the control panel would go
-- [ ] Exterior duct termination
-- [ ] DC location, with nameplate
+- [X] Current fan switch, control port connection and wiring
+- [X] Wall area where the control panel would go
+- [X] Exterior duct termination
+- [X] DC location, with nameplate
 - [X] Rough floor-plan sketch (fan, DC, saws, spray area, doors, makeup air, 24 VAC signal location)
+
+## 8. Mounting location options
+1. Above miter saw: Pros: Easy wiring to DC along ducting, central to dusty areas of the shop, reasonably visible from around the shop. Cons: Wire along ceiling to exhaust fan, sometimes spray in the area between the miter station and the exhaust fan so some VOCs might get undercounted (I think it's an important question how much of an issue this is--it's only 10' from where I'd be spraying so VOCs may spread enough it doesn't matter), may pick up very localized dust signal when miter saw runs (though maybe that's OK since we want to clear it?).
+2. Next to rear door at exhaust fan side of shop: Pros: Modest wiring (if DC connection is wireless), nearer to the exhaust path, visible from entire shop. Cons: Near exterior door so may be biased by fresh air (though usually closed), farther from dustier areas of shop
+3. Next to exhaust fan: Pros: minimal wiring (if DC connection is wireless), near exhaust path so should see good ambient air flow. Cons: Farthest from work area, can't see visual indicators from entire shop.
