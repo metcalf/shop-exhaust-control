@@ -53,7 +53,7 @@ Automatically control the shop exhaust fan based on air quality and dust collect
 | NFR-01 | All control logic runs locally; full function with Wi-Fi and Home Assistant unavailable. | M | Proposed |
 | NFR-02 | PM sensor service life of at least ‹TBD› years in this shop, given the duty cycling. The sensor is treated as a cleanable or replaceable consumable. | S | Proposed |
 | NFR-03 | The sensor can be removed or cleaned without tools, or with a single tool, in under 5 minutes. | S | Proposed |
-| NFR-04 | The PM sensor is the only component exposed to shop air: its inlet and outlet open outside the enclosure, with no air path into the electronics compartment. The electronics compartment has no ventilation openings, gasketed seams and sealed or gasketed panel controls, and is designed to IP5X intent (not tested). | M | Proposed |
+| NFR-04 | The air-quality sensors (PM, plus VOC (Q-09) and coarse dust (FR-17) if fitted) are the only components exposed to shop air. They sit in a sensor bay open to the room, thermally separated from the electronics, with no air path into the electronics compartment. The electronics compartment has no ventilation openings, gasketed seams and sealed or gasketed panel controls, and is designed to IP5X intent (not tested). | M | Proposed |
 | NFR-05 | The custom PCB is assemblable by a third-party PCBA service. Any mains section on it meets documented creepage/clearance and isolation rules (`pcb/SAFETY.md`). | S | Proposed |
 | NFR-06 | Firmware is ESP-IDF (C++). The control logic is a hardware-independent module covered by host-run unit tests on simulated sensor traces. | M | Proposed |
 | NFR-07 | After power loss, returns to Auto without manual intervention; an active hold or scene is not resumed. | M | Proposed |
