@@ -115,13 +115,13 @@ Template:
 
 ## D-013: Fan and node on always-on 120 V; lighting relay no longer switches the fan
 - Date: 2026-10-25
-- Status: Proposed — needs Andrew (site mains change; reviewed at G3)
+- Status: Accepted (Andrew, 2026-10-25, Q-19: use the existing unswitched receptacle)
 - Context: Survey §2: the fan's receptacle is switched by a relay driven from the 24 VAC lighting transformer, so the fan loses power when the lights go off. Auto (D-009) turns the fan off only when the shop is vacant *and* the air is clear, which needs the fan to run after the lights go off.
-- Decision: Give the fan and the node's listed supply always-on 120 V in the cabinet: either an unswitched receptacle, or remove the relay from the fan receptacle's feed. The 24 VAC transformer stays and becomes the occupancy input only (FR-07). Andrew does the wiring (survey §3); G3 flags anything an electrician should check.
+- Decision: Plug the fan and the node's listed supply into the existing unswitched receptacle in the cabinet. No rewiring. The 24 VAC transformer stays and becomes the occupancy input only (FR-07).
 - Alternatives considered:
   - Keep the relay: the fan stops when the lights go off, so no vacant clear-down and Spray run-on dies with the lights. Contradicts FR-02/FR-08.
   - Controller switches mains itself: unnecessary, since 0 % PWM is true off (Q-15), and it would put mains in the enclosure (Q-18).
-- Consequences: IR-05. The fan's off state now depends entirely on the control port, so its behavior with the node dead (Q-15, SR-08) matters more: if it runs at full speed with no control signal, a dead node means the fan runs until noticed (HA offline alert, FR-13).
+- Consequences: IR-05. No mains work, so G3 for this is a check that the receptacle's circuit is suitable. The fan's off state now depends entirely on the control port. It runs at full speed with no signal (Q-15), so a dead node means the fan runs until noticed (HA offline alert, FR-13); SR-08 accepts that.
 
 ## D-014: Panel, sensors and indicator above the miter station
 - Date: 2026-10-25

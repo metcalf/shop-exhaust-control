@@ -20,8 +20,8 @@ Boost behavior (how long the DC must run first, the boost level, and what happen
 
 | Signal | Dir | Type | Level | Connector | GPIO | Notes |
 |--------|-----|------|-------|-----------|------|-------|
-| Fan speed | Out | PWM to the fan's EC control port | ~10 V PWM (community reports) ‹verify, Q-15› | Fan's UIS port (USB-C-style cable) | | 0 % = off (Q-15) |
-| Fan tach | In | Pulse from the UIS port (Q-15) | ‹TBD, Q-15› | Fan's UIS port | | Fan fault detection (FR-18) |
+| Fan speed | Out | Open-drain pull-down, 5 kHz PWM, on the fan's speed line (yellow) | Fan pulls up to +10 V via ~2.2 kΩ; high-time duty = speed | Fan's UIS port (USB-C-style cable) | | Held low = off; open/high = full (Q-15). Isolated from node (SR-09). Stock levels 1/4/10 = 20/46/100 % |
+| Fan tach | In | Square wave on white; 50 % duty; ~30 / 75 / 144 Hz at levels 1 / 4 / 10 | Stock controller pulls it up 10 kΩ to its 5 V; fan output type (open-drain vs push-pull) unconfirmed, so design for either | Fan's UIS port | | Fan fault detection (FR-18). Isolated (SR-09). Pulses/rev unknown; only frequency vs command is needed |
 | Occupancy | In | Isolated AC input | 24 VAC from the lighting transformer in the fan cabinet (Q-16) | | | Rectifier plus optocoupler |
 | `DC_RUNNING` | In | Opto | | | | |
 | PM sensor | Bidir | SPS30, I²C or UART (G2) | 5 V supply | | | Sleep/wake and fan-clean by command (D-012) |
@@ -31,6 +31,8 @@ Boost behavior (how long the DC must run first, the boost level, and what happen
 | Panel: buttons | In | Momentary, unlit | 3.3 V | | | About 4; assignments are config (initially Auto, Quiet, Boost, spare) (D-009) |
 | Panel: display | Out | SPI | 3.3 V | | | ~2" IPS (ST7789-class) |
 | Ambient indicator | Out | Addressable LED data | 5 V | | | Level-shifted; with the panel above the miter station (D-014) |
+
+**S6 control port (UIS), measured by Andrew 2026-10-25 (Q-15):** black = GND, red = +10 V from the fan (don't draw meaningful current), yellow = speed, white = tach. Fan's GND relation to mains unknown (SR-09). The stock controller pulls yellow low through a transistor against the fan's 2.2 kΩ pull-up.
 
 ## 3. Power
 - Mains in: always-on 120 V receptacle in the fan cabinet (D-013, IR-05)
