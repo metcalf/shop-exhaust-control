@@ -17,7 +17,7 @@ Automatically set exhaust fan speed based on shop air quality. Keep day-to-day c
 - **Separate from the DC controller.** The two systems are coupled by one signal ("DC running"). Shared UI, if any, lives in Home Assistant. Boosting exhaust is non-critical, so routing that signal through Home Assistant is acceptable; a dry contact or a direct node-to-node link is sturdier.
 
 ## Sensing: particulate
-**Working assumption:** a PMS5003-class laser particle sensor with **adaptive duty cycling**. Consider a separate coarse dust sensor that can run continuously (e.g. **Sharp GP2Y1014AU0F**). It's rugged and cleanable, but its resolution is only about 20–50 µg/m³ with heavy averaging, roughly 0.1 mg/m³ to trigger reliably. It can't see the lingering fines that matter for deciding when to turn the fan off.
+*Decided 2026-10-25 (D-012): SPS30 plus SGP41, both v1. The text below is the original reasoning.* **Former working assumption:** a PMS5003-class laser particle sensor with **adaptive duty cycling**. Consider a separate coarse dust sensor that can run continuously (e.g. **Sharp GP2Y1014AU0F**). It's rugged and cleanable, but its resolution is only about 20–50 µg/m³ with heavy averaging, roughly 0.1 mg/m³ to trigger reliably. It can't see the lingering fines that matter for deciding when to turn the fan off.
 
 Alternative to evaluate: the **Sensirion SPS30** (about $50). It has a fan-boost self-clean and is more contamination-resistant, with a roughly 10-year rated life under normal conditions. It may be worth the cost over a PMS5003.
 

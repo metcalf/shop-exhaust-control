@@ -1,98 +1,162 @@
 # Requirements — Shop Exhaust Fan Controller
 
-**Status:** DRAFT, phase 1 not started. Entries marked `Proposed` come from the kickoff conversation (`docs/context.md`) and need confirmation against the site survey. Claude completes this in phase 1, and Andrew signs off at **G1**.
+**Status:** READY FOR G1 (drafted 2026-10-25 from the site survey and answers to Q-03…Q-18). Andrew signs off at **G1**.
 
 **Conventions**
-- IDs: `FR` functional, `NFR` non-functional, `SR` safety, `IR` interface.
+- IDs: `FR` functional, `NFR` non-functional, `SR` safety, `IR` interface. IDs are never reused; dropped entries stay with a note.
 - Priority: **M** must, **S** should, **C** could (v2 candidate).
-- Every requirement gets at least one acceptance criterion (AC) in section 7.
-- Thresholds shown as `‹TBD›` are set from the survey or commissioning data, never guessed.
+- Every requirement has at least one acceptance criterion (AC) in §7.
+- Numeric thresholds live in the parameter table (§8) as `P-nn`. Each has an initial value with its source; final values are set at commissioning (phase 6) from logged data.
 
 ## 1. Purpose and scope
-Automatically control the shop exhaust fan based on air quality and dust collector activity, with local physical controls and Home Assistant reporting.
+Automatically control the shop exhaust fan (AC Infinity CLOUDLINE PRO S6) based on air quality, occupancy and dust collector activity, with local physical controls, an ambient air-quality indicator, and Home Assistant reporting.
 
-**In scope:** fan speed control (including off), PM and VOC sensing, an ambient air-quality indicator, local controls and indicators, the DC-running input, Home Assistant integration, enclosure and mounting.
+**In scope:** fan speed control (including off) through the S6 control port, PM and VOC sensing, occupancy from the 24 VAC lighting signal, the `DC_RUNNING` input, panel and ambient indicator, Home Assistant integration, the custom PCB, enclosure and mounting, and the site wiring changes the controller needs (IR-05).
 
-**Out of scope (v1):** DC control (separate project), makeup-air control, life-safety functions, CO and combustion monitoring.
+**Out of scope (v1):** DC control (separate project), makeup-air control, Home Assistant control of the fan (FR-16), CO/combustion monitoring, and any life-safety function (SR-05).
 
-## 2. Users and interaction model
+## 2. Site summary (from `docs/site-survey.md`)
+- Shop 11'2" × 30'9½", ceiling 8'10½" (≈ 3,050 ft³). Doors and window usually closed.
+- **Exhaust:** S6 inline above a Broan PM300SS hood (fan removed, stock mesh/baffle filter is the intake) in a wall cabinet at the north (sink) end. 6" duct, ~10', two swept 90°s, gravity damper and wall cap. S6 is rated ≈ 400 CFM free air; the delivered flow here will be lower and is measured at commissioning (from the PM decay rate, FR-05).
+- **Makeup air:** one 6" duct with a spring-loaded backdraft damper, at the ceiling at the south (DC/jointer) end, from the garage, which vents to outside. Air crosses the full length of the shop, past the work area, to the fan.
+- **Fan power today:** 120 V receptacle in the cabinet, switched by a relay driven by a 24 VAC transformer on the lighting circuit. The fan therefore loses power when the lights go off (see IR-05).
+- **Fan control today:** stock single-button AC Infinity controller on the S6's port, cable run down to the pegboard below the cabinet.
+- **Main work area:** miter station mid-shop (east wall), table saw opposite; ~18' horizontally from the fan. Panel and indicator go above the miter station (Q-10).
+- **Dust and fume sources:** table saw, miter saw, router table, jointer, planer, band saw (poorly collected); sanding (hand and orbital with vacuum) from minutes to hours; metal grinding/cutting away from the intake; soldering, lathe oil smoke, acetone/alcohol, occasional epoxy and glue; occasional aerosol-can finishing at varying locations.
+- **Occupancy pattern:** mostly weekdays 9–5, plus frequent short walk-ins to grab tools.
+- **No fuel-burning appliances** anywhere in the building (Q-05). Radiant floor heat; exhaust heat loss is a minor concern.
+
+## 3. Users and interaction model
 - **User:** Andrew, the only person working in the shop.
-- **Interaction model (proposed, not settled):** no fixed mode list.
-  - **Auto** is the resting state, and the sensors should do most of the work. While the shop is **occupied**, the fan never drops below a low ventilation floor ‹TBD›; speed rises above it with air quality and DC boost. The fan turns **off only when the shop is vacant** and the air-quality criteria are met.
-  - A **hold** sets a level for a duration ("max for 20 min", "off for 1 h"), then returns to Auto. Entry on the encoder: press, turn to set level, press, turn to set time, press. Each step defaults to the last value used, so repeating a hold is three quick presses.
-  - A **scene** is a named hold plus what happens after it. The set is expected to grow with use. Initial examples: **Quiet** (speed capped for a time), **Boost** (max for a time), **Spray** (max, then a decaying run-on, possibly via Auto, even if vacant).
-  - **Panel:** a rotary encoder with push, about 4 buttons and a small display (about 2"). Initial button assignment: **Auto** (cancel to Auto), **Quiet**, **Boost**, and one spare. Assignments are expected to change with use. Scenes without a button are started from the encoder menu. The display shows state, readings and time remaining, and hosts hold and scene setup.
-  - **Ambient indicator:** a color indicator readable down the length of the shop (e.g. an addressable LED bar, bright light washing on the surrounding wall). Color shows the air-quality band.
+- **Auto** is the resting state; the sensors do most of the work. While **occupied**, the fan holds a low ventilation floor (after a short walk-in delay, P-02) and rises with air quality, VOCs and DC boost. The fan turns **off only when the shop is vacant** and the air-quality criteria are met. Normal running favors low, quiet speeds; high speed only when needed (survey §2).
+- A **hold** sets a level for a duration ("max for 20 min", "off for 1 h"), then returns to Auto. Entry on the encoder: press, turn to set level, press, turn to set time, press. Each step defaults to the last value used, so repeating a hold is three presses.
+- A **scene** is a named hold plus what happens after it. The set is expected to grow. Initial: **Quiet** (speed capped for a time), **Boost** (max for a time), **Spray** (max, then run-on per FR-08, even if vacant).
+- **Panel:** rotary encoder with push, about 4 unlit buttons, ~2" display (D-009). Initial buttons: **Auto** (cancel to Auto), **Quiet**, **Boost**, spare. Scenes without a button start from the encoder menu.
+- **Ambient indicator:** a color indicator readable down the length of the shop, showing the air-quality band.
 
-## 3. Functional requirements
+## 4. Functional requirements
 
 | ID | Requirement | Pri | Status | Source |
 |----|-------------|-----|--------|--------|
-| FR-01 | Local physical controls provide Auto, timed holds at a chosen level, and scenes (§2). A button-assigned action takes one press. A hold that reuses the last level and duration takes at most three presses. Button-to-action assignments are configuration, separate from the control logic. | M | Proposed | context: physical controls |
-| FR-02 | In Auto, while occupied, the fan runs at no less than a ventilation floor ‹TBD› and rises above it when PM exceeds an on-threshold ‹TBD›, returning to the floor below an off-threshold ‹TBD›. While vacant, the same thresholds decide between running and off. Speed changes don't chatter on noisy readings; the mechanism (hysteresis, sample debouncing, ramped or decaying speed) is a design choice tuned against recorded traces. | M | Proposed | context |
-| FR-03 | *Dropped 2026-10-24:* folded into FR-02 as a no-chatter outcome; debouncing is a design choice, not a requirement. | — | Dropped | |
-| FR-04 | The PM sensor duty cycle adapts to concentration: continuous at low levels, sparse at high levels, with each sample preceded by ≥30 s of sensor fan settling. | M | Proposed | Andrew's design |
-| FR-05 | During clear-down, the sample interval shortens as readings fall. *Could:* predict the threshold crossing from a fitted decay rate. | S | Proposed | context |
-| FR-06 | A pegged (saturated) PM reading is treated as "high" and handled as the slowest sample rate. | M | Proposed | context |
-| FR-07 | An occupancy input (the 24 VAC lighting signal near the fan, to be confirmed in Q-16) drives Auto (FR-02). The PM sensor sleeps once the shop is vacant and the fan is off. The signal is assumed reliable; no failure handling (Q-17). | M | Proposed | laser life |
-| FR-08 | The Spray scene commands full exhaust immediately, independent of sensors. When it ends, the fan runs until air-quality criteria are met or a minimum run-on ‹TBD› elapses, whichever is later. | M | Proposed | safety discussion |
-| FR-09 | When the DC-running input has been active ‹TBD› minutes, Auto raises fan speed to a boost level ‹TBD›. Behavior after the DC stops ‹TBD›. | S | Proposed | Andrew's DC feature list |
-| FR-10 | Fan speed, including off, is set through the CLOUDLINE PRO S6's EC control port (PWM, ‹TBD› steps or continuous). Mains switching only if the port can't reach true off or a safe fail state (Q-15). | S | Proposed | |
-| FR-11 | The panel shows the current state (Auto, hold or scene, with time remaining), occupancy (e.g. "Vacant"), fan speed, air-quality readings and faults. | M | Proposed | context: physical controls |
-| FR-12 | Home Assistant exposes air-quality readings, fan state and speed, current state (Auto/hold/scene), DC-input state, run hours and faults. | S | Proposed | |
-| FR-13 | Home Assistant can send alerts for faults and maintenance (e.g. sensor fault, mesh cleaning reminder). | C | Proposed | |
-| FR-14 | VOC sensing (SGP41-class) extends run-on after the Spray scene. | S | Proposed | context: VOC section |
-| FR-15 | An ambient air-quality indicator is readable from anywhere in the shop (11' × 33'). | S | Proposed | context: goal |
-| FR-16 | *Dropped 2026-10-24:* Home Assistant control of scenes and holds. Revisit later; HA stays read-only for v1. | — | Dropped | |
-| FR-17 | If a continuously running coarse dust sensor is fitted (Q-08), the PM sensor is suspended while the coarse reading is high and resumes once it falls to near zero ‹TBD›; Auto treats a high coarse reading as "high". | C | Proposed | Andrew, 2026-10-24 |
+| FR-01 | Local physical controls provide Auto, timed holds at a chosen level, and scenes (§3). A button-assigned action takes one press. A hold that reuses the last level and duration takes at most three presses. Button-to-action assignments are configuration, separate from the control logic. | M | Proposed | D-009 |
+| FR-02 | **Auto.** While occupied, the fan runs at no less than the ventilation floor (P-01), starting once the shop has been occupied for P-02; air-quality, VOC (FR-14) and DC (FR-09) demands apply immediately, without that delay. Speed rises above the floor as PM rises above the on-threshold (P-03), reaching full speed at P-05, and falls back as PM drops below the off-threshold (P-04). While vacant, the same thresholds decide between running and off. Speed changes don't chatter on noisy readings; the mechanism (hysteresis, debouncing, ramped or decaying speed) is a design choice tuned against recorded traces. | M | Proposed | context, D-009, survey §1–2 |
+| FR-03 | *Dropped 2026-10-24:* folded into FR-02. | — | Dropped | |
+| FR-04 | The PM sensor duty cycle adapts to concentration: continuous at low levels, sparse at high levels (P-07), with each sample preceded by at least the settling time (P-06). | M | Proposed | Andrew's design |
+| FR-05 | During clear-down, the sample interval shortens as readings fall so the fan doesn't overrun by a whole interval. *Could:* predict the off-threshold crossing from a fitted decay rate. The fitted rate is reported (FR-12), since it also measures delivered airflow. | S | Proposed | context |
+| FR-06 | A saturated PM reading (at or above the sensor's range limit) is treated as "high" and handled at the slowest sample rate. | M | Proposed | context |
+| FR-07 | Occupancy is the 24 VAC lighting-transformer signal near the fan (Q-16): present = occupied. It drives Auto (FR-02) and the indicator (FR-15). The PM sensor sleeps when the shop is vacant and the fan is off. The signal is trusted as correct; no failure handling (Q-17). | M | Proposed | Q-06, Q-16, Q-17 |
+| FR-08 | The **Spray** scene commands full speed immediately, independent of sensors (SR-03). When it ends (timer or cancel to Auto), the fan stays at full speed until both the minimum run-on (P-09) has elapsed and the VOC and PM criteria are met, then returns to Auto. Runs whether occupied or vacant. P-09 alone must clear the spray area, because spraying downstream of the sensor (between it and the fan) may never reach the VOC sensor. | M | Proposed | safety discussion, survey §8 |
+| FR-09 | **DC boost.** While `DC_RUNNING` is asserted and for P-11 after it de-asserts, Auto runs the fan at no less than P-10. This is a floor: air quality may drive it higher. Holds and scenes override it. | S | Proposed | Q-03 |
+| FR-10 | Fan speed, including off, is set through the S6's control port (0 % PWM = off, Q-15). No mains switching of the fan by the controller. The port's speed resolution (steps or continuous) is characterized at G2. | M | Proposed | Q-15 |
+| FR-11 | The panel display shows the current state (Auto, or hold/scene with time remaining), occupancy (e.g. "Vacant"), fan speed, PM and VOC readings, DC boost, and active faults and maintenance prompts. | M | Proposed | D-009 |
+| FR-12 | Home Assistant (MQTT discovery) exposes PM, VOC index, fan commanded speed and tach RPM, current state, occupancy, DC input, run hours, PM sensor duty, fitted decay rate, faults (with reason) and maintenance prompts. Readings are published at full sample rate while they change, so HA history can be exported and replayed as host-test traces. Read-only: no control from HA in v1 (FR-16). | S | Proposed | context |
+| FR-13 | Faults (FR-18, SR-04), node offline (MQTT last-will), and maintenance prompts are exposed as HA entities suitable for HA-app notifications. Maintenance prompts include a **hood filter cleaning reminder** from accumulated PM exposure at the intake (PM × fan airflow over time), threshold P-14, cleared from the panel. The node only exposes the entities; notification automations live in HA. | S | Proposed | survey §2, §4 |
+| FR-14 | **VOC sensing (v1)** with an SGP41-class MOX sensor (index, not concentration). In Auto, a VOC index above P-12 raises the fan to at least P-13 until it falls below the off-level; it also gates the end of Spray run-on (FR-08). Covers solvents, soldering, glues and finishes; lathe oil smoke is expected to show mostly as PM. | M | Proposed | Q-09, survey §5 |
+| FR-15 | An ambient indicator, located with the panel above the miter station, shows the air-quality band (good / elevated / high, P-15) and is readable from anywhere in the shop. It flashes red for an active fault while occupied (Q-07), and is dark while vacant. | S | Proposed | context, Q-07, Q-10 |
+| FR-16 | *Dropped 2026-10-24:* Home Assistant control of scenes and holds. HA is read-only for v1. | — | Dropped | |
+| FR-17 | If a continuously running coarse dust sensor is fitted, the PM sensor is suspended while the coarse reading is high and resumes once it falls to near zero; Auto treats a high coarse reading as "high". | C | Proposed | Andrew, 2026-10-24 |
+| FR-18 | The fan's tach is monitored. A **fan fault** is raised when the fan is commanded on and the tach reads zero (or far below the expected RPM for the command) for P-16. | S | Proposed | Q-15 |
 
-## 4. Non-functional requirements
-
-| ID | Requirement | Pri | Status |
-|----|-------------|-----|--------|
-| NFR-01 | All control logic runs locally; full function with Wi-Fi and Home Assistant unavailable. | M | Proposed |
-| NFR-02 | PM sensor service life of at least ‹TBD› years in this shop, given the duty cycling. The sensor is treated as a cleanable or replaceable consumable. | S | Proposed |
-| NFR-03 | The sensor can be removed or cleaned without tools, or with a single tool, in under 5 minutes. | S | Proposed |
-| NFR-04 | The air-quality sensors (PM, plus VOC (Q-09) and coarse dust (FR-17) if fitted) are the only components exposed to shop air. They sit in a sensor bay open to the room, thermally separated from the electronics, with no air path into the electronics compartment. The electronics compartment has no ventilation openings, gasketed seams and sealed or gasketed panel controls, and is designed to IP5X intent (not tested). | M | Proposed |
-| NFR-05 | The custom PCB is assemblable by a third-party PCBA service. Any mains section on it meets documented creepage/clearance and isolation rules (`pcb/SAFETY.md`). | S | Proposed |
-| NFR-06 | Firmware is ESP-IDF (C++). The control logic is a hardware-independent module covered by host-run unit tests on simulated sensor traces. | M | Proposed |
-| NFR-07 | After power loss, returns to Auto without manual intervention; an active hold or scene is not resumed. | M | Proposed |
-| NFR-08 | Budget ≤ ‹TBD›. | S | Open |
-
-## 5. Safety requirements
+## 5. Non-functional requirements
 
 | ID | Requirement | Pri | Status |
 |----|-------------|-----|--------|
-| SR-01 | Every off-the-shelf component carrying line voltage is UL-listed/recognized or equivalent and rated for the fan's load, including motor inrush. Mains on the custom PCB meets SR-01a. | M | Proposed |
-| SR-01a | Mains sections of the custom PCB meet IEC 62368-1 creepage/clearance, with reinforced insulation between mains and any accessible low-voltage circuit; the rules followed and their verification are documented in `pcb/SAFETY.md`. | M | Proposed |
-| SR-02 | The controller electronics sit outside the exhaust airstream (aerosol propellant and overspray). A vapor-rated fan is not required for occasional aerosol use (Q-04). | S | Proposed |
-| SR-03 | The Spray scene doesn't depend on any sensor or network to deliver full exhaust. | M | Proposed |
-| SR-04 | On sensor fault, the system indicates the fault locally and falls back to ‹TBD: last manual speed / run at low speed / off›. | M | Open |
-| SR-05 | Air-quality control is documented as a convenience function, not a respiratory-protection or life-safety system. | M | Proposed |
-| SR-06 | If the shop contains fuel-burning appliances (survey §1), exhaust operation must not cause backdrafting. Makeup air is addressed, or the limitation is documented. | M | Conditional |
-| SR-07 | Any mains wiring design is reviewed at gate G3. Points that need electrician verification are flagged. | M | Proposed |
+| NFR-01 | All control logic runs locally; full function with Wi-Fi, the MQTT broker and Home Assistant unavailable. | M | Proposed |
+| NFR-02 | PM sensor (SPS30, D-012) expected service life ≥ 5 years in this shop given the duty cycling, by analysis from logged duty. The sensor's self-clean is run on a schedule. The sensor is a cleanable, replaceable consumable. | S | Proposed |
+| NFR-03 | The PM and VOC sensors can be removed or cleaned without tools, or with a single tool, in under 5 minutes, without opening the electronics compartment. | S | Proposed |
+| NFR-04 | The air-quality sensors (PM, VOC, and the coarse sensor if fitted) are the only components exposed to shop air. They sit in a sensor bay open to the room, thermally separated from the electronics, with no air path into the electronics compartment. The electronics compartment has no ventilation openings, gasketed seams and sealed or gasketed panel controls, and is designed to IP5X intent (not tested). | M | Proposed |
+| NFR-05 | The custom PCB is assemblable by a third-party PCBA service. Any mains section on it meets SR-01a. | S | Proposed |
+| NFR-06 | Firmware is ESP-IDF (C++) on `esp-iot-core` (D-007). The control logic is a hardware-independent module covered by host-run unit tests on simulated and recorded sensor traces. | M | Proposed |
+| NFR-07 | After power loss or a watchdog reset, the node returns to Auto without intervention; an active hold or scene is not resumed. The fan is not driven on during boot before the logic decides it should be. | M | Proposed |
+| NFR-08 | Cost target $100 for v1 parts and fabrication (Q-11); estimate reported at G2 and actual at G4, with anything over P-17 flagged for Andrew's approval. | S | Proposed |
+| NFR-09 | The PM and VOC sensors see air representative of the work area. Fan-induced airflow at the sensor location doesn't shift readings materially (AC-17). | M | Proposed |
+| NFR-10 | Every `P-nn` parameter and the button assignments are adjustable without reflashing (panel service menu and/or HA config entities) and persist across power loss. Config entities are not control (FR-16 stands). | S | Proposed |
+| NFR-11 | Firmware updates over the air via `esp-iot-core`; USB flashing works without exposing any mains (SR-01a). | S | Proposed |
 
-## 6. Interface requirements
-See `docs/interfaces.md` for the details.
+## 6. Safety requirements
 
 | ID | Requirement | Pri | Status |
 |----|-------------|-----|--------|
-| IR-01 | Accepts a DC-running input, with the electrical form ‹TBD: dry contact preferred› and a path through Home Assistant as an alternative. | S | Proposed |
-| IR-02 | The DC-running signal definition is reusable unchanged by the future DC controller. | M | Proposed |
-| IR-03 | Home Assistant entities follow the naming in `docs/interfaces.md`. | S | Proposed |
+| SR-01 | Every off-the-shelf component carrying line voltage is UL-listed/recognized or equivalent and rated for its load, including motor inrush. v1 default: no mains inside the custom enclosure; the node runs from a listed external supply (Q-18 (a)). | M | Proposed |
+| SR-01a | If any mains ends up on the custom PCB, it meets IEC 62368-1 creepage/clearance, with reinforced insulation to all accessible low voltage (including USB), documented in `pcb/SAFETY.md`. | M | Conditional |
+| SR-02 | The controller electronics sit outside the exhaust airstream. A vapor-rated fan is not required for occasional aerosol use (Q-04). | M | Proposed |
+| SR-03 | The Spray scene delivers full exhaust regardless of any sensor, sensor fault, or network state. | M | Proposed |
+| SR-04 | On PM sensor fault (no data, CRC/framing errors, or out-of-range readings for P-18), the fault shows on the panel and indicator (FR-15) and in HA, and Auto falls back to: occupied → at least P-19; vacant → P-19 for P-20 after vacancy, then off (Q-20). A VOC sensor fault drops the VOC demand and shows a fault; Spray run-on then uses P-09 plus PM only. | M | Proposed |
+| SR-05 | Documentation and the panel make no health claims: air-quality control is a convenience function, not respiratory protection or a life-safety system. | M | Proposed |
+| SR-06 | No fuel-burning appliances in the building (Q-05), so backdrafting isn't a design driver. Documented limitations: makeup air comes from the garage, so a combustion source running there (e.g. a vehicle) would be drawn into the shop; and with doors closed the single 6" makeup duct limits flow and depressurizes the shop. Revisit if either changes. | M | Proposed |
+| SR-07 | Any mains wiring design (including the IR-05 site change) is reviewed at G3, with points needing licensed-electrician verification flagged. | M | Proposed |
+| SR-08 | The fan's behavior with the node unpowered, in reset, or with the control cable unplugged is characterized (Q-15) and documented, and the hardware holds the control line in a defined state through reset and boot (NFR-07). | M | Proposed |
 
-## 7. Acceptance criteria
-Filled in during phase 1. Format: `AC-nn → requirement ID(s) — test method — pass condition`.
+## 7. Interface requirements
+Details in `docs/interfaces.md`.
+
+| ID | Requirement | Pri | Status |
+|----|-------------|-----|--------|
+| IR-01 | Accepts `DC_RUNNING` as an isolated input from a dry contact, with node-to-node MQTT as the fallback transport. No interim source before the DC controller exists (Q-12). | S | Proposed |
+| IR-02 | The `DC_RUNNING` definition is reusable unchanged by the DC controller. | M | Proposed |
+| IR-03 | HA entities use the `shop_exhaust_` prefix and the naming in `docs/interfaces.md`. | S | Proposed |
+| IR-04 | Wiring between the panel location (above the miter station) and the fan cabinet is low-voltage only, runs exposed along the ceiling, and works over at least 35 ft of cable (18' horizontal + drops + slack). | M | Proposed |
+| IR-05 | **Site change:** the fan and the node have always-on 120 V, no longer switched by the lighting relay, so the fan can clear down after the lights go off. The 24 VAC transformer stays as the occupancy source (D-013, Q-19). | M | Proposed — needs Andrew |
+
+## 8. Parameters
+Initial values let the logic be host-tested now; commissioning replaces them. All adjustable per NFR-10.
+
+| ID | Parameter | Initial | Source of initial value |
+|----|-----------|---------|-------------------------|
+| P-01 | Occupied ventilation floor | Lowest speed that runs steadily and Andrew finds quiet; placeholder 20 % | Survey §2 (prefer low speed); set at commissioning |
+| P-02 | Occupied delay before the floor starts | 5 min | Survey §1 (frequent short walk-ins) |
+| P-03 | PM on-threshold | PM2.5 35 µg/m³ | US EPA 24-h PM2.5 standard as a reference point; readings are relative (context) |
+| P-04 | PM off-threshold | PM2.5 12 µg/m³ | Clean indoor 5–20 µg/m³ (context) |
+| P-05 | PM level for full speed | PM2.5 150 µg/m³ | Placeholder; tune from traces |
+| P-06 | PM settling before a valid sample | 30 s | SPS30 start-up time is up to 30 s at low concentration |
+| P-07 | Sparse sampling at high PM | 30 s sample every 5–10 min | Andrew's design (context) |
+| P-08 | *(reserved)* | | |
+| P-09 | Spray minimum run-on at full speed | 20 min | ~3 air changes of the ~1,500 ft³ between miter station and fan at an assumed 200–400 CFM delivered |
+| P-10 | DC boost floor | 60 % | Q-03 |
+| P-11 | DC boost hold after `DC_RUNNING` drops | 5 min | Q-03 |
+| P-12 | VOC index on / off | 150 / 120 | SGP41 index: 100 = learned baseline; placeholder |
+| P-13 | VOC demand speed | 60 % | Placeholder; same as DC boost |
+| P-14 | Hood filter cleaning reminder | Set after 1–2 months of logged exposure | Survey §2 (no cleaning schedule today) |
+| P-15 | Indicator bands (PM2.5) | good < P-03 ≤ elevated < P-05 ≤ high | Follows the control thresholds |
+| P-16 | Fan fault debounce | 30 s | Placeholder |
+| P-17 | Cost flag threshold | $200 | Q-21 |
+| P-18 | PM sensor fault debounce | 60 s | Placeholder |
+| P-19 | Fallback speed on PM sensor fault | Max(P-01, 30 %) | Q-07 ("low speed") |
+| P-20 | Vacant run time on PM sensor fault | 60 min | Q-20 |
+
+## 9. Acceptance criteria
+Format: test method, then pass condition. "Sim" = host unit test of the control logic on synthetic or recorded traces. "Bench" = assembled node off-site. "In-situ" = installed in the shop.
 
 | AC | Verifies | Method | Pass condition |
 |----|----------|--------|----------------|
-| AC-01 | FR-02 | Simulation with recorded or synthetic PM traces | Fan state transitions match the expected sequence; no chatter |
-| AC-02 | FR-04, FR-05, FR-06 | Simulation | Duty cycle within ‹TBD› of target at each concentration band; no sample used before settling |
-| AC-03 | FR-08, SR-03 | Bench and in-situ, network disconnected and sensor unplugged | Full exhaust within ‹TBD› s of starting Spray |
-| AC-04 | NFR-01 | In-situ with Wi-Fi disabled | Auto, holds and scenes all function |
-| AC-05 | Mounting (context: validation test) | Steady-dust test, fan off vs. on at each speed | Reading shift < ‹TBD›% |
-| … | | | |
+| AC-01 | FR-02 | Sim: occupancy and PM step, ramp and noisy traces | Floor starts at P-02 after occupancy; speed follows P-03…P-05; off only when vacant and PM < P-04; ≤ 1 speed-direction reversal per 2 min on a noisy-but-flat trace |
+| AC-02 | FR-04, FR-06 | Sim: constant traces at low, high and saturated PM | Continuous sampling below P-03; ≤ 10 % duty at saturation; no sample used before P-06 of settling |
+| AC-03 | FR-05 | Sim: exponential decay traces at two decay rates | Fan reaches Auto's next state within one shortened interval of the trace crossing P-04; fitted decay rate within 20 % of the trace's |
+| AC-04 | FR-07 | Sim + bench (24 VAC applied/removed) | Occupancy follows the input within 2 s; PM sensor asleep when vacant and fan off |
+| AC-05 | FR-08, SR-03 | Sim; bench and in-situ with Wi-Fi off and PM/VOC sensors unplugged | Full speed within 2 s of starting Spray; run-on ≥ P-09 and until PM/VOC criteria met (with sensors present) |
+| AC-06 | FR-09 | Sim; bench with a contact closure on `DC_RUNNING` | Speed ≥ P-10 within 2 s of assertion and for P-11 after release; PM demand above P-10 still wins |
+| AC-07 | FR-10, FR-18 | Bench with the S6 | Commanded 0 % stops the fan; each commanded step changes tach RPM monotonically; tach fault raised within P-16 + 5 s with the fan's mains unplugged |
+| AC-08 | FR-01, FR-11 | Bench: scripted walk-through | Each button action in 1 press; repeat-last hold in ≤ 3 presses; display shows all FR-11 fields; reassigning a button needs no logic change |
+| AC-09 | FR-12, FR-13, IR-03 | Bench with HA | All listed entities appear via discovery with the right names; LWT marks the node unavailable within 60 s of power-off; a recorded HA history exports and replays in the host tests |
+| AC-10 | FR-14 | Sim; in-situ with an acetone or IPA wipe near the sensor | Fan rises to ≥ P-13 on index > P-12 and returns after it falls below the off-level |
+| AC-11 | FR-15 | In-situ, lights on, daytime | Andrew can name the band color from both ends of the shop; fault flash visible; indicator dark when vacant |
+| AC-12 | NFR-01 | In-situ with the AP or broker down for ≥ 1 h | Auto, holds, scenes, display and indicator all work; node reconnects unaided |
+| AC-13 | NFR-02 | Analysis after 1 month of logged duty | Projected SPS30 operating hours/year × 5 years within its rated life |
+| AC-14 | NFR-03 | In-situ, timed | PM and VOC sensors out and back in < 5 min with ≤ 1 tool, electronics compartment closed |
+| AC-15 | NFR-04, SR-02 | Design review at G2/G3 + inspection after 1 month | No ventilation openings in the electronics compartment; no visible dust inside |
+| AC-16 | NFR-06 | CI/host test run | Control-logic tests pass on the host with no ESP-IDF headers; output committed |
+| AC-17 | NFR-09 | In-situ steady-dust test (context: validation test) | Mean PM shifts < 20 % between fan off and each fan speed, holding the source steady; result logged |
+| AC-18 | NFR-07, SR-08 | Bench: power-cycle and forced watchdog reset during a hold; scope the control line through reset | Returns to Auto; fan not commanded on during boot; documented fail state matches observed |
+| AC-19 | NFR-10, NFR-11 | Bench | Changing a P-nn from the panel or HA takes effect and survives power-cycle; OTA update succeeds |
+| AC-20 | SR-04 | Sim; bench by unplugging the PM sensor | Fault shown within P-18 + 5 s; fallback speeds per SR-04 while occupied and vacant |
+| AC-21 | SR-01, SR-01a, SR-07 | G3 review | Listed parts for all mains; `pcb/SAFETY.md` complete if any on-board mains; electrician checkpoints flagged |
+| AC-22 | IR-01, IR-02 | Bench: dry contact and MQTT fallback | Both assert boost; contact wiring tolerant of 35 ft run without false triggers with the DC motor running (in-situ, once the DC controller exists) |
+| AC-23 | IR-04, IR-05 | In-situ | Fan runs with lights off; all panel–cabinet signals work over the installed cable |
+| AC-24 | NFR-08 | G2 estimate, G4 BOM | Reported against the $100 target; overruns past P-17 approved by Andrew |
+| AC-25 | SR-05, SR-06 | Doc review at G1 and G6 | Limitations and non-life-safety statement present in README and panel help/about screen |
 
-## 8. Assumptions and open items
-- Open questions live in `docs/open-questions.md`. Requirements depending on them stay `Open` or carry ‹TBD›.
-- **Working assumption:** the PM sensor is a PMS5003. Re-evaluate against the SPS30, and whether to add a continuously running coarse sensor, during architecture (Q-08).
+## 10. Assumptions and notes
+- **Sensors:** SPS30 for PM and SGP41 for VOC (D-012). Coarse sensor (FR-17) deferred to v2.
+- **Sensor placement:** the sensor bay lives with the panel above the miter station unless G2 finds a reason to split it. Local spikes from the miter saw push the fan up, which is fine; the risk that matters is the off decision, and mid-shop sits in the main airflow path from makeup air to the fan. AC-17 checks it.
+- **Clear-down time:** fully mixed, dropping from 1,000 to 12 µg/m³ takes ln(83) ≈ 4.4 air changes, roughly 35–70 min for the whole shop at 200–400 CFM delivered. The real number comes from FR-05.
+- Open questions are in `docs/open-questions.md`.

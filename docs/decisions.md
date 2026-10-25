@@ -105,11 +105,38 @@ Template:
   - SLA resin: brittle for a shop enclosure. FDM: fine if Andrew prints, but slower to dial in remotely. Off-the-shelf listed enclosure with machined cutouts plus a printed bezel: the fallback if mains ends up inside (Q-18).
 - Consequences: Phase 3 mech needs Python deps (`build123d`, `pyvista` or `trimesh`, `pytest`) and FreeCAD for drawings. Standard PA12 is not flame-rated (typically UL94 HB), so it can't be the fire enclosure around mains; Q-18 resolves this at G2. CLAUDE.md updated from CadQuery to build123d.
 
+## D-012: SPS30 for PM and SGP41 for VOC, both in v1
+- Date: 2026-10-25
+- Status: Accepted (Andrew, Q-08 and Q-09)
+- Context: PMS5003 was the kickoff working assumption. The SPS30 costs more but has a fan self-clean and better contamination resistance; VOC was a v2 candidate.
+- Decision: SPS30 (I²C or UART, chosen at G2) for PM; SGP41 for VOC, both in v1. The coarse dust sensor (FR-17) stays a v2 candidate.
+- Alternatives considered: PMS5003 (cheaper, shorter life, no self-clean); VOC deferred to v2.
+- Consequences: FR-14 becomes M and also drives Auto (solvents, soldering), not just Spray run-on. Settling time P-06 follows the SPS30 datasheet. Adds roughly $25–30 over a PMS5003 to the BOM (NFR-08).
+
+## D-013: Fan and node on always-on 120 V; lighting relay no longer switches the fan
+- Date: 2026-10-25
+- Status: Proposed — needs Andrew (site mains change; reviewed at G3)
+- Context: Survey §2: the fan's receptacle is switched by a relay driven from the 24 VAC lighting transformer, so the fan loses power when the lights go off. Auto (D-009) turns the fan off only when the shop is vacant *and* the air is clear, which needs the fan to run after the lights go off.
+- Decision: Give the fan and the node's listed supply always-on 120 V in the cabinet: either an unswitched receptacle, or remove the relay from the fan receptacle's feed. The 24 VAC transformer stays and becomes the occupancy input only (FR-07). Andrew does the wiring (survey §3); G3 flags anything an electrician should check.
+- Alternatives considered:
+  - Keep the relay: the fan stops when the lights go off, so no vacant clear-down and Spray run-on dies with the lights. Contradicts FR-02/FR-08.
+  - Controller switches mains itself: unnecessary, since 0 % PWM is true off (Q-15), and it would put mains in the enclosure (Q-18).
+- Consequences: IR-05. The fan's off state now depends entirely on the control port, so its behavior with the node dead (Q-15, SR-08) matters more: if it runs at full speed with no control signal, a dead node means the fan runs until noticed (HA offline alert, FR-13).
+
+## D-014: Panel, sensors and indicator above the miter station
+- Date: 2026-10-25
+- Status: Accepted (Andrew, Q-10, location); sensor/panel split decided at G2
+- Context: The fan and 24 VAC are at the north end; work and dust are mid-shop; the DC wiring will reach the miter station's blast gate anyway.
+- Decision: The panel and ambient indicator go above the miter station, on the cabinet/wall beside the miter hood rather than on the hood itself (vibration, direct ejecta). The sensor bay goes with them by default. Low-voltage cable runs along the ceiling to the fan cabinet (IR-04).
+- Alternatives considered: by the rear door or at the fan (survey §8): less wiring, but farther from the work, and from the fan the indicator isn't visible down the shop.
+- Consequences: Where the node lives (panel end or fan end) and what crosses the ceiling cable is a G2 decision.
+
 ---
 
 ## Gate approvals
 | Gate | Date | Approved by | Notes |
 |------|------|-------------|-------|
+| Phase 0 survey | 2026-10-25 | Claude (sufficient for requirements); Andrew to confirm with G1 | Survey and photos committed d9833fd |
 | G1 Requirements | | | |
 | G2 Architecture | | | |
 | G3 Mains/safety | | | |
