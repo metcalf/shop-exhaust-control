@@ -25,10 +25,7 @@ Boost behavior (how long the DC must run first, the boost level, and what happen
 | Fan tach | In | Square wave on white; 50 % duty; ~30 / 75 / 144 Hz at levels 1 / 4 / 10 | Stock controller pulls it up 10 kΩ to its 5 V; fan output type (open-drain vs push-pull) unconfirmed, so design for either | Fan's UIS port | | Fan fault detection (FR-18). Isolated (SR-09). Pulses/rev unknown; only frequency vs command is needed |
 | Occupancy | In | Isolated AC input | 24 VAC from the lighting transformer in the fan cabinet (Q-16) | | | Rectifier plus optocoupler |
 | `DC_RUNNING` | In | BLE (on-module radio) | | | | No wired input (D-016) |
-| PM sensor | Bidir | SPS30, I²C or UART (G2) | 5 V supply | | | Sleep/wake and fan-clean by command (D-012) |
-| Coarse dust sensor | In | Analog + pulsed LED drive (GP2Y1014-type) or UART (GP2Y1026-type), G2 | 5 V; analog out divided into the ADC | | | v1, continuous (FR-17) |
-| Temp/humidity | Bidir | I²C | 3.3 V | | | SHT4x, in the sensor bay (FR-20) |
-| VOC sensor | Bidir | I²C | 3.3 V | | | SGP41 (D-012) |
+| Sensor module | Bidir | SEN65, I²C | 3.3 V supply and logic; ~350 mA peak for 2 ms | | | PM, VOC/NOx, RH/T; one airflow path (D-012). I²C run short (< 10 cm recommended) |
 | Panel: encoder | In | Quadrature + push | 3.3 V | | | |
 | Panel: buttons | In | Momentary, unlit | 3.3 V | | | About 4; assignments are config (initially Auto, Quiet, Boost, spare) (D-009) |
 | Panel: display | Out | SPI | 3.3 V | | | ~2" IPS (ST7789-class) |
@@ -44,7 +41,7 @@ Boost behavior (how long the DC must run first, the boost level, and what happen
 ## 4. Home Assistant entities
 Naming prefix: `shop_exhaust_` (confirmed, survey §4). Alerts go to the HA mobile app.
 
-Illustrative only. Finalize at G2 to match the design, including VOC/NOx, coarse dust, temperature/humidity, holds and scenes.
+Illustrative only. Finalize at G2 to match the design, including VOC/NOx, temperature/humidity, holds and scenes.
 
 | Entity | Type | Notes |
 |--------|------|-------|

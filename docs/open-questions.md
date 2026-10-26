@@ -7,13 +7,13 @@ Claude batches questions here. Each has an ID, why it matters, and the default C
 
 | ID | Question | Why it matters | Default if unanswered | Blocks | Answer |
 |----|----------|----------------|-----------------------|--------|--------|
-| Q-24 | Humidity for VOC compensation: (1) replace SPS30 + SGP41 + SHT4x with a Sensirion SEN55 (PM + VOC/NOx + RH/T, gas-only mode suits PM duty-cycling); (2) keep separate sensors, fixed ~57 %RH compensation, no RH signal; or (3) keep the SHT4x for humidity only. The SPS30 has no humidity output. Findings in `sourcing/pm-sensor.md` (2026-10-25): SEN55 $34 vs SPS30 $39 at DigiKey; same PM accuracy and range; gas-only mode and number concentrations confirmed; **SEN55 is NRND** at Sensirion (successor SEN65 has no gas-only mode); whether its VOC index uses its own RH reading is undocumented. | Changes D-012, the sensor bay, FR-20 and the BOM | (1) with a spare SEN55 bought up front | G2 | |
 | Q-22 | Optional, 2 min with a meter: with the S6 **unplugged from mains**, resistance from the control port's black (GND) wire to each plug prong (L, N, ground). | Open circuit to L/N would support treating the port as SELV, but it isn't proof. It shapes SR-09. | Isolate the fan interface regardless (cheap: two optos); the measurement is a sanity check | — | |
 
 ## Answered
 
 | ID | Question | Answer | Answered | Applied to |
 |----|----------|--------|----------|------------|
+| Q-24 | Humidity for VOC compensation / sensor choice | Build around the SEN65 and drop the coarse sensor, for one airflow path. Gas-only mode isn't needed: PM sampling stops only when dust is high, when the fan is at max anyway. | 2026-10-25 | D-012, FR-14, FR-17 (dropped), FR-20, NFR-02/03/04, SR-04, FR-08 |
 | Q-23 | Exact north-end mounting spot and cable length | Under the cabinets, < 10 ft of cable. | 2026-10-25 | D-015, IR-04, NFR-09 (≥ 3 ft from hood) |
 | Q-15 | S6 control port fail state, pinout and levels | Unplugged → full speed. Black GND, red +10 V (low current), yellow speed (2.2 kΩ pull-up to +10 V, pulled low by the controller; 5 kHz PWM, 20/46/100 % at levels 1/4/10), white tach (50 % square, ~30/75/144 Hz at levels 1/4/10; 10 kΩ pull-up to the controller's 5 V). Not scoped: mains grounding relationship unknown. | 2026-10-25 | FR-10, FR-18, SR-08, SR-09 (new), `interfaces.md` §2 |
 | Q-19 | Unswitched receptacle for the fan? | Yes, one is available in the cabinet. | 2026-10-25 | D-013 (accepted), IR-05 |

@@ -105,13 +105,22 @@ Template:
   - SLA resin: brittle for a shop enclosure. FDM: fine if Andrew prints, but slower to dial in remotely. Off-the-shelf listed enclosure with machined cutouts plus a printed bezel: the fallback if mains ends up inside (Q-18).
 - Consequences: Phase 3 mech needs Python deps (`build123d`, `pyvista` or `trimesh`, `pytest`) and FreeCAD for drawings. Standard PA12 is not flame-rated (typically UL94 HB), so it can't be the fire enclosure around mains; Q-18 resolves this at G2. CLAUDE.md updated from CadQuery to build123d.
 
-## D-012: SPS30 for PM and SGP41 for VOC, both in v1
-- Date: 2026-10-25
-- Status: Accepted (Andrew, Q-08 and Q-09)
-- Context: PMS5003 was the kickoff working assumption. The SPS30 costs more but has a fan self-clean and better contamination resistance; VOC was a v2 candidate.
-- Decision: SPS30 (I²C or UART, chosen at G2) for PM; SGP41 for VOC (and NOx, logged); SHT4x in the sensor bay for the SGP41's humidity compensation (FR-20). *Revised 2026-10-25 (Andrew):* the coarse dust sensor (FR-17) is in v1 too, logged continuously for comparison, with its control use behind a flag that starts off.
-- Alternatives considered: PMS5003 (cheaper, shorter life, no self-clean); VOC deferred to v2.
-- Consequences: FR-14 becomes M and also drives Auto (solvents, soldering), not just Spray run-on. Settling time P-06 follows the SPS30 datasheet. Adds roughly $25–30 over a PMS5003 to the BOM (NFR-08).
+## D-012: One Sensirion SEN65 module for PM, VOC/NOx and RH/T
+- Date: 2026-10-24, revised 2026-10-25
+- Status: Accepted (Andrew, 2026-10-25, Q-24)
+- Context: Sensors went through PMS5003 → SPS30 + SGP41 (Q-08, Q-09) → plus a coarse sensor and an SHT4x for VOC humidity compensation. The SHT4x needs enclosure self-heating compensation; the SEN55 combines everything but is NRND at Sensirion (`sourcing/pm-sensor.md`).
+- Decision: A single SEN65 (SEN6x family, active): PM mass and number concentrations, VOC and NOx indices, RH/T. No coarse dust sensor (FR-17 dropped) and no separate RH/T sensor, so the sensor bay has one airflow path.
+- Alternatives considered:
+  - SEN55: cheaper and has a gas-only mode, but NRND.
+  - SPS30 + SGP41 (+ SHT4x): independent failure of PM and VOC, but two airflow paths and the compensation problem.
+  - Adding a coarse sensor: dropped for one airflow path; v2 candidate.
+- Consequences:
+  - No gas-only mode: VOC is measured only while the module measures PM. Acceptable (Andrew): when dust is high and PM sampling is sparse, the fan is already high.
+  - The VOC baseline must survive module sleep (FR-14); check the SEN6x for algorithm-state backup/restore at G2, else keep a host-side baseline on the raw signal.
+  - SEN6x runs on 3.3 V with peaks of ~350 mA for 2 ms; the supply and decoupling are sized at G2.
+  - Fan auto-clean behavior isn't documented for SEN6x; plan a manual clean command on a schedule (NFR-02).
+  - A module fault takes out PM and VOC together (SR-04).
+  - Price unchecked; the SEN66 is ~$62 at DigiKey and the SEN65 should be lower. Checked at G4.
 
 ## D-013: Fan and node on always-on 120 V; lighting relay no longer switches the fan
 - Date: 2026-10-25
