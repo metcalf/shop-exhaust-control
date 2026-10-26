@@ -19,7 +19,7 @@ echo "=== $(date) nightly start"
 # launchd gives a bare PATH. claude is the native install (~/.local/bin); the nodenv shim fails without NODENV_VERSION.
 export PATH="$HOME/.local/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 
-pmset -g batt | grep -q "'AC Power'" || { echo "on battery, skipping"; exit 0; }
+[ -n "${NIGHTLY_IGNORE_POWER:-}" ] || pmset -g batt | grep -q "'AC Power'" || { echo "on battery, skipping"; exit 0; }
 
 lock="$logdir/.lock"
 mkdir "$lock" 2>/dev/null || { echo "previous run still going ($lock), skipping"; exit 0; }

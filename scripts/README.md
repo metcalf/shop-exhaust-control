@@ -7,7 +7,7 @@ launchd starts `nightly.sh` at 21:59; the Mac wakes at 22:00, and launchd runs a
 `.claude/usage.json` current for the budget hook. `.claude/hooks/nightly-stop.sh` (gated on `SHOP_NIGHTLY=1`) closes
 tmux when Claude ends its turn; a watchdog kills it after 5 h. Logs: `~/Library/Logs/shop-exhaust-nightly/`
 (summary plus the transcript path). Watch live: `tmux -L shop-nightly attach -t nightly` (detach `C-b d`).
-Test without the real prompt: `NIGHTLY_MODEL=haiku NIGHTLY_MAX_SECS=240 NIGHTLY_PROMPT='...' scripts/nightly.sh`.
+Test without the real prompt (add `NIGHTLY_IGNORE_POWER=1` on battery): `NIGHTLY_MODEL=haiku NIGHTLY_MAX_SECS=240 NIGHTLY_PROMPT='...' scripts/nightly.sh`.
 
 Install:
 
