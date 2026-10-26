@@ -154,6 +154,62 @@ Template:
   - BLE GATT connection: more state than a few bytes at a low rate needs.
 - Consequences: BLE and Wi-Fi time-share the radio; the scan duty and coexistence get tested with OTA (AC-22). Adds the NimBLE stack to RAM and flash; checked at G2, with a PSRAM module as the fallback. Supersedes the transport text in D-002's consequences; D-002 itself (separate nodes, coupled by one signal) still stands. Loss of the link costs only boost. Commands to the DC, if ever added, need authentication.
 
+## D-017: VOC index computed on the node from the SEN65 raw signal
+- Date: 2026-10-25
+- Status: Proposed (G2). Reversible in firmware
+- Context: FR-14 needs the VOC baseline to survive module Idle. The module's index algorithm resets whenever a measurement starts. D-012 left two options: the module's algorithm-state backup/restore, or a host-side baseline on the raw signal.
+- Decision: Run Sensirion's open-source gas index algorithm (BSD-3, plain C) on the node, fed one step per valid 1 s raw VOC reading. Pause it (keep its state) while the module isn't measuring and for C-07 after each start. Save the state to NVS hourly and restore it at boot. Publish the module's own index too, as a check.
+- Alternatives considered: Module state backup/restore (fewer lines of code, but behaviour across long Idle is undocumented, and recorded traces can't be replayed through the module). It stays as the fallback if the raw signal proves unusable on the bench.
+- Consequences: Deterministic, so host tests and HA replay run exactly the same algorithm (FR-12, AC-28). Phase 3 confirms that the SEN6x raw VOC command exists and is humidity-compensated inside the module. Restoring a stale state after a long node outage is accepted; the algorithm re-adapts over hours.
+
+## D-018: No mains in the design; listed 12 V adapter
+- Date: 2026-10-25
+- Status: Proposed (G2)
+- Context: CLAUDE.md leaves on- or off-board mains to architecture. The fan is switched off through its control port (Q-15, D-013), so there's no relay or contactor to host. Q-18 (a) prefers no mains in the printed enclosure.
+- Decision: No mains on the PCB or in the enclosure. A UL-listed 12 V / ≥ 1 A Class 2 adapter plugs into the always-on cabinet receptacle and feeds a barrel jack. On board: fuse, reverse-polarity FET, TVS, 12→5 V buck, 5→3.3 V buck, plus a switched 5→3.3 V LDO for the SEN65.
+- Alternatives considered: 5 V USB-C adapter (cheaper by one buck, but ~0.3 V drop over 10 ft at peak, and a second external USB-C next to the fan's USB-C port invites mis-plugging; see D-020). On-board mains supply (saves the adapter, but brings SR-01a, `pcb/SAFETY.md` and a flame-rated enclosure for no functional gain).
+- Consequences: SR-01a isn't triggered. G3 covers only the receptacle circuit, the adapter listing and the 24 VAC hookup (SR-07). PA12 is fine as the enclosure material.
+
+## D-019: One enclosure: sealed electronics above an open sensor bay
+- Date: 2026-10-25
+- Status: Proposed — needs Andrew (sets the enclosure's shape and cutouts; dimensions wait on Q-27)
+- Context: NFR-03/04/09, D-015 (under the north cabinets), Sensirion's guidance to keep the module below heat sources.
+- Decision: One PA12 enclosure hung from a cabinet bracket. The sealed electronics compartment is on top, with the panel on the front face and the light bar along its bottom edge. The open sensor bay is below, with a front grille and a tool-less cover; the module cable crosses through a sealed grommet. Cables enter at the back or top with strain reliefs.
+- Alternatives considered: A separate sensor pod on a short cable (better thermal separation, but I²C over a longer run and two enclosures). Sensor bay beside the electronics (shorter enclosure, but at the same height as the heat).
+- Consequences: Phase 3 mech models two compartments and a grommet pass-through. The SEN65 RH/T offset is tuned at commissioning.
+
+## D-020: Flashing USB is internal; the fan port is the only external USB-C
+- Date: 2026-10-25
+- Status: Proposed (G2)
+- Context: The S6 control cable is USB-C (stock controller J1). If the fan cable went into a node USB port, the fan's +10 V and GND would land on non-isolated node pins, bypassing SR-09.
+- Decision: The ESP32-S3 native USB-C is inside the electronics compartment, reachable only with the lid off. OTA is the normal update path (NFR-11). Power comes in on a barrel jack (D-018).
+- Alternatives considered: External flashing port with a label (relies on the label). A non-USB connector for the fan (needs a custom or cut fan cable).
+- Consequences: First flash and recovery need the lid off. The fan-port receptacle is labelled "FAN".
+
+## D-021: BLE DC link: payload v1.0, fast-burst advertising, 30 % scan
+- Date: 2026-10-25
+- Status: Proposed (G2). Shared with the DC project, so changes after G2 need a decision entry
+- Context: D-016 chose BLE advertising. AC-22 needs assertion within 3 s and no false assertions, with Wi-Fi running.
+- Decision: Manufacturer-specific data with company ID 0xFFFF, magic "MS", version, type, sender, sequence, flags (bit 0 `DC_RUNNING`) and reserved status and MAC fields (`docs/interfaces.md` §1.1). The DC side advertises every 100 ms for 5 s after a change, then every 500 ms. The exhaust side scans passively, 30 ms every 100 ms.
+- Alternatives considered: A constant 500 ms interval with a higher scan duty (more radio time taken from Wi-Fi). Extended advertising (BLE 5; not needed for 21 bytes).
+- Consequences: The DC project implements the encoder from this table. The exhaust side tests the parser and timeout on the host.
+
+## D-022: ESP32-S3-WROOM-1-N16R8, 2.0" ST7789 module, LVGL
+- Date: 2026-10-25
+- Status: Proposed (G2)
+- Context: D-008 named the ESP32-S3. D-016 flagged NimBLE RAM, with a PSRAM module as the fallback. Andrew's hvac_control already uses LVGL.
+- Decision: The N16R8 module (octal PSRAM, so GPIO 35–37 are unavailable). A 2.0" 240×320 IPS ST7789-class SPI display module on a header. LVGL via `esp_lcd`.
+- Alternatives considered: N8 without PSRAM (cheaper by ~$1; RAM is tight with NimBLE, TLS OTA and LVGL). A bare FPC panel (cheaper, but a fine-pitch connector and backlight circuit on our board).
+- Consequences: GPIO plan in `docs/interfaces.md` §2. The display module's outline feeds the enclosure in phase 3.
+
+## D-023: Fan-powered, fail-off isolated fan interface
+- Date: 2026-10-25
+- Status: Proposed — needs Andrew (depends on the port supplying ≈ 5–8 mA, Q-26)
+- Context: SR-08 requires the fan to be off with the node unpowered, with the hold-off powered from the fan side. SR-09 requires isolation. FR-18 needs the tach.
+- Decision: A fan-side N-MOSFET holds the speed line low by default (gate pulled up from a 5 V LDO on the fan's +10 V). A Schmitt-output opto driven by the node's PWM releases it, so the LED-on fraction is the fan duty. Two more optos carry the tach and a fan-present signal back. ≥ 3 mm barrier (`docs/interfaces.md` §2.1).
+- Alternatives considered: An isolated DC-DC powering the fan side from the node (fails on, since the hold-off dies with node power). A relay on the speed line (slow; can't PWM at 5 kHz). A digital isolator (needs a few mA on both sides, no better than the opto here).
+- Consequences: If the port can't supply the current (Q-26), the fallback is a smaller budget: drop the presence LED and raise the pull-up values. Phase 3 verifies the opto polarity and timing (architecture §9). AC-18 scopes it.
+
 ---
 
 ## Gate approvals

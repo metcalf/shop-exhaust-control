@@ -1,16 +1,17 @@
 # Project State
 
-**Updated:** 2026-10-25
-**Phase:** 2, architecture (G1 approved 2026-10-25); not started
-**Waiting on:** Andrew to schedule the start of phase 2 (paused at his request)
+**Updated:** 2026-10-25 (nightly)
+**Phase:** 2, architecture (G1 approved 2026-10-25). G2 draft complete; **independent review not yet run**
+**Waiting on:** the G2 reviewer run (needs an attended session, see Blockers), then Andrew's G2 review
 
 ## Next actions
-1. **Claude, when Andrew schedules it:** architecture: block diagram, control-logic state machine spec, complete `docs/interfaces.md` (fan interface with fail-off and isolation, SEN65 and VOC baseline handling, BLE message format, power budget including SEN65 peaks), cost estimate against $300; then run the reviewer for G2.
-2. **Claude, before phase 3 PCB:** brief PCBA vendor comparison, including JLCPCB Economic tier rules (Q-14, NFR-05).
-3. **Andrew (optional):** Q-22, a meter check of fan-port GND to the mains prongs.
+1. **Claude, next attended session:** run the `reviewer` subagent for G2. Brief: `docs/requirements.md`, `docs/interfaces.md`, `docs/architecture.md`, `docs/control-logic.md`, decisions D-017…D-023 only, with output to `reviews/G2-review.md`. Then fix the blocking findings.
+2. **Andrew, at G2:** review `docs/architecture.md` (block diagram, failure modes, traceability, a cost estimate of ≈ $265 against the $300 ceiling), `docs/control-logic.md` and `docs/interfaces.md`. Accept or change D-017…D-023 (D-019 and D-023 are "needs Andrew"). Answer Q-28 (design calls, plus an AC-06 wording fix). Q-25 (fan cable USB-C pin map) and Q-27 (mounting measurements) are needed before phase 3 layout and mech, not before G2.
+3. **Claude, before phase 3 PCB:** brief PCBA vendor comparison, including the JLCPCB Economic tier rules (Q-14, NFR-05), plus the phase 3 verify list in `docs/architecture.md` §9.
+4. **Andrew (optional):** Q-22 (fan-port GND to the mains prongs), Q-26 (stock controller current on red).
 
 ## Blockers
-- None.
+- The G2 reviewer can't run unattended: subagents run in the background, and the nightly session closes when its turn ends. Either run it attended, or change the nightly prompt to allow waiting on the reviewer (process note 2026-10-25).
 
 ## Log
 - 2026-10-22: Repo created from the kickoff conversation. See `docs/context.md`.
@@ -26,3 +27,4 @@
 - 2026-10-25: Nightly unattended run added (`scripts/`, see `scripts/README.md`); budget hook now wraps up via `STATE.md`.
 - 2026-10-25: Q-24: single SEN65 module (PM, VOC/NOx, RH/T); coarse sensor and SHT4x dropped (D-012 rewritten). FR-14 requires the VOC baseline to survive module sleep; FR-08 sleeps the module during Spray's minimum run-on to protect it from overspray.
 - 2026-10-25: **G1 approved** (Andrew). Paused before phase 2 at Andrew's request while he sets up scheduling.
+- 2026-10-25 (nightly): Phase 2 started; the nightly schedule was taken as the "Andrew schedules it" trigger, since G1 is recorded. G2 draft: `docs/architecture.md` (block diagram, partitioning, firmware structure, mechanical concept, failure modes, traceability, cost ≈ $265), `docs/control-logic.md` (modes, AutoDemand, sampler with an overrun-bounded clear-down rule, faults, output shaping, design constants C-nn, host-test plan), `docs/interfaces.md` completed (BLE payload v1.0, GPIO plan, fan-powered fail-off isolated fan interface, power budget, HA entities, mechanical interfaces). Decisions D-017…D-023. Questions Q-25…Q-28. No mains anywhere in the design (D-018), so SR-01a isn't triggered.
