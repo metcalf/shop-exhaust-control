@@ -102,7 +102,7 @@ States: **Off** (module Idle; vacant and fan off), **Protect** (Idle during Spra
 |----------------|-------------|--------|--------------|
 | `sensor_no_data` | Sampler wants Measure, past warm-up, and no valid frame (I²C error, CRC, timeout) for P-18 | SR-04 (§4): PM and VOC demand off, floor and DC boost unchanged; SprayRunOn uses P-09 only. Power-cycle the module (`SEN_PWR_EN`) every C-12 while faulted | C-13 of valid frames |
 | `sensor_status` | Device-status error bits (fan, laser, gas, RH/T) set for P-18 | as above | bits clear for C-13 |
-| `sensor_range` | PM above the module's output range or a raw signal stuck at an invalid code for P-18 | as above | C-13 of in-range data |
+| `sensor_range` | Invalid data only, for P-18: the module's "not available" code, physically impossible readings (PM1.0 > PM2.5 > PM10 ordering violated; mass high with number concentrations at zero), or a raw signal stuck at one code. A high PM value is **never** a fault: at or above the range limit it's saturated (FR-06, §4) | as above | C-13 of valid data |
 | `fan_tach` (FR-18) | Duty ≥ C-06 and tach < C-14 × `f_expected(duty)` for P-16, ignoring C-15 after any duty change | Display, indicator, HA. Command unchanged | Tach OK for C-15 |
 | `fan_port` | `FAN_PRESENT` lost for C-16 | As `fan_tach`. Message says the cable may be unplugged (fan then runs full) or the fan has lost mains | Present for C-16 |
 | clear-down incomplete (notice) | FR-19 vacant cut-off (§4) or vacant SprayRunOn exit with PM/VOC still above off-threshold | Display, HA | Next occupancy |
@@ -183,7 +183,7 @@ Layout, matching hvac_control: `firmware/components/exhaust_logic/` (pure C++20)
 | AC | Test |
 |----|------|
 | AC-01 | Occupancy step → floor within 2 s; PM step/ramp follows P-03…P-05; noisy flat trace ≤ 1 reversal per 2 min; off only when vacant and PM < P-04 |
-| AC-02 | Constant low/high/saturated PM: continuous below P-03; ≤ 10 % duty at saturation; no PM used before P-06 |
+| AC-02 | Constant low/high/saturated PM: continuous below P-03; ≤ 10 % duty at saturation; no PM used before P-06; PM pinned at and above the range limit for 30 min raises no fault and keeps full-speed demand (G2 review B-3) |
 | AC-03 | Closed-loop exponential clear-down at two airflows, sweeping P-23: report on-time vs overrun (the trade-off curve); mean overrun ≤ P-23 at the initial value; fitted k within 20 % |
 | AC-04 | Occupancy follows input; module Idle when vacant and fan off |
 | AC-05 | Spray from every mode; sensors faulted, absent or offline; full within 2 s; run-on ≥ P-09 and until criteria; module Idle until `t_min − C-07`; Auto press or a new hold/scene during Spray and SprayRunOn takes effect at once |

@@ -1,17 +1,17 @@
 # Project State
 
-**Updated:** 2026-10-25 (nightly)
-**Phase:** 2, architecture (G1 approved 2026-10-25). G2 draft complete; **independent review not yet run**
-**Waiting on:** the G2 reviewer run (needs an attended session, see Blockers), then Andrew's G2 review
+**Updated:** 2026-10-26
+**Phase:** 2, architecture (G1 approved 2026-10-25). G2 draft complete with Q-25/Q-28 applied; **G2 review done** (`reviews/G2-review.md`: 3 blocking, 17 should-fix, 19 notes). B-3 fixed; B-1/B-2 wait on Andrew (Q-29, Q-30)
+**Waiting on:** Andrew: Q-29, Q-30 (Q-22 measurement), then G2 review
 
 ## Next actions
-1. **Claude, next attended session:** run the `reviewer` subagent for G2. Brief: `docs/requirements.md`, `docs/interfaces.md`, `docs/architecture.md`, `docs/control-logic.md`, decisions D-017…D-023 only, with output to `reviews/G2-review.md`. Then fix the blocking findings.
-2. **Andrew, at G2:** review `docs/architecture.md` (block diagram, failure modes, traceability, a cost estimate of ≈ $265 against the $300 ceiling), `docs/control-logic.md` and `docs/interfaces.md`. Accept or change D-017…D-023 (D-019 and D-023 are "needs Andrew"). Answer Q-28 (design calls, plus an AC-06 wording fix). Q-25 (fan cable USB-C pin map) and Q-27 (mounting measurements) are needed before phase 3 layout and mech, not before G2.
-3. **Claude, before phase 3 PCB:** brief PCBA vendor comparison, including the JLCPCB Economic tier rules (Q-14, NFR-05), plus the phase 3 verify list in `docs/architecture.md` §9.
+1. **Claude:** apply Q-29/Q-30 once answered (B-1, B-2); work the should-fix items S-1…S-17 in `reviews/G2-review.md` (S-1 fan-power-up ordering and S-2 port current first, both SR-08).
+2. **Andrew, at G2:** review `docs/architecture.md`, `docs/control-logic.md`, `docs/interfaces.md` and D-017…D-026 (D-019 and D-023 are "needs Andrew"). Q-27 (mounting measurements) is needed before phase 3 mech, not G2.
+3. **Claude, before phase 3 PCB:** brief PCBA vendor comparison including JLCPCB Economic tier rules (Q-14, NFR-05), plus the verify list in `docs/architecture.md` §9.
 4. **Andrew (optional):** Q-22 (fan-port GND to the mains prongs), Q-26 (stock controller current on red).
 
 ## Blockers
-- None for the G2 reviewer: nightly runs can now run subagents (budget-gated at 70% 5h usage), so tonight's run can start it.
+- None.
 
 ## Log
 - 2026-10-22: Repo created from the kickoff conversation. See `docs/context.md`.
@@ -29,3 +29,5 @@
 - 2026-10-25: **G1 approved** (Andrew). Paused before phase 2 at Andrew's request while he sets up scheduling.
 - 2026-10-25 (nightly): Phase 2 started; the nightly schedule was taken as the "Andrew schedules it" trigger, since G1 is recorded. G2 draft: `docs/architecture.md` (block diagram, partitioning, firmware structure, mechanical concept, failure modes, traceability, cost ≈ $265), `docs/control-logic.md` (modes, AutoDemand, sampler with an overrun-bounded clear-down rule, faults, output shaping, design constants C-nn, host-test plan), `docs/interfaces.md` completed (BLE payload v1.0, GPIO plan, fan-powered fail-off isolated fan interface, power budget, HA entities, mechanical interfaces). Decisions D-017…D-023. Questions Q-25…Q-28. No mains anywhere in the design (D-018), so SR-01a isn't triggered.
 - 2026-10-26: Nightly harness: subagents allowed; session closes on an explicit done signal, idle watchdog, subagent spawns gated at 70% 5h usage (`scripts/README.md`).
+- 2026-10-26: Applied Q-28 (D-024: Auto press and new holds/scenes override Spray and its run-on; a sensor fault drops only PM/VOC demand, P-19 dropped; `fan_port` fault into FR-18) and wired opto `DC_RUNNING` backup input used for AC-06 (D-025, amends D-016/IR-01). Q-25: fan hard-wired to a 4-pos terminal, no USB-C (D-026). Fixed the 24 VAC input TVS (≥ 40 V standoff). G2 reviewer started.
+- 2026-10-26: G2 reviewer run: 3 blocking (B-1 resets end Spray, SR-03; B-2 SR-09 basic-only barrier with unknown SELV and lid-off service; B-3 high PM classed as `sensor_range` fault). Fixed B-3 in control-logic §6 and AC-02 test; Q-29/Q-30 for B-1/B-2.
