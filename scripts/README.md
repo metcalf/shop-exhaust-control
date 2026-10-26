@@ -19,6 +19,6 @@ Remove: `launchctl bootout gui/$(id -u)/com.metcalf.shop-exhaust-nightly` and `s
 
 Notes:
 - The pmset wake can't be conditioned on power; on battery the Mac wakes, the script exits, and it sleeps again.
-- The statusline doesn't run under `-p`, so `.claude/usage.json` is stale during the run; the budget hook's
-  02:30–07:00 window is what actually stops a long night run.
+- The statusline doesn't run under `-p`; `nightly.sh` writes `.claude/usage.json` from the stream's `rate_limit_event`,
+  but that arrived once per run in testing, so mid-run readings are not guaranteed.
 - Lid closed without an external display may still force sleep despite `caffeinate`; test it.

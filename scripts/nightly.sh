@@ -29,7 +29,24 @@ blocked on Andrew, do only prep work that is allowed in the current phase (or no
 Batch new questions into docs/open-questions.md. Never purchase, push, or touch anything outside this repo.
 Finish with the CLAUDE.md "End of every session" steps (update STATE.md, log decisions, commit), then stop.'
 
+# The statusline doesn't run under -p, so feed .claude/usage.json (read by the budget hook) from the
+# stream's rate_limit_events instead. Full stream goes to a .jsonl beside the log; the result text to the log.
+track_usage() {
+  local jsonl="$logdir/$(date +%F-%H%M).jsonl" usage="$repo/.claude/usage.json" line
+  while IFS= read -r line; do
+    printf '%s\n' "$line" >>"$jsonl"
+    case $line in
+      *'"type":"rate_limit_event"'*)
+        jq -ce '.rate_limit_info.unifiedWindows | select(.five_hour)
+                | {t: now, fh: (.five_hour.utilization * 100 | round),
+                   wk: ((.seven_day.utilization // 0) * 100 | round)}' <<<"$line" >"$usage.tmp" \
+          && mv "$usage.tmp" "$usage" && echo "usage: $(cat "$usage")" ;;
+      *'"type":"result"'*) jq -r '.result // empty' <<<"$line" ;;
+    esac
+  done
+}
+
 # direnv exec applies .envrc (CLAUDE_CONFIG_DIR). caffeinate -s holds the system awake while on AC.
 direnv exec "$repo" caffeinate -i -s \
-  claude -p "$prompt" --permission-mode auto
-echo "=== $(date) nightly end (exit $?)"
+  claude -p "$prompt" --permission-mode auto --output-format stream-json --verbose | track_usage
+echo "=== $(date) nightly end (exit ${PIPESTATUS[0]})"
