@@ -7,6 +7,7 @@ Claude batches questions here. Each has an ID, why it matters, and the default C
 
 | ID | Question | Why it matters | Default if unanswered | Blocks | Answer |
 |----|----------|----------------|-----------------------|--------|--------|
+| Q-24 | Humidity for VOC compensation: (1) replace SPS30 + SGP41 + SHT4x with a Sensirion SEN55 (PM + VOC/NOx + self-compensated RH/T, with a gas-only mode that suits PM duty-cycling); (2) keep separate sensors, fixed ~57 %RH compensation, no RH signal; or (3) keep the SHT4x for humidity only. The SPS30 has no humidity output. | Changes D-012, the sensor bay, FR-20 and the BOM. SHT4x temperature in an enclosure needs self-heating compensation. | (1), subject to a price/stock check; else (2) | G2 | |
 | Q-22 | Optional, 2 min with a meter: with the S6 **unplugged from mains**, resistance from the control port's black (GND) wire to each plug prong (L, N, ground). | Open circuit to L/N would support treating the port as SELV, but it isn't proof. It shapes SR-09. | Isolate the fan interface regardless (cheap: two optos); the measurement is a sanity check | — | |
 
 ## Answered
