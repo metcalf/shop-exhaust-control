@@ -11,7 +11,7 @@
 4. **Andrew (optional):** Q-22 (fan-port GND to the mains prongs), Q-26 (stock controller current on red).
 
 ## Blockers
-- The G2 reviewer can't run unattended: subagents run in the background, and the nightly session closes when its turn ends. Either run it attended, or change the nightly prompt to allow waiting on the reviewer (process note 2026-10-25).
+- None for the G2 reviewer: nightly runs can now run subagents (budget-gated at 70% 5h usage), so tonight's run can start it.
 
 ## Log
 - 2026-10-22: Repo created from the kickoff conversation. See `docs/context.md`.
@@ -28,3 +28,4 @@
 - 2026-10-25: Q-24: single SEN65 module (PM, VOC/NOx, RH/T); coarse sensor and SHT4x dropped (D-012 rewritten). FR-14 requires the VOC baseline to survive module sleep; FR-08 sleeps the module during Spray's minimum run-on to protect it from overspray.
 - 2026-10-25: **G1 approved** (Andrew). Paused before phase 2 at Andrew's request while he sets up scheduling.
 - 2026-10-25 (nightly): Phase 2 started; the nightly schedule was taken as the "Andrew schedules it" trigger, since G1 is recorded. G2 draft: `docs/architecture.md` (block diagram, partitioning, firmware structure, mechanical concept, failure modes, traceability, cost ≈ $265), `docs/control-logic.md` (modes, AutoDemand, sampler with an overrun-bounded clear-down rule, faults, output shaping, design constants C-nn, host-test plan), `docs/interfaces.md` completed (BLE payload v1.0, GPIO plan, fan-powered fail-off isolated fan interface, power budget, HA entities, mechanical interfaces). Decisions D-017…D-023. Questions Q-25…Q-28. No mains anywhere in the design (D-018), so SR-01a isn't triggered.
+- 2026-10-26: Nightly harness: subagents allowed; session closes on an explicit done signal, idle watchdog, subagent spawns gated at 70% 5h usage (`scripts/README.md`).

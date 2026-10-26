@@ -4,8 +4,11 @@
 
 launchd starts `nightly.sh` at 21:59; the Mac wakes at 22:00, and launchd runs a job missed during sleep on wake. It exits on battery or a dirty tree, then runs interactive Claude (auto mode,
 `.envrc` applied, under `caffeinate`) in a detached tmux on its own socket, so the statusline keeps
-`.claude/usage.json` current for the budget hook. `.claude/hooks/nightly-stop.sh` (gated on `SHOP_NIGHTLY=1`) closes
-tmux when Claude ends its turn; a watchdog kills it after 5 h. Logs: `~/Library/Logs/shop-exhaust-nightly/`
+`.claude/usage.json` current for the budget hooks. Claude may run subagents (it ends its turn to wait for them).
+As its last action it creates `$NIGHTLY_DONE`; `.claude/hooks/nightly-stop.sh` then closes tmux. A watchdog kills
+the session after 20 min with no transcript writes (main or subagent) or 5 h total. `.claude/hooks/subagent-budget.sh`
+refuses a subagent above 70% 5h usage (asks, in attended sessions); spawn/finish usage is logged to
+`.claude/usage-log.tsv` for calibrating that cap. Logs: `~/Library/Logs/shop-exhaust-nightly/`
 (summary plus the transcript path). Watch live: `tmux -L shop-nightly attach -t nightly` (detach `C-b d`).
 Test without the real prompt (add `NIGHTLY_IGNORE_POWER=1` on battery): `NIGHTLY_MODEL=haiku NIGHTLY_MAX_SECS=240 NIGHTLY_PROMPT='...' scripts/nightly.sh`.
 
