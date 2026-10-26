@@ -2,7 +2,7 @@
 
 ## Nightly run (`nightly.sh`)
 
-launchd starts `nightly.sh` at 22:00. It exits on battery or a dirty tree, then runs interactive Claude (auto mode,
+launchd starts `nightly.sh` at 21:59; the Mac wakes at 22:00, and launchd runs a job missed during sleep on wake. It exits on battery or a dirty tree, then runs interactive Claude (auto mode,
 `.envrc` applied, under `caffeinate`) in a detached tmux on its own socket, so the statusline keeps
 `.claude/usage.json` current for the budget hook. `.claude/hooks/nightly-stop.sh` (gated on `SHOP_NIGHTLY=1`) closes
 tmux when Claude ends its turn; a watchdog kills it after 5 h. Logs: `~/Library/Logs/shop-exhaust-nightly/`
@@ -15,7 +15,7 @@ Install:
 mkdir -p ~/Library/Logs/shop-exhaust-nightly
 cp scripts/com.metcalf.shop-exhaust-nightly.plist ~/Library/LaunchAgents/
 launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.metcalf.shop-exhaust-nightly.plist
-sudo pmset repeat wakeorpoweron MTWRFSU 21:58:00   # replaces any existing pmset repeat
+sudo pmset repeat wakeorpoweron MTWRFSU 22:00:00   # after the 21:59 job time, so the job is already due at wake
 ```
 
 Test now: `launchctl kickstart gui/$(id -u)/com.metcalf.shop-exhaust-nightly`.

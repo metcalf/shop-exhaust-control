@@ -6,7 +6,7 @@
   <key>ProgramArguments</key>
   <array><string>/Users/andrew/code/shop-exhaust-control/scripts/nightly.sh</string></array>
   <key>StartCalendarInterval</key>
-  <dict><key>Hour</key><integer>22</integer><key>Minute</key><integer>0</integer></dict>
+  <dict><key>Hour</key><integer>21</integer><key>Minute</key><integer>59</integer></dict>
   <key>StandardOutPath</key><string>/Users/andrew/Library/Logs/shop-exhaust-nightly/launchd.log</string>
   <key>StandardErrorPath</key><string>/Users/andrew/Library/Logs/shop-exhaust-nightly/launchd.log</string>
 </dict>

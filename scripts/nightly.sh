@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Nightly unattended Claude session. Run by launchd (scripts/com.metcalf.shop-exhaust-nightly.plist);
-# the wake comes from `pmset repeat` (see scripts/README.md).
+# the wake comes from `pmset repeat` at 22:00, after the 21:59 job time, so launchd runs the missed job on wake.
 #
 # Runs interactive Claude in a detached tmux (own socket, -L shop-nightly) rather than -p, so the statusline
 # keeps .claude/usage.json current for the budget hook. The Stop hook (.claude/hooks/nightly-stop.sh) closes
