@@ -14,8 +14,8 @@ mkdir -p "$logdir"
 exec >>"$logdir/$(date +%F).log" 2>&1
 echo "=== $(date) nightly start"
 
-# launchd gives a bare PATH; claude is a nodenv shim.
-export PATH="$HOME/.nodenv/shims:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+# launchd gives a bare PATH. claude is the native install (~/.local/bin); the nodenv shim fails without NODENV_VERSION.
+export PATH="$HOME/.local/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 
 pmset -g batt | grep -q "'AC Power'" || { echo "on battery, skipping"; exit 0; }
 
@@ -40,9 +40,12 @@ tasks. Finish with the CLAUDE.md "End of every session" steps (update STATE.md, 
 tmx() { tmux -L shop-nightly "$@"; }
 tmx kill-server 2>/dev/null
 start=$(date +%s)
+sid=$(uuidgen | tr A-Z a-z)
+echo "session: $sid"
 # direnv exec applies .envrc (CLAUDE_CONFIG_DIR). caffeinate -s holds the system awake while on AC.
 SHOP_NIGHTLY=1 tmx new-session -d -s nightly -x 220 -y 50 -c "$repo" \
-  direnv exec "$repo" caffeinate -i -s claude --permission-mode auto ${NIGHTLY_MODEL:+--model "$NIGHTLY_MODEL"} "$prompt"
+  direnv exec "$repo" caffeinate -i -s claude --no-chrome --session-id "$sid" --permission-mode auto \
+  ${NIGHTLY_MODEL:+--model "$NIGHTLY_MODEL"} "$prompt"
 
 while tmx has-session -t nightly 2>/dev/null; do
   if (( $(date +%s) - start > max_secs )); then
@@ -51,9 +54,9 @@ while tmx has-session -t nightly 2>/dev/null; do
   sleep 30
 done
 
-transcript=$(ls -t "$HOME/.claude-morgan/projects/$(pwd | tr / -)"/*.jsonl 2>/dev/null | head -1)
+transcript="$(direnv exec "$repo" sh -c 'echo $CLAUDE_CONFIG_DIR' 2>/dev/null)/projects/$(pwd | tr / -)/$sid.jsonl"
 echo "transcript: $transcript"
-[ -n "$transcript" ] && jq -r 'select(.type=="assistant") | .message.content[]? | select(.type=="text") | .text' \
+[ -f "$transcript" ] && jq -r 'select(.type=="assistant") | .message.content[]? | select(.type=="text") | .text' \
   "$transcript" | tail -40
 echo "usage: $(cat .claude/usage.json 2>/dev/null)"
 echo "=== $(date) nightly end ($(( ($(date +%s) - start) / 60 )) min)"
