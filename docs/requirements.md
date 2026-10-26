@@ -71,7 +71,7 @@ Automatically control the shop exhaust fan (AC Infinity CLOUDLINE PRO S6) based 
 | NFR-06 | Firmware is ESP-IDF (C++) on `esp-iot-core` (D-007). The control logic is a hardware-independent module covered by host-run unit tests on simulated and recorded sensor traces. | M | Proposed |
 | NFR-07 | After power loss or a watchdog reset, the node returns to Auto without intervention; an active hold or scene is not resumed. The fan is not driven on during boot before the logic decides it should be. | M | Proposed |
 | NFR-08 | v1 parts and fabrication cost ≤ $300 (hard ceiling, Q-21), aiming well below it ($100 was the original hope, Q-11). Estimate reported at G2, actual at G4. Cost is a tiebreaker in part and vendor choices. | S | Proposed |
-| NFR-09 | The PM and VOC sensors sit near the exhaust end so they sample the air the fan is removing, from every source in the shop (D-015), but outside the hood's capture zone: fan-induced airflow at the sensor doesn't shift readings materially (AC-17). | M | Proposed |
+| NFR-09 | The PM and VOC sensors sit near the exhaust end so they sample the air the fan is removing, from every source in the shop (D-015), but outside the hood's capture zone: the sensor bay is at least 3 ft from the hood's edge with its inlet facing into the room, not toward the hood, and fan-induced airflow doesn't shift readings materially (AC-17). | M | Proposed |
 | NFR-10 | Every `P-nn` parameter and the button assignments are adjustable without reflashing (panel service menu and/or HA config entities) and persist across power loss. Config entities are not control (FR-16 stands). | S | Proposed |
 | NFR-11 | Firmware updates over the air via `esp-iot-core`; USB flashing works without exposing any mains (SR-01a). | S | Proposed |
 
@@ -98,7 +98,7 @@ Details in `docs/interfaces.md`.
 | IR-01 | Receives `DC_RUNNING` from the DC controller over BLE advertising (D-016); no wired input and no MQTT fallback. No advertisement for P-24 means "DC not running". No interim source before the DC controller exists (Q-12). | S | Proposed |
 | IR-02 | The `DC_RUNNING` message (`docs/interfaces.md` §1) is reusable unchanged by the DC controller. Its format has room for more DC status and a reverse direction, so that a shared panel (deferred to the DC project) can be added without breaking it. | M | Proposed |
 | IR-03 | HA entities use the `shop_exhaust_` prefix and the naming in `docs/interfaces.md`. | S | Proposed |
-| IR-04 | Wiring between the controller and the fan cabinet (fan port, 24 VAC occupancy, low-voltage supply) is low-voltage only and works over at least 15 ft of cable (final length from the mounting position, Q-23). | M | Proposed |
+| IR-04 | Wiring between the controller and the fan cabinet (fan port, 24 VAC occupancy, low-voltage supply) is low-voltage only and works over at least 10 ft of cable (under-cabinet mount, Q-23). | M | Proposed |
 | IR-05 | **Site change:** the fan plugs into the existing unswitched receptacle in the cabinet, and the node's listed supply has always-on 120 V, so the fan can clear down after the lights go off. The 24 VAC transformer stays as the occupancy source. No mains rewiring (D-013, Q-19). | M | Proposed |
 
 ## 8. Parameters
@@ -166,6 +166,6 @@ Format: test method, then pass condition. "Sim" = host unit test of the control 
 
 ## 10. Assumptions and notes
 - **Sensors:** SPS30 for PM and SGP41 for VOC (D-012). Coarse sensor (FR-17) deferred to v2.
-- **Sensor placement (D-015):** air enters at the south end and leaves at the north, so a mid-shop sensor is blind to the lathe, the north bench and spraying north of it. Near the exhaust, the sensor sees everything the fan removes, and it's the last place to clear, which makes the off decision conservative. The cost is slower detection of upstream sources; the DC-collected machines are covered by DC boost (FR-09) and by the DC's recirculation mixing the room. Sanding with the vacuum is the main uncovered case, with a lag of minutes. Default spot: the rear-door wall, about 6–8 ft from the hood (Q-23). AC-17 checks it.
+- **Sensor placement (D-015):** air enters at the south end and leaves at the north, so a mid-shop sensor is blind to the lathe, the north bench and spraying north of it. Near the exhaust, the sensor sees everything the fan removes, and it's the last place to clear, which makes the off decision conservative. The cost is slower detection of upstream sources; the DC-collected machines are covered by DC boost (FR-09) and by the DC's recirculation mixing the room. Sanding with the vacuum is the main uncovered case, with a lag of minutes. Mounted under the north-wall upper cabinets, within 10 ft of cable of the fan cabinet (Q-23), and at least 3 ft from the hood (NFR-09). AC-17 checks it.
 - **Clear-down time:** fully mixed, dropping from 1,000 to 12 µg/m³ takes ln(83) ≈ 4.4 air changes, roughly 35–70 min for the whole shop at 200–400 CFM delivered. The real number comes from FR-05.
 - Open questions are in `docs/open-questions.md`.

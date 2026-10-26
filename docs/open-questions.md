@@ -7,13 +7,13 @@ Claude batches questions here. Each has an ID, why it matters, and the default C
 
 | ID | Question | Why it matters | Default if unanswered | Blocks | Answer |
 |----|----------|----------------|-----------------------|--------|--------|
-| Q-23 | Exact mounting spot at the north end: the rear-door wall (my default), or elsewhere? Rough cable length from there to the fan cabinet? | Sets the cable length (IR-04), sensor distance from the hood (NFR-09) and indicator sightlines (FR-15) | Rear-door wall, ~4–5 ft up, ~15 ft of cable to the cabinet | G2 (enclosure, cable) | |
 | Q-22 | Optional, 2 min with a meter: with the S6 **unplugged from mains**, resistance from the control port's black (GND) wire to each plug prong (L, N, ground). | Open circuit to L/N would support treating the port as SELV, but it isn't proof. It shapes SR-09. | Isolate the fan interface regardless (cheap: two optos); the measurement is a sanity check | — | |
 
 ## Answered
 
 | ID | Question | Answer | Answered | Applied to |
 |----|----------|--------|----------|------------|
+| Q-23 | Exact north-end mounting spot and cable length | Under the cabinets, < 10 ft of cable. | 2026-10-25 | D-015, IR-04, NFR-09 (≥ 3 ft from hood) |
 | Q-15 | S6 control port fail state, pinout and levels | Unplugged → full speed. Black GND, red +10 V (low current), yellow speed (2.2 kΩ pull-up to +10 V, pulled low by the controller; 5 kHz PWM, 20/46/100 % at levels 1/4/10), white tach (50 % square, ~30/75/144 Hz at levels 1/4/10; 10 kΩ pull-up to the controller's 5 V). Not scoped: mains grounding relationship unknown. | 2026-10-25 | FR-10, FR-18, SR-08, SR-09 (new), `interfaces.md` §2 |
 | Q-19 | Unswitched receptacle for the fan? | Yes, one is available in the cabinet. | 2026-10-25 | D-013 (accepted), IR-05 |
 | Q-20 | PM sensor fault while vacant | Fan can stop when unoccupied. Occupancy is a Lutron sensor with a 15-min delay. | 2026-10-25 | SR-04, FR-07, P-20 dropped; P-02 walk-in delay dropped (Andrew: floor during walk-ins is fine) |

@@ -125,9 +125,9 @@ Template:
 
 ## D-015: Controller at the north (exhaust) end
 - Date: 2026-10-25
-- Status: Accepted (Andrew, 2026-10-25), replaces D-014 (panel above the miter station). Exact spot: Q-23
+- Status: Accepted (Andrew, 2026-10-25), replaces D-014 (panel above the miter station). Spot: under the north-wall upper cabinets, < 10 ft of cable to the fan cabinet (Q-23)
 - Context: Makeup air enters at the south end and the hood exhausts at the north, so air flows the length of the shop. A sensor at the miter station (D-014) would be blind to everything downstream of it: the lathe, the north bench (soldering) and spraying north of it.
-- Decision: Panel, ambient indicator and sensors go together at the north end, out of the hood's capture zone. Default spot: the rear-door wall (survey §8 option 2), about 6–8 ft from the hood and visible from the whole shop. All site wiring (fan port, 24 VAC, supply) is local to the fan cabinet. Whether the DC gets its own panel or shares this one is deferred to the DC project.
+- Decision: Panel, ambient indicator and sensors go together at the north end, out of the hood's capture zone. Spot: hung under the north-wall upper cabinets (Q-23), at least 3 ft from the hood's edge, facing south down the shop. The enclosure hangs from the cabinet bottom with the display and controls angled toward the user, and the sensor inlet faces into the room. All site wiring (fan port, 24 VAC, supply) is local to the fan cabinet. Whether the DC gets its own panel or shares this one is deferred to the DC project.
 - Alternatives considered:
   - Above the miter station (D-014, accepted earlier on Q-10): close to the work and the DC wiring, but blind downstream and needed a 35 ft ceiling cable. Splitting the sensors from the panel was also possible, but separating them buys nothing once the sensors are at the north end.
   - Directly beside the fan, under the cabinet (survey option 3): least wiring, but inside the hood's draw and poorly visible.
