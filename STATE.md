@@ -10,7 +10,7 @@
 3. **Andrew (optional):** Q-22, a meter check of fan-port GND to the mains prongs.
 
 ## Blockers
-- None beyond G1.
+- None.
 
 ## Log
 - 2026-10-22: Repo created from the kickoff conversation. See `docs/context.md`.
