@@ -21,7 +21,7 @@ Boost behavior (how long the DC must run first, the boost level, and what happen
 
 | Signal | Dir | Type | Level | Connector | GPIO | Notes |
 |--------|-----|------|-------|-----------|------|-------|
-| Fan speed | Out | Open-drain pull-down, 5 kHz PWM, on the fan's speed line (yellow) | Fan pulls up to +10 V via ~2.2 kΩ; high-time duty = speed | Fan's UIS port (USB-C-style cable) | | Held low = off; open/high = full (Q-15). Isolated from node (SR-09). Stock levels 1/4/10 = 20/46/100 % |
+| Fan speed | Out | Open-drain pull-down, 5 kHz PWM, on the fan's speed line (yellow) | Fan pulls up to +10 V via ~2.2 kΩ; high-time duty = speed | Fan's UIS port (USB-C-style cable) | | Held low = off; open/high = full (Q-15); continuous in duty. Isolated from node (SR-09). Fail-off (SR-08): the pull-down is held on from the fan side and the node releases it. Stock levels 1/4/10 = 20/46/100 % |
 | Fan tach | In | Square wave on white; 50 % duty; ~30 / 75 / 144 Hz at levels 1 / 4 / 10 | Stock controller pulls it up 10 kΩ to its 5 V; fan output type (open-drain vs push-pull) unconfirmed, so design for either | Fan's UIS port | | Fan fault detection (FR-18). Isolated (SR-09). Pulses/rev unknown; only frequency vs command is needed |
 | Occupancy | In | Isolated AC input | 24 VAC from the lighting transformer in the fan cabinet (Q-16) | | | Rectifier plus optocoupler |
 | `DC_RUNNING` | In | BLE (on-module radio) | | | | No wired input (D-016) |

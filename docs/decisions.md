@@ -121,7 +121,7 @@ Template:
 - Alternatives considered:
   - Keep the relay: the fan stops when the lights go off, so no vacant clear-down and Spray run-on dies with the lights. Contradicts FR-02/FR-08.
   - Controller switches mains itself: unnecessary, since 0 % PWM is true off (Q-15), and it would put mains in the enclosure (Q-18).
-- Consequences: IR-05. No mains work, so G3 for this is a check that the receptacle's circuit is suitable. The fan's off state now depends entirely on the control port. It runs at full speed with no signal (Q-15), so a dead node means the fan runs until noticed (HA offline alert, FR-13); SR-08 accepts that.
+- Consequences: IR-05. No mains work, so G3 for this is a check that the receptacle's circuit is suitable. The fan's off state now depends entirely on the control port. The fan runs at full speed with the cable unplugged (Q-15), but SR-08 holds it off whenever the node is unpowered or booting, so a dead node means no exhaust until noticed (HA offline alert, FR-13).
 
 ## D-015: Controller at the north (exhaust) end
 - Date: 2026-10-25
