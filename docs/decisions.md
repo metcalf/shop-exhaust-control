@@ -109,7 +109,7 @@ Template:
 - Date: 2026-10-25
 - Status: Accepted (Andrew, Q-08 and Q-09)
 - Context: PMS5003 was the kickoff working assumption. The SPS30 costs more but has a fan self-clean and better contamination resistance; VOC was a v2 candidate.
-- Decision: SPS30 (I²C or UART, chosen at G2) for PM; SGP41 for VOC, both in v1. The coarse dust sensor (FR-17) stays a v2 candidate.
+- Decision: SPS30 (I²C or UART, chosen at G2) for PM; SGP41 for VOC (and NOx, logged); SHT4x in the sensor bay for the SGP41's humidity compensation (FR-20). *Revised 2026-10-25 (Andrew):* the coarse dust sensor (FR-17) is in v1 too, logged continuously for comparison, with its control use behind a flag that starts off.
 - Alternatives considered: PMS5003 (cheaper, shorter life, no self-clean); VOC deferred to v2.
 - Consequences: FR-14 becomes M and also drives Auto (solvents, soldering), not just Spray run-on. Settling time P-06 follows the SPS30 datasheet. Adds roughly $25–30 over a PMS5003 to the BOM (NFR-08).
 

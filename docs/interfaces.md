@@ -26,7 +26,8 @@ Boost behavior (how long the DC must run first, the boost level, and what happen
 | Occupancy | In | Isolated AC input | 24 VAC from the lighting transformer in the fan cabinet (Q-16) | | | Rectifier plus optocoupler |
 | `DC_RUNNING` | In | BLE (on-module radio) | | | | No wired input (D-016) |
 | PM sensor | Bidir | SPS30, I²C or UART (G2) | 5 V supply | | | Sleep/wake and fan-clean by command (D-012) |
-| Coarse dust sensor | In | Analog + pulsed LED drive | 5 V | | | v2 candidate (FR-17) |
+| Coarse dust sensor | In | Analog + pulsed LED drive (GP2Y1014-type) or UART (GP2Y1026-type), G2 | 5 V; analog out divided into the ADC | | | v1, continuous (FR-17) |
+| Temp/humidity | Bidir | I²C | 3.3 V | | | SHT4x, in the sensor bay (FR-20) |
 | VOC sensor | Bidir | I²C | 3.3 V | | | SGP41 (D-012) |
 | Panel: encoder | In | Quadrature + push | 3.3 V | | | |
 | Panel: buttons | In | Momentary, unlit | 3.3 V | | | About 4; assignments are config (initially Auto, Quiet, Boost, spare) (D-009) |
@@ -43,7 +44,7 @@ Boost behavior (how long the DC must run first, the boost level, and what happen
 ## 4. Home Assistant entities
 Naming prefix: `shop_exhaust_` (confirmed, survey §4). Alerts go to the HA mobile app.
 
-Illustrative only. Finalize at G2 to match the design, including VOC, the optional coarse sensor, holds and scenes.
+Illustrative only. Finalize at G2 to match the design, including VOC/NOx, coarse dust, temperature/humidity, holds and scenes.
 
 | Entity | Type | Notes |
 |--------|------|-------|
