@@ -1,8 +1,14 @@
 {
   "statusLine": { "type": "command", "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/rate-limits-statusline.sh" },
   "hooks": {
+    "PreToolUse": [{ "matcher": "Agent|Task", "hooks": [
+      { "type": "command", "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/subagent-budget.sh" }
+    ]}],
     "PostToolUse": [{ "matcher": "*", "hooks": [
       { "type": "command", "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/rate-limits-budget.sh" }
+    ]}],
+    "SubagentStop": [{ "hooks": [
+      { "type": "command", "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/subagent-usage-log.sh" }
     ]}],
     "Stop": [{ "hooks": [
       { "type": "command", "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/nightly-stop.sh" }

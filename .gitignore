@@ -1,6 +1,7 @@
 # Claude #
 ######################
 .claude/usage.json
+.claude/usage-log.tsv
 .claude/settings.local.json
 
 # Logs and databases #
