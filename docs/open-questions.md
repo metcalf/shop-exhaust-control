@@ -7,6 +7,7 @@ Claude batches questions here. Each has an ID, why it matters, and the default C
 
 | ID | Question | Why it matters | Default if unanswered | Blocks | Answer |
 |----|----------|----------------|-----------------------|--------|--------|
+| Q-23 | Exact mounting spot at the north end: the rear-door wall (my default), or elsewhere? Rough cable length from there to the fan cabinet? | Sets the cable length (IR-04), sensor distance from the hood (NFR-09) and indicator sightlines (FR-15) | Rear-door wall, ~4–5 ft up, ~15 ft of cable to the cabinet | G2 (enclosure, cable) | |
 | Q-22 | Optional, 2 min with a meter: with the S6 **unplugged from mains**, resistance from the control port's black (GND) wire to each plug prong (L, N, ground). | Open circuit to L/N would support treating the port as SELV, but it isn't proof. It shapes SR-09. | Isolate the fan interface regardless (cheap: two optos); the measurement is a sanity check | — | |
 
 ## Answered
@@ -22,7 +23,7 @@ Claude batches questions here. Each has an ID, why it matters, and the default C
 | Q-07 | Fallback on sensor fault | Run at low speed and show a fault; indicator flashes red (only when occupied). | 2026-10-25 | SR-04, FR-15, P-19; vacant case is Q-20 |
 | Q-08 | PMS5003 or SPS30? | SPS30 | 2026-10-25 | D-012, NFR-02, P-06 |
 | Q-09 | VOC in v1 or v2? | v1 | 2026-10-25 | D-012, FR-14 (now M, also drives Auto) |
-| Q-10 | Panel and indicator location | Above the miter saw, mid-shop; LV wire along the ceiling to the fan; DC wiring reaches the miter blast gate anyway. | 2026-10-25 | D-014, FR-15, IR-04 |
+| Q-10 | Panel and indicator location | Above the miter saw, mid-shop; LV wire along the ceiling to the fan; DC wiring reaches the miter blast gate anyway. | 2026-10-25 | D-014, later replaced by D-015 (north end) |
 | Q-11 | Budget ceiling | ~$100 hoped, can exceed. | 2026-10-25 | NFR-08; follow-up Q-21 |
 | Q-12 | Interim `DC_RUNNING` source? | No; wait for the DC controller. | 2026-10-25 | IR-01, `interfaces.md` §1 |
 | Q-14 | KiCad install and PCBA vendor | KiCad installed (`/Applications/KiCad/KiCad.app/Contents/MacOS/kicad-cli`). JLCPCB is the default, but do brief market research to recommend a vendor. | 2026-10-25 | D-010; vendor research is a Claude action before phase 3 PCB (STATE.md) |

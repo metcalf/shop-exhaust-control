@@ -6,7 +6,7 @@
 
 ## Next actions
 1. **Andrew:** approve G1 (or mark changes). New since the first draft: SR-08 fail states, SR-09 fan-port isolation, NFR-05 economic PCBA tier, $300 ceiling.
-2. **Andrew (optional):** Q-22, a meter check of fan-port GND to the mains prongs.
+2. **Andrew:** Q-23 (exact north-end spot, cable length to the fan cabinet). Optional: Q-22, a meter check of fan-port GND to the mains prongs.
 3. **Claude, after G1:** architecture: block diagram, node location (panel end vs fan end) and what crosses the ceiling cable, `docs/interfaces.md` complete, control-logic state machine spec; then run the reviewer for G2.
 4. **Claude, before phase 3 PCB:** brief PCBA vendor comparison (Q-14 answer); JLCPCB is the default.
 
@@ -20,3 +20,4 @@
 - 2026-10-25: Site survey complete; applied answers Q-03…Q-18. Requirements drafted in full for G1: site summary, FR/NFR/SR/IR with ACs (AC-01…AC-25), and a parameter table (P-nn) with sourced initial values. New: FR-18 (tach fault), NFR-09…NFR-11, SR-08 (fail state), IR-04 (ceiling cable), IR-05 (always-on fan power). Decisions D-012 (SPS30 + SGP41 in v1), D-013 (un-switch the fan from the lighting relay, proposed), D-014 (panel above miter station). New questions Q-19…Q-21.
 - 2026-10-25 (later): Applied Q-15 (port pinout, PWM 5 kHz open-drain, unplugged = full speed), Q-19 (unswitched receptacle; D-013 accepted, no rewiring), Q-20 (vacant → off on sensor fault), Q-21 ($300 ceiling, aim for the economic PCBA tier). Added SR-09 (isolate the fan port until it's shown to be SELV) and AC-26. Lutron 15-min occupancy timeout noted; walk-in delay P-02 dropped. FR-08/AC-10: measure VOC pickup from spraying downstream of the sensor instead of assuming none.
 - 2026-10-25: Added FR-19 (Andrew): vacant Auto limited to P-22 speed (60 %) and P-21 runtime (2 h after vacancy), with a "clear-down incomplete" notice; AC-27.
+- 2026-10-25: Moved the controller to the north/exhaust end (D-015 replaces D-014) so the sensors see every source, including the lathe. DC link is BLE advertising with no wired or MQTT path (D-016); P-24 link timeout. IR-01/02/04, NFR-09, FR-15, AC-22 updated; Q-23 for the exact spot. Single vs. separate DC panel deferred to the DC project.

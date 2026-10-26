@@ -31,7 +31,7 @@ Template:
 - Context: The two systems share only "DC running," plus an optional shared UI.
 - Decision: Independent ESP32 nodes. Shared UI and history go in Home Assistant.
 - Alternatives considered: One combined controller.
-- Consequences: Each node must work on its own (NFR-01). The interface lives in `docs/interfaces.md` §1.
+- Consequences: Each node must work on its own (NFR-01). The interface lives in `docs/interfaces.md` §1; transport is BLE (D-016).
 
 ## D-003: Local physical controls; Home Assistant for history and alerts
 - Date: 2026-10-22 (revised 2026-10-23)
@@ -123,13 +123,27 @@ Template:
   - Controller switches mains itself: unnecessary, since 0 % PWM is true off (Q-15), and it would put mains in the enclosure (Q-18).
 - Consequences: IR-05. No mains work, so G3 for this is a check that the receptacle's circuit is suitable. The fan's off state now depends entirely on the control port. It runs at full speed with no signal (Q-15), so a dead node means the fan runs until noticed (HA offline alert, FR-13); SR-08 accepts that.
 
-## D-014: Panel, sensors and indicator above the miter station
+## D-015: Controller at the north (exhaust) end
 - Date: 2026-10-25
-- Status: Accepted (Andrew, Q-10, location); sensor/panel split decided at G2
-- Context: The fan and 24 VAC are at the north end; work and dust are mid-shop; the DC wiring will reach the miter station's blast gate anyway.
-- Decision: The panel and ambient indicator go above the miter station, on the cabinet/wall beside the miter hood rather than on the hood itself (vibration, direct ejecta). The sensor bay goes with them by default. Low-voltage cable runs along the ceiling to the fan cabinet (IR-04).
-- Alternatives considered: by the rear door or at the fan (survey §8): less wiring, but farther from the work, and from the fan the indicator isn't visible down the shop.
-- Consequences: Where the node lives (panel end or fan end) and what crosses the ceiling cable is a G2 decision.
+- Status: Accepted (Andrew, 2026-10-25), replaces D-014 (panel above the miter station). Exact spot: Q-23
+- Context: Makeup air enters at the south end and the hood exhausts at the north, so air flows the length of the shop. A sensor at the miter station (D-014) would be blind to everything downstream of it: the lathe, the north bench (soldering) and spraying north of it.
+- Decision: Panel, ambient indicator and sensors go together at the north end, out of the hood's capture zone. Default spot: the rear-door wall (survey §8 option 2), about 6–8 ft from the hood and visible from the whole shop. All site wiring (fan port, 24 VAC, supply) is local to the fan cabinet. Whether the DC gets its own panel or shares this one is deferred to the DC project.
+- Alternatives considered:
+  - Above the miter station (D-014, accepted earlier on Q-10): close to the work and the DC wiring, but blind downstream and needed a 35 ft ceiling cable. Splitting the sensors from the panel was also possible, but separating them buys nothing once the sensors are at the north end.
+  - Directly beside the fan, under the cabinet (survey option 3): least wiring, but inside the hood's draw and poorly visible.
+- Consequences: Sensing integrates the whole shop and clears last, so the off decision is conservative; upstream sources are detected later, which DC boost largely covers. Manual controls are at the north end, by the interior door you enter through. The DC wired link is no longer nearly free, which led to D-016. IR-04 shrinks to a short local cable.
+
+## D-016: BLE advertising for the DC link, with no wired or MQTT path
+- Date: 2026-10-25
+- Status: Accepted (Andrew, 2026-10-25)
+- Context: With the controller at the north end (D-015), a wire from the DC would be a separate ~30 ft run. ESP-NOW was considered, but it shares the Wi-Fi channel, so AP outages and channel changes would need a channel-sweep scheme and an `esp-iot-core` change.
+- Decision: The DC node broadcasts `DC_RUNNING` in BLE advertisements; the exhaust node scans and treats P-24 of silence as "not running". No wired input, and no MQTT fallback, for simplicity (Andrew). Message format in `docs/interfaces.md` §1, versioned and with room for DC status and a reverse direction.
+- Alternatives considered:
+  - Dry contact into an optocoupler: robust and simple, but a dedicated wire run.
+  - ESP-NOW: better range and lower latency, but tied to the Wi-Fi channel.
+  - MQTT node-to-node fallback: dropped; it adds a second path to test for a non-critical function.
+  - BLE GATT connection: more state than a few bytes at a low rate needs.
+- Consequences: BLE and Wi-Fi time-share the radio; the scan duty and coexistence get tested with OTA (AC-22). Adds the NimBLE stack to RAM and flash; checked at G2, with a PSRAM module as the fallback. Supersedes the transport text in D-002's consequences; D-002 itself (separate nodes, coupled by one signal) still stands. Loss of the link costs only boost. Commands to the DC, if ever added, need authentication.
 
 ---
 
