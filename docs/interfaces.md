@@ -11,13 +11,14 @@ Companion docs: `docs/architecture.md` (block diagram, power, cost), `docs/contr
 | Signal name | `DC_RUNNING` |
 | Direction | DC controller → exhaust controller |
 | Meaning | Asserted while the DC motor is **commanded on**, including the DC's own run-on. Whether the motor is confirmed running (current sensing) is a separate flag (bit 3) that the exhaust side ignores in v1. |
-| Transport | BLE 4.x **legacy, non-connectable advertising** (`ADV_NONCONN_IND`) from the DC node (D-016). No wired or MQTT path. |
+| Transport | BLE 4.x **legacy, non-connectable advertising** (`ADV_NONCONN_IND`) from the DC node (D-016). Backup: an opto-isolated wired input on the exhaust node (§2.3, D-025); either path asserts. No MQTT path. |
 | Advertising interval (DC side) | 100 ms for 5 s after any payload change, then 500 ms. The fast burst makes assertion latency independent of the scanner's duty (AC-22: ≤ 3 s). |
 | Scanning (exhaust side) | Passive scan, window 30 ms every 100 ms (30 %), duplicate filtering off, coexisting with Wi-Fi (D-016, D-021). |
 | Failure behavior | No valid advertisement for P-24 (10 s) is treated as "DC not running". FR-09 then holds the boost floor for P-11 more, so a short reception gap is invisible to the fan. Exhaust Auto still works on PM/VOC alone. |
 | Authentication | None in v1: a spoofed `DC_RUNNING` only boosts the exhaust. Any future command *to* the DC (message type 0x02) must carry the MAC field (bytes 13–20) from a shared key plus the sequence counter as a replay guard. Stopping the DC stays hardwired at the DC. |
 | Sender filter | Optional compile-time allow-list of DC node BLE addresses (empty = accept any valid frame). Set once the DC node exists. |
-| Interim source (before the DC controller exists) | None (Q-12). A bench test sender (any ESP32 running the same encoder) is used for AC-22. |
+| Interim source (before the DC controller exists) | None (Q-12). A bench test sender (any ESP32 running the same encoder) is used for AC-22; AC-06 uses the wired input. |
+| Wired backup (DC side) | If BLE proves unsatisfactory, the DC controller closes a contact (or drives an output) that energizes the exhaust node's `DC_IN` with 12–24 V AC or DC, either polarity, while `DC_RUNNING` is asserted (§2.3). Same meaning as bit 0. |
 
 ### 1.1 Payload: manufacturer-specific data (AD type 0xFF)
 
@@ -46,10 +47,11 @@ GPIOs assume an ESP32-S3-WROOM-1-N16R8 (D-022): GPIO 0/3/45/46 (strapping), 19/2
 
 | Signal | Dir | Type | Level | Connector | GPIO | Notes |
 |--------|-----|------|-------|-----------|------|-------|
-| `FAN_PWM` | Out | Opto LED drive (§2.1) | 3.3 V, ~5 mA | J-FAN (USB-C receptacle, external) | 4 | LEDC 5 kHz, ≥ 10-bit. LED on = speed line released (high). 10 kΩ external pull-down keeps the LED off through reset/boot |
+| `FAN_PWM` | Out | Opto LED drive (§2.1) | 3.3 V, ~5 mA | J-FAN (4-pos pluggable terminal, 3.5 mm, fan side of the barrier) | 4 | LEDC 5 kHz, ≥ 10-bit. LED on = speed line released (high). 10 kΩ external pull-down keeps the LED off through reset/boot |
 | `FAN_TACH` | In | Opto phototransistor, 10 kΩ pull-up | 3.3 V | J-FAN | 5 | Edge timing via GPIO ISR (30–150 Hz); frequency only (pulses/rev unknown) |
 | `FAN_PRESENT` | In | Opto phototransistor, 10 kΩ pull-up | 3.3 V, low = fan side powered | J-FAN | 6 | Fan-side +10 V present. Lost when the fan cable is unplugged **or** the fan loses mains (§2.1) |
 | `OCC_IN` | In | AC-input opto, RC-filtered | 3.3 V, low = 24 VAC present | J-OCC (2-pos pluggable terminal, 3.5 mm) | 7 | Rectifier-less bidirectional-LED opto; MOV/TVS across the input. Firmware debounce C-20 |
+| `DC_IN` | In | AC-input opto, RC-filtered (§2.3) | 3.3 V, low = asserted | J-DC (2-pos pluggable terminal, 5.0 mm) | 1 | Wired `DC_RUNNING` backup (D-025). Firmware debounce C-31 |
 | SEN65 I²C SDA / SCL | Bidir | I²C 100 kHz, 10 kΩ pull-ups | 3.3 V (sensor rail) | J-SEN (module's 6-pin cable; connector verified in phase 3) | 8 / 9 | Run < 10 cm (sensor bay directly below the board) |
 | `SEN_PWR_EN` | Out | LDO enable for the sensor rail | 3.3 V | — | 10 | Lets firmware power-cycle the module to recover a fault (SR-04). Pull-down: rail off during boot until firmware enables |
 | Display SPI SCLK / MOSI / CS / DC / RST | Out | SPI 40 MHz | 3.3 V | J-DISP (8-pin 0.1" header, module) | 12 / 11 / 13 / 14 / 21 | 2.0" 240×320 IPS, ST7789V-class module (D-022) |
@@ -59,9 +61,9 @@ GPIOs assume an ESP32-S3-WROOM-1-N16R8 (D-022): GPIO 0/3/45/46 (strapping), 19/2
 | Indicator data | Out | WS2812B-class, via 74AHCT1G125 | 5 V | on board (12 LEDs, board edge) | 48 | RMT `led_strip`. Firmware caps total LED current at 300 mA |
 | USB (flash/debug) | Bidir | ESP32-S3 native USB | 5 V VBUS | J-USB (USB-C, **internal only**, lid off) | 19 / 20 | D-020. VBUS joins the 5 V rail through a Schottky; ESD array on D±/CC |
 | Power in | In | 12 V DC | 12 V nominal, 9–15 V accepted | J-PWR (5.5 × 2.1 mm barrel, centre +) | — | Fuse, reverse-polarity P-FET, TVS. Listed external adapter (D-018) |
-| Spare | — | — | — | test pads | 1, 2, 41, 42 | Reserved (e.g. a future wired `DC_RUNNING` opto, or a second I²C sensor) |
+| Spare | — | — | — | test pads | 2, 41, 42 | Reserved (e.g. a second I²C sensor) |
 
-**S6 control port (UIS), measured by Andrew 2026-10-25 (Q-15):** black = GND, red = +10 V from the fan (low current), yellow = speed (fan pulls up via 2.2 kΩ; the controller pulls it low; 5 kHz PWM, high-time duty = speed; 20/46/100 % at levels 1/4/10), white = tach (50 % square, ~30/75/144 Hz at levels 1/4/10; stock controller pulls it up 10 kΩ to its 5 V). Unplugged = full speed. The physical connector is USB-C (stock controller J1 is a USB-C receptacle, `docs/site/ac infinity controller pcb.jpg`); **which USB-C contacts carry which wire is Q-25**. Fan GND's relation to mains is unknown (SR-09, Q-22).
+**S6 control port (UIS), measured by Andrew 2026-10-25 (Q-15):** black = GND, red = +10 V from the fan (low current), yellow = speed (fan pulls up via 2.2 kΩ; the controller pulls it low; 5 kHz PWM, high-time duty = speed; 20/46/100 % at levels 1/4/10), white = tach (50 % square, ~30/75/144 Hz at levels 1/4/10; stock controller pulls it up 10 kΩ to its 5 V). Unplugged = full speed. The fan end of the cable is USB-C (stock controller J1 is a USB-C receptacle, `docs/site/ac infinity controller pcb.jpg`), but the node doesn't use USB-C: Andrew hard-wires the four conductors into J-FAN by color (Q-25, D-026), so the USB-C contact map isn't needed. J-FAN is labelled `GND (BLK) / +10V (RED) / SPD (YEL) / TACH (WHT)`. Fan GND's relation to mains is unknown (SR-09, Q-22).
 
 ### 2.1 Fan interface: isolated, fail-off (SR-08, SR-09, FR-10, FR-18)
 
@@ -96,8 +98,13 @@ Behavior:
 - **Timing:** H11L1-class propagation is ~1–4 µs against a 200 µs PWM period (≤ 2 % of period); rise on yellow is set by the fan's 2.2 kΩ against cable capacitance (< 1 µs for 3 m). AC-18 measures duty at the fan, and any fixed offset is calibrated in firmware.
 - **Barrier:** opto parts UL 1577 ≥ 3.75 kV rms, with IEC 60747-5-5 (VDE 0884) versions where JLC stocks them. PCB creepage and clearance ≥ 3.0 mm across the barrier, which is above basic insulation for 150 V working voltage under IEC 62368-1 (pollution degree 2). The phase 3 DRC rule encodes it (D-010). The barrier stays even if Q-22 shows the port is SELV, because it also breaks the ground loop through the fan cable.
 
+J-FAN sits on the fan side of the barrier, with ≥ 3 mm to any node-side copper. Its conductors carry nothing the fan's own cable doesn't already expose. It's 4-position, so it can't take the 2-position J-OCC or J-DC plugs.
+
 ### 2.2 Occupancy input (FR-07)
-24 VAC from the lighting transformer's secondary (the same terminals that drive the old fan relay coil, Q-16) → 2-pos terminal → bidirectional TVS (~36 V) → 2 × 2.2 kΩ (1206, series) → AC-input opto (LTV-814/PC814-class) → phototransistor with 10 kΩ pull-up and 1 µF to GND (τ ≈ 10 ms bridges the zero crossings) → GPIO7. Input draw ≈ 5–6 mA rms. Same ≥ 3 mm barrier as §2.1. Firmware debounce C-20 (0.5 s), well inside AC-04's 2 s.
+24 VAC from the lighting transformer's secondary (the same terminals that drive the old fan relay coil, Q-16) → 2-pos terminal → bidirectional TVS (≥ 40 V standoff, SMBJ40CA-class, above the 37 V peak of 24 VAC + 10 %) → 2 × 2.2 kΩ (1206, series) → AC-input opto (LTV-814/PC814-class) → phototransistor with 10 kΩ pull-up and 1 µF to GND (τ ≈ 10 ms bridges the zero crossings) → GPIO7. Input draw ≈ 5–6 mA rms. Same ≥ 3 mm barrier as §2.1. Firmware debounce C-20 (0.5 s), well inside AC-04's 2 s.
+
+### 2.3 Wired `DC_RUNNING` input (IR-01 backup, D-025)
+The same circuit as §2.2, with the series resistance sized so 12 V DC still lights the LED (≥ 2 mA) and 24 VAC (+10 %, ≈ 37 V peak) stays within its rating: TVS (≥ 40 V standoff, as §2.2) → 2 × 2.7 kΩ (1206) → AC-input opto (bidirectional LED, so either polarity or AC) → 10 kΩ pull-up and 1 µF → GPIO1. Same ≥ 3 mm barrier. Unconnected reads not asserted. Because J-DC and J-OCC accept the same inputs, swapping their plugs is harmless (wrong function only); the different pitch (5.0 vs 3.5 mm) prevents it anyway. Phase 3 checks the resistor values against the opto's CTR and LED ratings.
 
 ## 3. Power (D-018)
 
@@ -140,9 +147,10 @@ MQTT with discovery, following the `HassMessages` (pure, host-tested topic/disco
 | `sensor.shop_exhaust_fan_tach` | sensor | Hz (pulses/rev unknown; RPM once known) | diagnostic | FR-12, FR-18 |
 | `sensor.shop_exhaust_state` | sensor | text: `Auto`, `Hold 60%`, `Quiet`, `Boost`, `Spray`, `Spray clearing` | — | FR-12 |
 | `sensor.shop_exhaust_state_remaining` | sensor | min (`duration`) | — | FR-12 |
-| `sensor.shop_exhaust_demand_source` | sensor | text: `floor`, `pm`, `voc`, `dc`, `fallback`, `vacant_cap`, `off` | diagnostic | FR-12 (tuning) |
+| `sensor.shop_exhaust_demand_source` | sensor | text: `floor`, `pm`, `voc`, `dc`, `vacant_cap`, `off` | diagnostic | FR-12 (tuning) |
 | `binary_sensor.shop_exhaust_occupied` | binary_sensor | `occupancy` | — | FR-07, FR-12 |
-| `binary_sensor.shop_exhaust_dc_running` | binary_sensor | `running` | — | FR-09, FR-12 |
+| `binary_sensor.shop_exhaust_dc_running` | binary_sensor | `running` (BLE or wired) | — | FR-09, FR-12 |
+| `binary_sensor.shop_exhaust_dc_wired` | binary_sensor | `running` (wired input alone) | diagnostic | IR-01, AC-06 |
 | `sensor.shop_exhaust_dc_link_rssi` | sensor | dBm | diagnostic | AC-22 |
 | `binary_sensor.shop_exhaust_fan_running` | binary_sensor | `running` (commanded > 0) | — | FR-12 |
 | `sensor.shop_exhaust_run_hours` | sensor | h, `total_increasing` | — | FR-12 |
@@ -165,6 +173,6 @@ Precedence: the panel is the only command source in v1, so no rule is needed. If
 - **Enclosure form (D-019):** one enclosure in two compartments. Upper: sealed electronics compartment, PCB vertical behind the front bezel (display, encoder, 4 buttons), gasketed lid, no vents (NFR-04). Lower: sensor bay, open to the room through a front grille, with the SEN65 inlet facing into the room, not toward the hood (NFR-09). The bay is below the electronics, as Sensirion recommends (sensor below heat sources).
 - **Sensor bay:** the SEN65 sits in a cradle behind a tool-less cover (thumb screw or snap). Its cable plugs in at the module end and passes into the electronics compartment through a sealed grommet in the dividing wall (no air path, NFR-04). Removal: open the cover, unplug, lift out, < 5 min (NFR-03). Module orientation per Sensirion's mechanical guidelines (inlets/outlet not blocked, inlet and outlet separated, no airflow > 1 m/s across it).
 - **Indicator:** a diffused light bar along the bottom-front edge of the electronics compartment, lit by the 12 board-edge LEDs through a light pipe, visible down the shop's length (FR-15).
-- **Cable entry:** rear or top face, toward the cabinet: J-FAN (USB-C cable to the fan), J-OCC (2-conductor thermostat wire to the 24 VAC terminals), J-PWR (barrel). Each gets a printed strain-relief clamp and a gasketed pass-through. The internal J-USB is reachable only with the lid off (D-020).
+- **Cable entry:** rear or top face, toward the cabinet: J-FAN (4-conductor fan cable, hard-wired), J-OCC (2-conductor thermostat wire to the 24 VAC terminals), J-DC (2-conductor, only if the wired DC backup is used), J-PWR (barrel). Each gets a printed strain-relief clamp and a gasketed pass-through. The internal J-USB is reachable only with the lid off (D-020).
 - **Mounting:** a printed bracket screws to the cabinet bottom (4 wood screws) and the enclosure slides onto it and locks with one screw, so the unit comes down without unscrewing from the cabinet.
 - **Positions:** display, encoder, button, LED and connector positions come from the `.kicad_pcb` in phase 3, never retyped (D-011).

@@ -1,6 +1,6 @@
 # Architecture
 
-**Status:** drafted for G2 (2026-10-25, nightly). Approved requirements: `docs/requirements.md`. Detail lives in `docs/interfaces.md` (signals, pins, power, HA entities, mechanical interfaces) and `docs/control-logic.md` (state machine). New decisions: D-017…D-023.
+**Status:** drafted for G2 (2026-10-25, nightly). Approved requirements: `docs/requirements.md`. Detail lives in `docs/interfaces.md` (signals, pins, power, HA entities, mechanical interfaces) and `docs/control-logic.md` (state machine). New decisions: D-017…D-026.
 
 **Not a life-safety device.** Air-quality sensing here is a convenience control. It is not respiratory protection and doesn't on its own protect health (SR-05).
 
@@ -31,6 +31,7 @@ flowchart LR
         USB["USB-C, internal only (D-020)"]
       end
       OCC_IF["24 VAC input: TVS, R, AC opto"]
+      DC_IF["Wired DC_RUNNING backup: TVS, R, AC opto"]
     end
     subgraph BAY["Sensor bay, open to room, below electronics"]
       SEN["Sensirion SEN65<br/>PM, VOC/NOx, RH/T (D-012)"]
@@ -40,7 +41,7 @@ flowchart LR
   DC["DC controller (future)<br/>BLE advertiser"]
   HA["Home Assistant (MQTT)"]
 
-  S6 <== "USB-C fan cable ≤10 ft" ==> FAN_IF
+  S6 <== "4-wire fan cable, hard-wired to terminals, ≤10 ft" ==> FAN_IF
   FAN_IF -.- BAR1 -.- MCU
   XFMR -- "2-wire 24 VAC" --> OCC_IF -.-> MCU
   PSU -- "12 V barrel" --> PWR --> MCU
@@ -48,6 +49,7 @@ flowchart LR
   MCU --- PANEL
   MCU --> LEDS
   DC -. "BLE adv: DC_RUNNING (interfaces §1)" .-> MCU
+  DC -. "optional 2-wire backup (interfaces §2.3)" .-> DC_IF -.-> MCU
   MCU <-. "Wi-Fi MQTT, read-only (FR-12)" .-> HA
 ```
 
@@ -60,7 +62,7 @@ flowchart LR
 | Control logic | `exhaust_logic`, pure C++ on the node | NFR-01, NFR-06; host-tested |
 | Sensing | One SEN65 in a bay open to the room | D-012, NFR-04, NFR-09 |
 | User interface | Panel on the enclosure front | D-003, D-009, FR-01, FR-11 |
-| DC link | BLE advertising, scanned by the on-module radio | D-016, IR-01/02 |
+| DC link | BLE advertising, scanned by the on-module radio; an opto-isolated wired input as backup | D-016, D-025, IR-01/02 |
 | History and alerts | HA over MQTT, read-only | FR-12, FR-13, FR-16 dropped |
 
 ## 3. Electronics (one 2-layer PCB, D-008)
@@ -68,10 +70,11 @@ flowchart LR
 - **MCU:** ESP32-S3-WROOM-1-N16R8 (D-022). PSRAM holds LVGL buffers and leaves internal RAM for NimBLE plus Wi-Fi/MQTT/TLS OTA (the D-016 RAM concern). The PCB antenna sits at the board's top edge, with a keep-out and no copper or enclosure metal around it.
 - **Fan interface:** `docs/interfaces.md` §2.1. Three optos cross the barrier (speed, tach, presence). The fan side is powered by the fan's +10 V, so the default (unlit LED) state is fan off.
 - **Occupancy:** AC-input opto from 24 VAC (`docs/interfaces.md` §2.2).
+- **Wired DC backup:** the same AC-input opto circuit, accepting 12–24 V AC/DC (`docs/interfaces.md` §2.3, D-025).
 - **Power:** 12 V in, two bucks and a switched sensor LDO (`docs/interfaces.md` §3). Peak ≈ 4.8 W, typical ≈ 1.3 W.
 - **Panel:** display module on a header; encoder and tact switches mounted on the PCB front, behind the bezel. Board-edge LEDs feed the light bar.
 - **PCBA (NFR-05):** SMT on one side from JLC basic/preferred parts where possible. Through-hole (barrel jack, terminal block, display header, encoder) is hand-soldered or done as a THT add-on. The tier rules are checked in the phase 3 vendor research.
-- **Off-board wiring:** fan cable (USB-C, Q-25 pin map), 2-conductor thermostat wire to the 24 VAC terminals, 12 V barrel. WireViz drawing in `electrical/` in phase 3 (D-010).
+- **Off-board wiring:** fan cable hard-wired into a 4-pos terminal (D-026), 2-conductor thermostat wire to the 24 VAC terminals, optional 2-conductor DC backup, 12 V barrel. WireViz drawing in `electrical/` in phase 3 (D-010).
 
 ## 4. Firmware (ESP-IDF, C++)
 
@@ -119,14 +122,14 @@ firmware/
 | Node unpowered, crashed, resetting, booting | No control | Fan held **off** by the fan-powered pull-down; HA shows offline via LWT | SR-08, FR-13, AC-18, AC-09 |
 | Fan cable unplugged | Fan runs **full** (fan behavior) | `fan_port` fault from loss of `FAN_PRESENT` (displayed; HA) | SR-08, FR-18 |
 | Fan has no mains / motor failed | No exhaust | `fan_port` (no +10 V) or `fan_tach` fault | FR-18, AC-07 |
-| SEN65 fault (no data, status, range) | No PM/VOC | SR-04 fallback (occupied ≥ P-19, vacant off); power-cycle retries; Spray uses P-09 alone | SR-04, AC-20 |
+| SEN65 fault (no data, status, range) | No PM/VOC | SR-04: PM/VOC demand dropped, floor and DC boost kept (occupied → P-01, vacant → off unless DC); power-cycle retries; Spray uses P-09 alone | SR-04, AC-20 |
 | SEN65 fouled (reads high) | Fan runs too long | FR-19 vacant caps (P-22, P-21) and the clear-down incomplete notice | FR-19, AC-27 |
 | Wi-Fi, broker or HA down | No history or alerts | No control impact | NFR-01, AC-12 |
-| DC link lost or DC absent | No boost | Treated as DC off after P-24; boost persists P-11 | IR-01, AC-22 |
+| DC link lost or DC absent | No boost | Treated as DC off after P-24; boost persists P-11. If BLE proves unreliable, wire the backup input (D-025) | IR-01, AC-22, AC-06 |
 | Spoofed BLE frame | False boost only | Accepted risk; allow-list option | `interfaces.md` §1 |
 | 24 VAC input lost | Reads vacant | Trusted signal, no handling (Q-17); display shows Vacant | FR-07 |
 | Fan-port mains fault (port not SELV) | Hazard on fan-side circuits | ≥ 3 mm barrier, rated optos; nothing fan-side is touchable; flashing USB is on the node side | SR-09, AC-26 |
-| Fan cable plugged into the flashing USB port | Fan +10 V on node USB pins; isolation bypassed | Flashing port is internal only (D-020) | SR-09 |
+| Fan wires mis-terminated at J-FAN | Fan won't run, or runs full; fan-side parts stressed | Color-coded terminal labels; TVS on each fan-side line; AC-18 bench check before install. No USB-C fan cable reaches the node, so it can't meet the flashing port (D-020, D-026) | SR-09, AC-18 |
 | Adapter fault | Node dead → fan off | Listed adapter, input fuse, TVS | SR-01, SR-08 |
 
 ## 7. Traceability (M and S requirements)
@@ -139,13 +142,14 @@ firmware/
 | FR-05 | `Sampler` rest rule and decay fit §5; `decay_rate`/`airflow_est` entities | AC-03 |
 | FR-07 | Occupancy input §2.2; control-logic §3; Sampler Off | AC-04 |
 | FR-08, SR-03 | Spray/SprayRunOn §2; Protect state §5 | AC-05 |
-| FR-09 | `DcBoostActive` §4; BLE link §1 | AC-06, AC-22 |
+| FR-09 | `DcBoostActive` §4; BLE link §1; wired input §2.3 | AC-06, AC-22 |
 | FR-10 | Fan interface §2.1; LEDC 5 kHz; C-06 | AC-07, AC-18 |
 | FR-11 | Display model §8 | AC-08 |
 | FR-12, FR-13, IR-03 | HA entities (interfaces §4); `HassMessages` | AC-09 |
 | FR-14 | Host-side gas index, paused across Idle (D-017); VocValid gating | AC-10, AC-28 |
 | FR-15 | Indicator §8; light bar (§5) | AC-11 |
 | FR-18 | Tach and presence optos; `fan_tach`/`fan_port` faults | AC-07 |
+| FR-08 (override) | Auto press and new holds/scenes end Spray/SprayRunOn (control-logic §2, D-024) | AC-05 |
 | FR-19 | Vacant cap/limit §4; SprayRunOn vacant exit §2 | AC-27 |
 | NFR-01 | No network dependence in `control` (§4) | AC-12 |
 | NFR-02 | Sampler duty; weekly clean; sensor-hours entity | AC-13 |
@@ -161,10 +165,10 @@ firmware/
 | SR-04 | Fault table and fallback (control-logic §6, §4) | AC-20 |
 | SR-05, SR-06 | Statements here, in the README and on the panel's About page | AC-25 |
 | SR-09 | Barrier, optos, internal USB (D-020) | AC-26 |
-| IR-01, IR-02 | BLE payload v1.0 (interfaces §1.1) | AC-22 |
+| IR-01, IR-02 | BLE payload v1.0 (interfaces §1.1); wired backup input (§2.3, D-025) | AC-22, AC-06 |
 | IR-04, IR-05 | Three short LV cables; always-on receptacle | AC-23 |
 
-Design elements without a requirement: the `fan_port` presence detect (an extension of FR-18 for the "cable unplugged → full speed" case) and the Auto long-press abort (control-logic §2). Both are flagged for G2.
+Design elements without a requirement: none. The `fan_port` presence detect is now in FR-18, and the Auto long-press was replaced by a plain Auto press (FR-08), both from Q-28.
 
 ## 8. Cost estimate (NFR-08, AC-24)
 
@@ -173,13 +177,13 @@ These are **estimates from memory, not checked against distributors** (except th
 | Item | Est. USD |
 |------|---------:|
 | SEN65 (SEN66 is $62; SEN65 assumed lower) | 45 |
-| On-board parts per board: ESP32-S3 module 5, display module 8, encoder + knob 4, switches 2, LEDs + shifter 2, optos 3, power 5, connectors 2, passives/ESD 3 | 34 |
-| Second assembled board (JLC PCBA minimum quantity is 2; a spare) | 34 |
+| On-board parts per board: ESP32-S3 module 5, display module 8, encoder + knob 4, switches 2, LEDs + shifter 2, optos 4, power 5, connectors 2, passives/ESD 3 | 35 |
+| Second assembled board (JLC PCBA minimum quantity is 2; a spare) | 35 |
 | PCB fab + PCBA fees (setup, stencil, extended-part fees) | 35 |
 | Enclosure, MJF PA12, two parts + bracket | 40 |
 | Gasket, heat-set inserts, screws, diffuser | 10 |
 | 12 V listed adapter + barrel extension | 15 |
-| Fan cable (USB-C, 3 m) and 10 ft of 18/2 thermostat wire | 17 |
+| 4-conductor extension for the fan cable if needed, and 18/2 thermostat wire for occupancy (and the DC backup) | 15 |
 | Shipping and duties (PCBA and print in one JLC order) | 35 |
 | **Total** | **≈ 265** (range ≈ 225–300) |
 
@@ -193,4 +197,4 @@ Under the $300 ceiling, but not "well below" it. Most of it is fixed overhead (P
 - ESP32-S3 GPIO reset states and boot glitches on the GPIOs chosen for `FAN_PWM` and `SEN_PWR_EN`.
 - Display module choice (header pinout, backlight drive) and mechanical outline.
 - JLC Economic PCBA rules (STATE action), opto/creepage footprints, and the antenna keep-out on the module footprint.
-- USB-C pin mapping of the fan cable (Q-25) before the fan connector footprint is wired.
+- Wired DC input resistor values against the opto's CTR at 12 V DC and LED rating at 24 VAC + 10 % (`docs/interfaces.md` §2.3).

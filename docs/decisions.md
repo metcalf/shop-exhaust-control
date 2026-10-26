@@ -144,7 +144,7 @@ Template:
 
 ## D-016: BLE advertising for the DC link, with no wired or MQTT path
 - Date: 2026-10-25
-- Status: Accepted (Andrew, 2026-10-25)
+- Status: Accepted (Andrew, 2026-10-25). **Amended by D-025** (wired backup input added)
 - Context: With the controller at the north end (D-015), a wire from the DC would be a separate ~30 ft run. ESP-NOW was considered, but it shares the Wi-Fi channel, so AP outages and channel changes would need a channel-sweep scheme and an `esp-iot-core` change.
 - Decision: The DC node broadcasts `DC_RUNNING` in BLE advertisements; the exhaust node scans and treats P-24 of silence as "not running". No wired input, and no MQTT fallback, for simplicity (Andrew). Message format in `docs/interfaces.md` §1, versioned and with room for DC status and a reverse direction.
 - Alternatives considered:
@@ -180,7 +180,7 @@ Template:
 
 ## D-020: Flashing USB is internal; the fan port is the only external USB-C
 - Date: 2026-10-25
-- Status: Proposed (G2)
+- Status: Proposed (G2). **Amended by D-026:** the fan now lands on terminals, so there's no external USB-C at all. The flashing port stays internal for the sealed compartment (NFR-04), not for mis-plug protection
 - Context: The S6 control cable is USB-C (stock controller J1). If the fan cable went into a node USB port, the fan's +10 V and GND would land on non-isolated node pins, bypassing SR-09.
 - Decision: The ESP32-S3 native USB-C is inside the electronics compartment, reachable only with the lid off. OTA is the normal update path (NFR-11). Power comes in on a barrel jack (D-018).
 - Alternatives considered: External flashing port with a label (relies on the label). A non-USB connector for the fan (needs a custom or cut fan cable).
@@ -209,6 +209,34 @@ Template:
 - Decision: A fan-side N-MOSFET holds the speed line low by default (gate pulled up from a 5 V LDO on the fan's +10 V). A Schmitt-output opto driven by the node's PWM releases it, so the LED-on fraction is the fan duty. Two more optos carry the tach and a fan-present signal back. ≥ 3 mm barrier (`docs/interfaces.md` §2.1).
 - Alternatives considered: An isolated DC-DC powering the fan side from the node (fails on, since the hold-off dies with node power). A relay on the speed line (slow; can't PWM at 5 kHz). A digital isolator (needs a few mA on both sides, no better than the opto here).
 - Consequences: If the port can't supply the current (Q-26), the fallback is a smaller budget: drop the presence LED and raise the pull-up values. Phase 3 verifies the opto polarity and timing (architecture §9). AC-18 scopes it.
+
+## D-024: Q-28 control-logic calls: user overrides always win; sensor faults drop only sensed demand
+- Date: 2026-10-26
+- Status: Accepted (Andrew, Q-28). Amends approved FR-08, FR-18, SR-04 and AC-05, AC-07, AC-20; drops P-19 and C-10
+- Context: The G2 draft made five interpretations the approved requirements didn't spell out (Q-28 (a)–(e)).
+- Decision:
+  - (a, d) An Auto press returns to Auto from any mode, including Spray and SprayRunOn, with no run-on. Any new hold or scene replaces Spray or its run-on. The 3 s long-press and the "refused during Spray" rule are gone.
+  - (b) Confirmed: the SEN65 idles from Spray start until C-07 before the P-09 minimum run-on ends. FR-08 now says so.
+  - (c) A sensor fault removes only PM/VOC demand; the occupancy floor (P-01) and DC boost stay, within the FR-19 vacant limits. P-19 (fault fallback speed) is dropped, since the floor already gives the "low speed" Q-07 asked for.
+  - (e) The `fan_port` fault (fan side unpowered: cable unplugged → fan full, or no mains) is accepted and written into FR-18.
+- Alternatives considered: as drafted (long-press, refusal, literal SR-04). Andrew chose simpler, override-first behavior.
+- Consequences: SR-03 still holds: only explicit user input ends Spray early, never a sensor or network path. Leaving Spray by Auto press means the SEN65 starts from Idle, so for ~1 min (P-06, C-07) Auto runs only floor and DC demand. That's an accepted cost of the override. If an accidental Auto press while spraying turns out to bite, the fix is a firmware change (e.g. a run-on on Spray exit by Auto).
+
+## D-025: Keep a wired, opto-isolated `DC_RUNNING` input as a BLE backup
+- Date: 2026-10-26
+- Status: Accepted (Andrew, Q-28 (f)). Amends D-016 and approved IR-01, AC-06
+- Context: D-016 dropped the wired input for simplicity. Andrew wants it kept on the board as a backup in case BLE disappoints, and as the simpler AC-06 bench test.
+- Decision: A second AC-input opto channel (`DC_IN`, GPIO1, J-DC 2-pos 5.0 mm), the same circuit as occupancy but accepting 12–24 V AC or DC of either polarity (`docs/interfaces.md` §2.3). `dc_running = dc_ble OR dc_wired`; an unconnected input reads false, so no configuration. The BLE payload (D-021) is unchanged.
+- Alternatives considered: dry-contact input with an isolated local source (needs an isolated supply on the node); no wired input (D-016 as was).
+- Consequences: About $1 per board, one more cable entry and GPIO (spare 1 used). The DC project can drive it with a relay contact switching its own 12–24 V, or straight from the 24 VAC if it has one. AC-06 runs on the wired input; AC-22 still covers BLE once a test sender or the DC node exists. A spoofed BLE frame or a wired assert both only boost.
+
+## D-026: Fan cable hard-wired into a 4-position terminal, no USB-C on the node
+- Date: 2026-10-26
+- Status: Accepted (Andrew, Q-25)
+- Context: J-FAN was a USB-C receptacle, which needed the fan cable's USB-C contact map (Q-25) and created the mis-plug hazard D-020 addressed.
+- Decision: J-FAN is a 4-pos 3.5 mm pluggable terminal on the fan side of the barrier, labelled GND (BLK) / +10V (RED) / SPD (YEL) / TACH (WHT). Andrew hard-wires the four conductors (from the S6's Q-15 color map).
+- Alternatives considered: USB-C receptacle wired to the measured contact map (needs Q-25 and a symmetry check).
+- Consequences: Q-25 is closed with no measurement needed. No USB-C fan cable reaches the node. Mis-termination is the new risk: color labels, fan-side TVS, and the AC-18 bench check. J-FAN (4-pos) can't take the 2-pos J-OCC/J-DC plugs.
 
 ---
 
