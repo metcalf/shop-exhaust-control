@@ -3,6 +3,9 @@
   "hooks": {
     "PostToolUse": [{ "matcher": "*", "hooks": [
       { "type": "command", "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/rate-limits-budget.sh" }
+    ]}],
+    "Stop": [{ "hooks": [
+      { "type": "command", "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/nightly-stop.sh" }
     ]}]
   }
 }

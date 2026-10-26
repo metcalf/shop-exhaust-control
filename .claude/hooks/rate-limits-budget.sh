@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-flag=/tmp/claude-wrapup-$(date -v-6H +%F); [ -f "$flag" ] && exit 0
+# Once per session, tell Claude to wrap up when the 5h budget is nearly spent or it's the middle of the night.
+sid=$(jq -r '.session_id // "none"'); flag=/tmp/claude-wrapup-$sid; [ -f "$flag" ] && exit 0
 fh=$(jq -r '.fh // 0' "$CLAUDE_PROJECT_DIR/.claude/usage.json" 2>/dev/null); fh=${fh%.*}
 hm=$(date +%H%M)
 if [ "${fh:-0}" -ge 85 ] || { [ "$hm" -ge 0230 ] && [ "$hm" -lt 0700 ]; }; then
