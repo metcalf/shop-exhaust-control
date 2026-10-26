@@ -1,14 +1,13 @@
 # Project State
 
 **Updated:** 2026-10-25
-**Phase:** 1, requirements: drafted, awaiting **G1**
-**Waiting on:** Andrew to approve G1
+**Phase:** 2, architecture (G1 approved 2026-10-25); not started
+**Waiting on:** Andrew to schedule the start of phase 2 (paused at his request)
 
 ## Next actions
-1. **Andrew:** approve G1 (or mark changes). New since the first draft: SR-08 fail states, SR-09 fan-port isolation, NFR-05 economic PCBA tier, $300 ceiling.
-2. **Andrew (optional):** Q-22, a meter check of fan-port GND to the mains prongs.
-3. **Claude, after G1:** architecture: block diagram, node location (panel end vs fan end) and what crosses the ceiling cable, `docs/interfaces.md` complete, control-logic state machine spec; then run the reviewer for G2.
-4. **Claude, before phase 3 PCB:** brief PCBA vendor comparison (Q-14 answer); JLCPCB is the default.
+1. **Claude, when Andrew schedules it:** architecture: block diagram, control-logic state machine spec, complete `docs/interfaces.md` (fan interface with fail-off and isolation, SEN65 and VOC baseline handling, BLE message format, power budget including SEN65 peaks), cost estimate against $300; then run the reviewer for G2.
+2. **Claude, before phase 3 PCB:** brief PCBA vendor comparison, including JLCPCB Economic tier rules (Q-14, NFR-05).
+3. **Andrew (optional):** Q-22, a meter check of fan-port GND to the mains prongs.
 
 ## Blockers
 - None beyond G1.
@@ -26,3 +25,4 @@
 - 2026-10-25: FR-10: duty is continuous. NFR-10 dropped (parameters compiled in, OTA to change). SR-08 reversed to fail-off: node unpowered/booting holds the fan off, powered from the fan side of the barrier; AC-18 updated.
 - 2026-10-25: Nightly unattended run added (`scripts/`, see `scripts/README.md`); budget hook now wraps up via `STATE.md`.
 - 2026-10-25: Q-24: single SEN65 module (PM, VOC/NOx, RH/T); coarse sensor and SHT4x dropped (D-012 rewritten). FR-14 requires the VOC baseline to survive module sleep; FR-08 sleeps the module during Spray's minimum run-on to protect it from overspray.
+- 2026-10-25: **G1 approved** (Andrew). Paused before phase 2 at Andrew's request while he sets up scheduling.

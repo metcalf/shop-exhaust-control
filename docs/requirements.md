@@ -1,6 +1,6 @@
 # Requirements — Shop Exhaust Fan Controller
 
-**Status:** READY FOR G1 (drafted 2026-10-25 from the site survey and answers to Q-03…Q-21). Andrew signs off at **G1**.
+**Status:** APPROVED at G1 (Andrew, 2026-10-25). Changes now need a decision entry and Andrew's OK.
 
 **Conventions**
 - IDs: `FR` functional, `NFR` non-functional, `SR` safety, `IR` interface. IDs are never reused; dropped entries stay with a note.

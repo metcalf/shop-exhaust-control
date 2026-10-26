@@ -159,8 +159,8 @@ Template:
 ## Gate approvals
 | Gate | Date | Approved by | Notes |
 |------|------|-------------|-------|
-| Phase 0 survey | 2026-10-25 | Claude (sufficient for requirements); Andrew to confirm with G1 | Survey and photos committed d9833fd |
-| G1 Requirements | | | |
+| Phase 0 survey | 2026-10-25 | Andrew (with G1) | Survey and photos committed d9833fd |
+| G1 Requirements | 2026-10-25 | Andrew | `docs/requirements.md` as of this commit, including the SEN65 consequences (FR-14 baseline survival, FR-08 sensor sleep during Spray minimum run-on) |
 | G2 Architecture | | | |
 | G3 Mains/safety | | | |
 | G4 BOM | | | |
