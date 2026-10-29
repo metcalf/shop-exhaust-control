@@ -27,7 +27,7 @@ flowchart LR
         MCU["ESP32-S3-WROOM-1-N16R8<br/>Wi-Fi + BLE (D-022)"]
         PWR["Polyfuse, TVS<br/>5→3.3 V regulator,<br/>load switch (sensor)"]
         PANEL["2.8&quot; IPS display (no touch), EC11 encoder,<br/>4 buttons"]
-        LEDS["12× WS2812B → light bar"]
+        LEDS["Plain RGB LEDs, 3 FETs →<br/>short light strip (D-031)"]
         USB["USB-C: power in + flash/log,<br/>external (D-030)"]
       end
       OCC_IF["24 VAC input: TVS, R, AC opto"]
@@ -72,7 +72,7 @@ flowchart LR
 - **Occupancy:** AC-input opto from 24 VAC (`docs/interfaces.md` §2.2).
 - **Wired DC backup:** the same AC-input opto circuit, accepting 12–24 V AC/DC (`docs/interfaces.md` §2.3, D-025).
 - **Power:** 5 V USB-C in (also the flash/log port), one 5→3.3 V regulator and a load-switched sensor rail (`docs/interfaces.md` §3, D-030). Peak ≈ 5.5 W for milliseconds, typical ≈ 1.7 W.
-- **Panel:** display module on a header; encoder and tact switches mounted on the PCB front, behind the bezel. Board-edge LEDs feed the light bar.
+- **Panel:** display module on a header; encoder and tact switches mounted on the PCB front, behind the bezel. Plain RGB LEDs feed a short light strip along one display edge (D-031).
 - **PCBA (NFR-05):** SMT on one side from JLC basic/preferred parts where possible. Through-hole (terminal blocks, display header, encoder) is hand-soldered or done as a THT add-on. The tier rules are checked in the phase 3 vendor research.
 - **Off-board wiring:** fan cable hard-wired into a 4-pos terminal (D-026), 2-conductor thermostat wire to the 24 VAC terminals, optional 2-conductor DC backup, USB-C cable for power. WireViz drawing in `electrical/` in phase 3 (D-010).
 
@@ -88,7 +88,7 @@ firmware/
     gas_index/                Sensirion gas index algorithm (BSD-3, vendored C), D-017
     hass/                     HassMessages (pure) + MqttExhaustHomeClient (BaseMqttClient)
     drivers/                  Sen6x (I²C), FanPort (LEDC 5 kHz + tach ISR + present), Occupancy,
-                              Panel (PCNT encoder, buttons), Display (esp_lcd ST7789/ILI9341 + LVGL), Indicator (RMT)
+                              Panel (PCNT encoder, buttons), Display (esp_lcd ST7789/ILI9341 + LVGL), Indicator (LEDC RGB)
     dc_link/                  NimBLE passive scanner → DcLinkParser
   test/                       host GoogleTest (control-logic.md §10), results committed
 ```
@@ -111,7 +111,7 @@ firmware/
 - One printed enclosure (MJF PA12, D-011) with two compartments: a **sealed electronics compartment** on top (gasketed lid, no vents, sealed encoder shaft and membrane-covered buttons; IP5X intent, NFR-04), and an **open sensor bay** below it with a front grille, its inlet facing south into the room (NFR-09).
 - Bay below the electronics, with an insulating air gap in the dividing wall: it keeps the SEN65 below and away from the ~1.3 W of electronics heat, as Sensirion recommends, and the RH/T offset is tuned at commissioning (FR-20).
 - Tool-less bay cover. The module unplugs at its own end, and its cable crosses into the electronics compartment through a sealed grommet (NFR-03, NFR-04).
-- Front face toward the room: display, encoder and buttons up top, the light bar along the bottom edge.
+- Front face toward the room: display, encoder and buttons, with a short light strip along one edge of the display (D-031).
 - The enclosure hangs from a cabinet bracket and comes off with one screw (`docs/interfaces.md` §5). Dimensions wait on Q-27.
 - No part of the controller is in the exhaust airstream (SR-02): it's outside the cabinet, ≥ 3 ft from the hood.
 
@@ -148,7 +148,7 @@ firmware/
 | FR-11 | Display model §8 | AC-08 |
 | FR-12, FR-13, IR-03 | HA entities (interfaces §4); `HassMessages` | AC-09 |
 | FR-14 | Host-side gas index, paused across Idle (D-017); VocValid gating | AC-10, AC-28 |
-| FR-15 | Indicator §8; light bar (§5) | AC-11 |
+| FR-15 | Indicator §8; light strip (§5) | AC-11 |
 | FR-18 | Tach and presence optos; `fan_tach`/`fan_port` faults | AC-07 |
 | FR-08 (override) | Auto press and new holds/scenes end Spray/SprayRunOn (control-logic §2, D-024) | AC-05 |
 | FR-19 | Vacant cap/limit §4; SprayRunOn vacant exit §2 | AC-27 |
@@ -178,8 +178,8 @@ These are **estimates from memory, not checked against distributors** (except th
 | Item | Est. USD |
 |------|---------:|
 | SEN65 (SEN66 is $62; SEN65 assumed lower) | 45 |
-| On-board parts per board: ESP32-S3 module 5, display module 11, encoder + knob 4, switches 2, LEDs + shifter 2, optos 4, power 5, connectors 2, passives/ESD 3 | 38 |
-| Second assembled board (JLC PCBA minimum quantity is 2; a spare; display module optional) | 38 |
+| On-board parts per board: ESP32-S3 module 5, display module 11, encoder + knob 4, switches 2, RGB LEDs + FETs 1, optos 4, power 5, connectors 2, passives/ESD 3 | 37 |
+| Second assembled board (JLC PCBA minimum quantity is 2; a spare; display module optional) | 37 |
 | PCB fab + PCBA fees (setup, stencil, extended-part fees) | 35 |
 | Enclosure, MJF PA12, two parts + bracket | 40 |
 | Gasket, heat-set inserts, screws, diffuser | 10 |
@@ -198,6 +198,7 @@ Under the $300 ceiling, but not "well below" it. Most of it is fixed overhead (P
 - Fan-side LDO input rating (≥ 16 V) and quiescent current.
 - ESP32-S3 GPIO reset states and boot glitches on the GPIOs chosen for `FAN_PWM` and `SEN_PWR_EN`; LEDC configured at duty 0 before the pin is routed.
 - Boot config: task watchdog panic on, RTC watchdog on; reset-reason handling for the RTC mode snapshot (D-027). On the board: BOOT (GPIO0) and EN tact switches or pads, EN RC per the Espressif hardware design guide (G2 review S-14).
+- Indicator: plain RGB LED part (JLC basic if possible), and an illuminated RGB EC11-class encoder (clear shaft) as an option, with a knob that passes the light (D-031).
 - Display module choice: 2.8" 240×320 **IPS confirmed from the panel datasheet, not the listing**, no touch layer; header pinout, backlight drive and current, mechanical outline (D-022).
 - JLC Economic PCBA rules (STATE action), opto/creepage footprints, and the antenna keep-out on the module footprint.
 - Wired DC input resistor values against the opto's CTR at 12 V DC and LED rating at 24 VAC + 10 % (`docs/interfaces.md` §2.3).

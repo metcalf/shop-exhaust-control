@@ -6,7 +6,7 @@
 
 ## Next actions
 1. **Andrew, G2:** approve `docs/architecture.md`, `docs/control-logic.md`, `docs/interfaces.md` and D-017…D-028 (D-019 enclosure form and D-023 fail-off interface are "needs Andrew"). Review: `reviews/G2-review.md`.
-2. **Claude, phase 3 order after G2 (D-029):** vendor check → schematic (ERC clean) → priced parts list for Andrew's review → then layout, mech, firmware. Fold in the hardware findings before the schematic: S-2 (worst-case fan-side current from datasheet maxima; needs Q-26), S-4 (isolation-domain table, every barrier crossing), S-5 (`DC_IN` resistor/CTR/pull-up at 12 VDC, 12 VAC, 26.4 VAC), S-13 (SEN65 back-powered through I²C with its rail off). S-14 and S-17 are done; S-1 accepted (D-028).
+2. **Claude, phase 3 order after G2 (D-029):** vendor check → schematic (ERC clean) → priced parts list for Andrew's review → then layout, mech, firmware. Fold in the hardware findings before the schematic: S-2 (worst-case fan-side current from datasheet maxima; needs Q-26), S-4 (isolation-domain table, every barrier crossing), S-5 (`DC_IN` resistor/CTR/pull-up at 12 VDC, 12 VAC, 26.4 VAC), S-13 is applied (D-031). S-14 and S-17 are done; S-1 accepted (D-028).
 3. **Claude, firmware backlog, handled at implementation rather than as doc revisions (process note 2026-10-28):** S-3 overspeed / tach at 0 %, S-6 frozen-sequence DC frames (record in D-021 when the DC project starts), S-7 SprayRunOn upper bound while occupied (FR-08 change, ask Andrew then), S-8, S-9, S-10, S-11, S-12, S-15, S-16 (MQTT keepalive ≤ 30 s; check `BaseMqttClient`).
 4. **Claude, with the schematic:** PCBA vendor comparison including JLCPCB Economic tier rules (Q-14, NFR-05) first, plus `docs/architecture.md` §9. Swap to basic parts where it's free (LTV-814 → PC817 + diode; 5→3.3 V buck → AMS1117; switched sensor rail → AMS1117 + AO3401) and check H11L1 SMD stock early.
 5. **Andrew:** Q-31 (2 kΩ loaded leakage check, before layout), Q-26 (port current, before schematic), Q-27 (mounting, before mech).
@@ -36,3 +36,4 @@
 - 2026-10-28: Display 2.0" → 2.8" 240×320 IPS, no touch (Andrew; D-022 amended). Power budget ≈ 1.5 W typical, cost ≈ $270.
 - 2026-10-28: Phase 3 reordered (D-029, Andrew): schematic and a priced parts list come before layout, mech and firmware.
 - 2026-10-28: Power: single external 5 V USB-C for power and flash/log, 3.3 V only, load-switched sensor rail; NFR-04 USB-C mouth exception (D-030, Andrew; supersedes D-020, amends D-018). Indicator count/drive under discussion.
+- 2026-10-28: Indicator plain RGB (3 FETs), short strip along a display edge, illuminated encoder as a sourcing option; SEN65 load switch kept for recovery, S-13 applied, `SEN_PWR_EN` polarity fixed (D-031).

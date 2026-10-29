@@ -270,6 +270,14 @@ Template:
 - Alternatives considered: 12 V barrel with an internal USB (D-018/D-020 as was: two regulators, lid-off flashing). A gasketed panel-mount USB-C pigtail (better seal, more parts and a cable inside).
 - Consequences: Fewer parts (no 12→5 V buck, no reverse-polarity FET, no barrel jack, no VBUS OR-ing), and flashing/logs without opening the lid. The input cable needs 24 AWG or heavier power conductors and ≤ 3 m. Running from a PC port during flashing means a lower indicator cap. No 12 V headroom for future loads.
 
+## D-031: Indicator: plain RGB, short strip by the display; sensor load switch kept for recovery
+- Date: 2026-10-28
+- Status: Accepted (Andrew)
+- Context: FR-15 needs one band color (or a red fault flash) readable down the shop; nothing needs per-LED effects. The 12-LED bar along the enclosure's bottom edge had no derivation behind its count. Separately: does the SEN65 need a power switch when sleep uses the module's Idle command?
+- Decision: Plain RGB LEDs driven by three LEDC PWM channels through low-side N-FETs from the 5 V input; no WS2812B or level shifter. A short diffused strip aligned with one edge of the display; length, diffuser depth and LED count are set in mech (~4–8 LEDs). An illuminated RGB encoder is evaluated in sourcing as an extra or alternative glow. The SEN65 load switch stays, for unattended recovery of a hung module only (a node reboot doesn't reset it); S-13's back-powering fixes are applied.
+- Alternatives considered: WS2812B bar (extended part plus shifter; effects not wanted). No sensor switch (two fewer parts; a hung sensor then needs a USB replug).
+- Consequences: GPIO 48/41/42 for R/G/B; one spare (GPIO 2) left. The LEDs and FETs are probably JLC basic parts, but each LED needs a resistor per color. `SEN_PWR_EN` is active low with a gate pull-up (the earlier "pull-down" was wrong for a P-FET).
+
 ---
 
 ## Gate approvals
