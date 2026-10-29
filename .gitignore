@@ -36,3 +36,10 @@ Thumbs.db
 # Python #
 ######################
 .venv/
+
+# KiCad
+.kicad-config/
+*-backups/
+fp-info-cache
+*.lck
+*.kicad_prl

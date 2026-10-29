@@ -294,6 +294,38 @@ Template:
 - Alternatives considered: Under the north cabinets ≥ 3 ft from the hood (D-015 as written; harder to reach).
 - Consequences: The enclosure becomes a flat wall mount, not a cabinet-hung unit (D-019's compartments stay; the slide-off bracket becomes a wall cleat). The kids' workbench below (glue, markers, hot glue) will show as local VOC/PM and can raise the fan; accepted unless AC-17 or commissioning shows it misleads clear-down. The panel is within the kids' reach at the bench; no lock (Andrew: they're old enough). Cable route from the fan cabinet down the panel edge, < 10 ft.
 
+## D-034: PCBA on JLCPCB Standard, single-sided
+- Date: 2026-10-28
+- Status: Accepted (Claude; reversible until the order). Andrew to confirm at the priced-parts review (Q-33)
+- Context: Q-21 aimed for JLC Economic PCBA. The vendor check (`sourcing/pcba-vendor.md`) found the ESP32-S3-WROOM-1-N16R8 (C2913202) listed as "Standard Only", so Economic can't place it.
+- Decision: JLCPCB Standard PCBA, all parts on the top side; JLC also places or wave-solders the THT parts. Estimated ≈ $150–180 for 5 boards, components included.
+- Alternatives considered: Economic without the module, which Andrew hotplate-reflows himself: saves ≈ $20 but adds a manual step on the most expensive part. Switching to an Economic-eligible module (C3-WROOM-02): loses PSRAM and GPIOs, so it would reopen D-022. PCBWay: quote-based, with setup ≈ $90–150 (unverified), so likely dearer.
+- Consequences: setup ≈ $26 plus $8 stencil, and $1.53 per unique part (Basic included). Using Basic passives keeps the parts list short.
+
+## D-035: Schematic as code (kiutils generator, label per pin)
+- Date: 2026-10-28
+- Status: Accepted (Claude; tooling, reversible). Implements D-010 under KiCad 10
+- Context: KiCad 10.0.7 is installed. kiutils 1.4.8 reads the KiCad 10 symbol libraries and writes schematics that kicad-cli 10 loads, ERC-checks and netlists (tested). kicad-cli hangs inside the Claude sandbox unless it has its own config dir.
+- Decision: `pcb/gen/build.py` generates `pcb/exhaust.kicad_sch` from stock KiCad symbols. Every pin gets a net label at its endpoint (no drawn wires). `pcb/gen/check.py` asserts the design properties on the exported netlist: isolation domains and crossings, fail-off pulls, GPIO plan, switched-rail pull-ups. `pcb/tools/kicad-cli` wraps the CLI with a repo-local, gitignored config dir seeded with the stock library tables. The generator stays the source until layout starts. After that, the `.kicad_sch` becomes the source (Andrew may edit it in the GUI), and check.py keeps running on it.
+- Alternatives considered: writing S-expressions from templates (more code, no gain); KiCad's IPC API (needs a running GUI).
+- Consequences: the sheet is label-heavy, unlike a hand-drawn schematic; text placement on rotated parts needs GUI touch-up. The netlist assertions catch injected faults (mutation-tested). Footprints are stock KiCad placeholders until checked against the LCSC drawings (pcb/design.md O-3).
+
+## D-036: 24 VAC and wired DC inputs: bridge + PC817C, one circuit for both
+- Date: 2026-10-28
+- Status: Accepted (Claude; schematic-level, reversible before layout). Resolves G2 review S-5; replaces the LTV-814 in interfaces §2.2–2.3 and D-031's "PC817 + antiparallel diode" swap
+- Context: the antiparallel-diode swap conducts on only one half-cycle, leaving gaps of ≥ 8 ms. S-5 showed that the old 10 k pull-up chatters at 12 VAC with minimum CTR.
+- Decision: J-OCC and J-DC share one circuit: SMBJ48CA → 2 × 2.7 k 1206 → MB10S bridge → PC817C-S (CTR 200–400 %), 47 k pull-up and 1 µF. Worst cases in `pcb/design.md` §3: ≥ 20× margin at 12 VDC − 10 %, 0.12 V ripple at 12 VAC − 10 %, 65 mW per resistor at 26.4 VAC.
+- Alternatives considered: LTV-814 AC-input opto (Extended, not stocked as cheaply); two PC817s with antiparallel LEDs (an extra opto per input).
+- Consequences: one fewer unique part type. J-OCC and J-DC stay interchangeable. 12–24 V AC/DC of either polarity works (IR-01).
+
+## D-037: 3.3 V from an SY8089 buck; VBUS sense on the spare GPIO
+- Date: 2026-10-28
+- Status: Accepted (Claude; reversible before layout). Fills D-030's "buck or LDO" choice
+- Context: a 5 → 3.3 V LDO dissipates ≈ 0.6 W at the 0.35 A typical load, which is too much for SOT-23-5 in a sealed box. D-030 left an optional CC read for the indicator cap.
+- Decision: SY8089AAAC (2 A) with a 2.2 µH inductor and 2 × 22 µF output. GPIO2 reads `+5V` through a 100 k / 100 k divider, and firmware lowers the indicator cap when the supply sags.
+- Alternatives considered: TLV757 LDO (thermal); reading CC1/CC2 (two ADC pins, and it doesn't see cable drop).
+- Consequences: no spare GPIO remains. Open item O-4: hot-plug overshoot against SY8089's 6 V abs max (maybe input bulk).
+
 ---
 
 ## Gate approvals

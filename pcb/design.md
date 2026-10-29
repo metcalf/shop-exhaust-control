@@ -1,0 +1,74 @@
+# Schematic design notes (v1)
+
+Source: `pcb/gen/build.py` → `pcb/exhaust.kicad_sch` (D-035). Checks: `pcb/gen/run.sh` (ERC, netlist assertions, SVG, raw BOM into `pcb/reports/`). Parts: `pcb/gen/parts.py`, sourced in `sourcing/*.md` (2026-10-28). Isolation: `pcb/SAFETY.md`.
+
+Datasheet figures below come from the sourcing notes. Where a value is assumed rather than read, it says so.
+
+## 1. Power (D-030, D-037)
+- J1 USB-C (HRO TYPE-C-31-M-12) → F1 polyfuse 1.5 A hold → `+5V`. Rd 5.1 kΩ on CC1 and CC2 (sink). D1 SMAJ5.0A on `+5V`. U2 USBLC6-2SC6 on D±. Shield goes straight to GND: the enclosure is plastic and there's no chassis.
+- **3.3 V: SY8089AAAC sync buck** (2 A, SOT-23-5), 2.2 µH (3.4 A Isat), 10 µF in, 2 × 22 µF out. FB 453 k / 100 k gives 0.6 × 5.53 = 3.32 V, with 22 pF feed-forward. Why not an LDO: at 0.35 A typical, an LDO dissipates ≈ 0.6 W, too much for SOT-23-5 in a sealed box (sourcing/power.md). Peak load ≈ 0.8 A at 3.3 V (module TX 360 mA + display 100 mA + SEN65 350 mA for 2 ms), within the 2 A rating.
+- `VBUS_SENSE` (GPIO2, ADC1): 100 k / 100 k divider from `+5V`, 100 nF. Reads 2.5 V at 5 V and draws 25 µA. Firmware lowers the indicator cap when `+5V` sags below ~4.6 V (a weak PC port). This replaces the CC-read option in D-030 and uses the last spare GPIO.
+- **Open (O-4):** SY8089's abs max is 6 V, but SMAJ5.0A clamps at ≈ 9.2 V. Ceramic-only input plus a 3 m cable can ring on hot-plug. The polyfuse (~0.1 Ω) damps some of it. Decide before layout whether to add 47–100 µF of polymer/electrolytic bulk on `+5V`.
+
+## 2. Fan interface, fan domain (SR-08, SR-09, D-023; G2 review S-2)
+Circuit as in `docs/interfaces.md` §2.1, with these parts: U4 HT7550-1 (Vin ≤ 30 V, Iq ≤ 3 µA), U5 H11L1S-TA1-L, Q1 2N7002 (gate driven to 5 V, where RDS(on) is specified), U6 and U7 PC817C-S, D5 1N4148W, three SMF15A on red, yellow and white to GND_F.
+
+**Fan-side current from red +10 V, datasheet maxima (S-2):**
+
+| Load | Max |
+|------|-----|
+| H11L1 ICC (on or off), 5 V | 1.3 mA |
+| Q1 gate pull-up 10 k (flows to GND_F via U5 when lit, or held at +5F) | 0.5 mA |
+| Tach LED, white low: (5.1 − 1.0 − 0.6) / 3.3 k (Vf min) | 1.1 mA |
+| White pull-up 10 k, white low | 0.5 mA |
+| Presence LED: (5.1 − 1.0) / 4.7 k | 0.9 mA |
+| HT7550 Iq, TVS leakage | < 0.01 mA |
+| **Total** | **≈ 4.3 mA**, against the ≤ 9 mA budget (Q-26: the port supplies ≈ 9.3 mA) |
+
+- PWM LED drive: (3.3 − 1.5) / 390 Ω ≥ 4.6 mA against H11L1 IF(on) max 1.6 mA: 2.9× margin. GPIO4 has a 10 k pull-down, so the LED stays dark through reset and boot, and the fan stays off (SR-08).
+- Tach and presence outputs: PC817C CTR ≥ 200 % at 5 mA. *Assumed:* CTR at ~1 mA is ≥ 50 % of that, so ≥ 100 %. That gives IC ≥ 0.85 mA against the 0.15 mA the 22 k pull-up needs: ≥ 5.7×, still ~3× after 50 % aging. Switching time with a 22 k load is ~100 µs order (not characterized), against a ≥ 3.3 ms tach half-period.
+- H11L1 propagation is ≤ 0.5 µs (Lite-On), < 0.3 % of the 200 µs PWM period.
+
+## 3. 24 VAC occupancy and wired DC inputs (FR-07, IR-01, D-025, D-036; G2 review S-5)
+J-OCC and J-DC use one identical circuit: SMBJ48CA across the terminals → 2 × 2.7 kΩ 1206 in series (5.4 k) → MB10S bridge → PC817C-S LED. The output has a 47 k pull-up to 3.3 V and 1 µF to GND. A bridge, not an antiparallel diode (D-036): half-wave conduction leaves ≥ 8 ms gaps per cycle, which the RC would have to bridge.
+
+Path drop, worst case: LED 1.4 V + two bridge diodes ≈ 1.8 V, so ≈ 3.2 V. The pull-up needs 3.3 V / 47 k = 70 µA.
+
+| Case | Result |
+|------|--------|
+| 12 VDC − 10 % (10.8 V) | IF ≥ (10.8 − 3.2) / 5.4 k = 1.4 mA. With CTR ≥ 100 % (assumed, as §2), IC ≥ 1.4 mA, 20× the 70 µA needed |
+| 12 VAC − 10 % (15.3 V pk) | Conducts usefully (IF ≥ 0.3 mA) above 4.8 V, i.e. above 18° of each half-cycle. Gap ≈ 1.7 ms per half-cycle; RC τ = 47 ms, so the output rises ≈ 3.3 × 1.7 / 47 = 0.12 V, well below VIL (0.83 V). No chatter |
+| 24 VAC + 10 % (26.4 V, 37.3 V pk) | IF pk 6.5 mA (PC817 max 50 mA). P ≈ 26.4² / 5.4 k ≈ 0.13 W total, 65 mW per 1206 (rated 0.25 W) |
+| Lightly loaded Class 2 secondary, 29 VAC / 41 V pk | IF pk 7.1 mA, 0.155 W total. TVS standoff 48 V > 41 V |
+| 26.4 VDC either polarity | 4.4 mA, 0.105 W. The bridge makes polarity irrelevant |
+| Assert / release | Assert: the opto discharges 1 µF at ≥ 1.4 mA, ≈ 2 ms. Release: rises to VIH (2.48 V) in −τ ln 0.25 ≈ 65 ms. Both are well inside the 0.5 s debounce (C-20 / C-31) |
+| Open input | LED dark, pulled high: reads not asserted |
+
+## 4. SEN65 rail (D-031, S-13)
+- Q2 AO3401A high-side (RDS(on) ≤ 85 mΩ at −2.5 V: 30 mV at a 350 mA peak). Gate: 100 k pull-up to +3V3 keeps the rail off through boot; 10 k series from GPIO10; **100 nF gate-source soft start**. Without it, the rail's 10 µF charge-shares with the 44 µF buck output and dips +3V3 by ≈ 0.6 V, near brownout. With a ~1 ms ramp, inrush ≈ 10 µF × 3.3 V / 1 ms ≈ 33 mA.
+- 10 µF + 100 nF on `+3V3_SEN`. A 10 k bleed takes the rail below 0.3 V in ≈ 0.25 s (τ = 0.1 s) and costs 0.33 mA while on. I²C pull-ups (10 k) go to `+3V3_SEN` only (S-13; check.py asserts it).
+- **Open (O-1):** J5 pinout. Pins 1/6 are VDD and 2/5 GND (sourcing/ui-connectors.md); pins 3 = SDA and 4 = SCL are **assumed** pending the SEN6x datasheet (`sourcing/off-board.md`).
+
+## 5. MCU, boot and recovery (G2 review S-14)
+- EN: 10 k to 3V3 and 1 µF to GND (Espressif HW design guide RC), EN tact switch. GPIO0: 10 k pull-up and BOOT tact switch. Test pads for 3V3, 5V, GND, TXD0, RXD0, EN and BOOT (UART0 rescue).
+- Strapping: GPIO3, 45 and 46 are not connected, so the internal defaults apply. With GPIO45 low, VDD_SPI is 3.3 V, which is right for the N16R8's 3.3 V flash and PSRAM. GPIO35–37 (octal PSRAM) are not connected. check.py asserts all of these.
+- Reset states: FAN_PWM has a 10 k pull-down (LED dark, fan off). SEN_PWR_EN and DISP_BL have 100 k gate pull-ups (off). IND_R/G/B have 100 k gate pull-downs (dark). So nothing turns on before firmware does.
+- Firmware backlog (not hardware): TWDT panic, RTC WDT, LEDC duty 0 before routing the pin.
+- **Open (O-6):** confirm that GPIO47/48 run at 3.3 V on the N16R8 (VDD_SPI domain question).
+
+## 6. Indicator (D-031, FR-15)
+Six C601699 3528 common-anode RGB LEDs on `+5V`, one resistor per colour per LED, and three AO3400A low-side switches (a 2N7002 isn't specified at a 3.3 V gate; AO3400A is). Red 200 Ω: (5 − 2.0) / 200 = 15 mA. Green and blue 120 Ω: (5 − 3.0) / 120 = 16.7 mA, or 13 mA at Vf 3.4 V. All six full white ≈ 290 mA, so the 300 mA firmware cap is barely binding. Green is ~3× brighter, so colour balance happens in PWM. The count of 6 is provisional: mech sets it (D-031).
+
+## 7. Display and controls
+- J6: 1×8 socket. The pinout (VCC, GND, CS, RST, DC, MOSI, SCK, LED) is **tentative** until the module is chosen (O-2, `sourcing/off-board.md`). The backlight is high-side switched from 3.3 V by an AO3401A on GPIO47 (low = on). That works whether the module's LED pin feeds the LEDs directly or a transistor.
+- Encoder (Alps EC11E18244A5) and 4 × 6×6 mm, 9.5 mm-tall tact switches: 10 k pull-up and 10 nF at each pin (τ = 0.1 ms); debounce in firmware and PCNT filter.
+
+## 8. Open items before layout
+| ID | Item |
+|----|------|
+| O-1 | SEN6x connector SDA/SCL pins (datasheet) |
+| O-2 | Display module choice: header pinout, backlight circuit and current, outline |
+| O-3 | Footprints against the LCSC drawings. Stock KiCad footprints are placeholders: H11L1S/PC817C-S lead span (SMDIP W9.53), MB10S (MBS vs the MBLS footprint used), 3528 RGB pin map against the LED_ARGB symbol numbering, 5.1 mm tact, KF128L and XY350V terminals (the Phoenix PT footprint used differs), GH header, HRO USB-C pin map. Use `easyeda2kicad` footprints where they exist |
+| O-4 | VBUS hot-plug overshoot against SY8089's 6 V abs max (§1) |
+| O-5 | Opto package creepage. Pad-to-pad across the 9.53 mm gull-wing span is ≈ 7 mm, which comfortably exceeds the 3 mm basic barrier (D-028). Confirm from the drawings |
+| O-6 | GPIO47/48 voltage on the N16R8 |

@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# kicad-cli with a repo-local config dir (gitignored). Without its own config dir
+# kicad-cli hangs inside the Claude Code sandbox; this also pins the library tables
+# to the stock KiCad 10 libraries so ERC/netlist results don't depend on a GUI setup.
+set -euo pipefail
+ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
+APP=/Applications/KiCad/KiCad.app/Contents
+CFG="$ROOT/.kicad-config"
+if [ ! -f "$CFG/10.0/sym-lib-table" ]; then
+  mkdir -p "$CFG/10.0" "$CFG/docs"
+  cp "$APP/SharedSupport/template/sym-lib-table" "$APP/SharedSupport/template/fp-lib-table" "$CFG/10.0/"
+fi
+export KICAD_CONFIG_HOME="$CFG" KICAD_DOCUMENTS_HOME="$CFG/docs"
+exec "$APP/MacOS/kicad-cli" "$@"
