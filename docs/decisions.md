@@ -204,7 +204,7 @@ Template:
 
 ## D-023: Fan-powered, fail-off isolated fan interface
 - Date: 2026-10-25
-- Status: Proposed — needs Andrew (depends on the port supplying ≈ 5–8 mA, Q-26)
+- Status: Proposed — needs Andrew. Q-26 answered: the stock controller draws ≈ 9.3 mA from the port, so the ≤ 9 mA budget is within demonstrated capacity
 - Context: SR-08 requires the fan to be off with the node unpowered, with the hold-off powered from the fan side. SR-09 requires isolation. FR-18 needs the tach.
 - Decision: A fan-side N-MOSFET holds the speed line low by default (gate pulled up from a 5 V LDO on the fan's +10 V). A Schmitt-output opto driven by the node's PWM releases it, so the LED-on fraction is the fan duty. Two more optos carry the tach and a fan-present signal back. ≥ 3 mm barrier (`docs/interfaces.md` §2.1).
 - Alternatives considered: An isolated DC-DC powering the fan side from the node (fails on, since the hold-off dies with node power). A relay on the speed line (slow; can't PWM at 5 kHz). A digital isolator (needs a few mA on both sides, no better than the opto here).
@@ -248,7 +248,7 @@ Template:
 
 ## D-028: Fan port treated as SELV on measured evidence; basic barrier kept; power-up burst accepted
 - Date: 2026-10-28
-- Status: Accepted (Andrew, Q-22/Q-30 measurements, S-1), pending Q-31's loaded check. Resolves G2 review B-2; closes S-1
+- Status: Accepted (Andrew, Q-22/Q-30 measurements, S-1), confirmed by Q-31 (≈ 60 µA into 10 kΩ, under the 0.5 mA ES1 limit). Resolves G2 review B-2; closes S-1
 - Context: B-2: the barrier is basic insulation while the port's SELV status was unknown, and lid-off flashing and AC-18's scope touch the fan side. S-1: when fan mains returns with the node off, the speed line can read high before the LDO-fed hold-off is up.
 - Decision: Unplugged, port GND is open to L, N and earth (resistance and diode). Plugged in, ~65 VAC open-circuit to N/earth, which is consistent with Y-capacitor coupling from an isolated supply into a 10 MΩ meter. On that evidence the port is treated as SELV. The ≥ 3 mm basic barrier is kept for the ground loop and the capacitive float, with no fan-side cover or "unplug before service" rule. S-1's fan power-up burst is accepted (Andrew), so the LDO-fed hold-off stays.
 - Alternatives considered: Reinforced barrier and fan-side cover regardless (unnecessary if Q-31 confirms). Feed Q1/U1 from +10 V to close S-1 (stays an option if Q-26 shows the port current is tight, since it also cuts the draw).
@@ -285,6 +285,14 @@ Template:
 - Decision: Fixed 3.5 mm screw terminals (one part, 2- and 4-position) for J-FAN, J-OCC and J-DC, inside the sealed compartment behind the cable glands.
 - Alternatives considered: Pluggable terminals (a bench swap without re-terminating; ~$1–2 more and a mis-plug question). Pluggable headers through the rear wall (lid-closed removal, but another sealing gap).
 - Consequences: Taking the unit down means lid off and unscrewing the conductors. The J-OCC/J-DC mis-plug question and the pitch-keying go away. One terminal part family for the BOM.
+
+## D-033: Controller on the refrigerator side panel next to the hood
+- Date: 2026-10-29
+- Status: Proposed — needs Andrew (amends D-015's spot and relaxes approved NFR-09; Q-32 has the measurements)
+- Context: Andrew proposes the side of the refrigerator panel beside the hood (`docs/site/mounting location option - next to intake.jpg`): within reach, near the airflow, still visible from most of the shop. NFR-09 wants the sensor inlet ≥ 3 ft from the hood's edge; the panel looks closer.
+- Decision: Wall-mount on the panel's front half (toward the room), panel at standing height, sensor bay below with its inlet facing the room, indicator on the room-facing edge so it reads down the shop. NFR-09's distance becomes "as far from the hood as the panel allows", validated by AC-17.
+- Alternatives considered: Under the north cabinets ≥ 3 ft from the hood (D-015 as written; harder to reach).
+- Consequences: The enclosure becomes a flat wall mount, not a cabinet-hung unit (D-019's compartments stay; the slide-off bracket becomes a wall cleat). Local sources at the bench below (soldering) will read high before the hood clears them, which raises the fan; accepted unless AC-17 or commissioning shows it misleads clear-down. Cable route from the fan cabinet down the panel edge, < 10 ft.
 
 ---
 
