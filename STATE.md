@@ -8,7 +8,7 @@
 1. **Andrew, G2:** approve `docs/architecture.md`, `docs/control-logic.md`, `docs/interfaces.md` and D-017…D-028 (D-019 enclosure form and D-023 fail-off interface are "needs Andrew"). Review: `reviews/G2-review.md`.
 2. **Claude, phase 3 order after G2 (D-029):** vendor check → schematic (ERC clean) → priced parts list for Andrew's review → then layout, mech, firmware. Fold in the hardware findings before the schematic: S-2 (worst-case fan-side current from datasheet maxima; needs Q-26), S-4 (isolation-domain table, every barrier crossing), S-5 (`DC_IN` resistor/CTR/pull-up at 12 VDC, 12 VAC, 26.4 VAC), S-13 is applied (D-031). S-14 and S-17 are done; S-1 accepted (D-028).
 3. **Claude, firmware backlog, handled at implementation rather than as doc revisions (process note 2026-10-28):** S-3 overspeed / tach at 0 %, S-6 frozen-sequence DC frames (record in D-021 when the DC project starts), S-7 SprayRunOn upper bound while occupied (FR-08 change, ask Andrew then), S-8, S-9, S-10, S-11, S-12, S-15, S-16 (MQTT keepalive ≤ 30 s; check `BaseMqttClient`).
-4. **Claude, with the schematic:** PCBA vendor comparison including JLCPCB Economic tier rules (Q-14, NFR-05) first, plus `docs/architecture.md` §9. Swap to basic parts where it's free (LTV-814 → PC817 + diode; 5→3.3 V buck → AMS1117; switched sensor rail → AMS1117 + AO3401) and check H11L1 SMD stock early.
+4. **Claude, with the schematic:** PCBA vendor comparison including JLCPCB Economic tier rules (Q-14, NFR-05) first, plus `docs/architecture.md` §9. Check the claim that JLC Economic reflow is too hot for ESP32 modules (`sourcing/fan-pwm-thread.md`). H11L1 stays unless the priced list shows a significant saving from PC817 at ~1 kHz. Swap to basic parts where it's free (LTV-814 → PC817 + diode; 5→3.3 V buck → AMS1117; switched sensor rail → AMS1117 + AO3401) and check H11L1 SMD stock early.
 5. **Andrew:** Q-31 (2 kΩ loaded leakage check, before layout), Q-26 (port current, before schematic), Q-27 (mounting, before mech).
 
 ## Blockers
@@ -38,3 +38,4 @@
 - 2026-10-28: Power: single external 5 V USB-C for power and flash/log, 3.3 V only, load-switched sensor rail; NFR-04 USB-C mouth exception (D-030, Andrew; supersedes D-020, amends D-018). Indicator count/drive under discussion.
 - 2026-10-28: Indicator plain RGB (3 FETs), short strip along a display edge, no illuminated encoder; SEN65 load switch kept for recovery, S-13 applied, `SEN_PWR_EN` polarity fixed (D-031).
 - 2026-10-28: Field wiring on fixed 3.5 mm screw terminals, not pluggable (D-032, Andrew).
+- 2026-10-28: Read the rollitup Cloudline/ESP32 thread: PC817 at 1 kHz isn't validated there; H11L1 at 5 kHz stays unless cost says otherwise (`sourcing/fan-pwm-thread.md`).
