@@ -164,7 +164,7 @@ Template:
 
 ## D-018: No mains in the design; listed 12 V adapter
 - Date: 2026-10-25
-- Status: Proposed (G2)
+- Status: Proposed (G2). **Adapter and on-board supply amended by D-030** (5 V USB-C); "no mains" stands
 - Context: CLAUDE.md leaves on- or off-board mains to architecture. The fan is switched off through its control port (Q-15, D-013), so there's no relay or contactor to host. Q-18 (a) prefers no mains in the printed enclosure.
 - Decision: No mains on the PCB or in the enclosure. A UL-listed 12 V / ≥ 1 A Class 2 adapter plugs into the always-on cabinet receptacle and feeds a barrel jack. On board: fuse, reverse-polarity FET, TVS, 12→5 V buck, 5→3.3 V buck, plus a switched 5→3.3 V LDO for the SEN65.
 - Alternatives considered: 5 V USB-C adapter (cheaper by one buck, but ~0.3 V drop over 10 ft at peak, and a second external USB-C next to the fan's USB-C port invites mis-plugging; see D-020). On-board mains supply (saves the adapter, but brings SR-01a, `pcb/SAFETY.md` and a flame-rated enclosure for no functional gain).
@@ -180,7 +180,7 @@ Template:
 
 ## D-020: Flashing USB is internal; the fan port is the only external USB-C
 - Date: 2026-10-25
-- Status: Proposed (G2). **Amended by D-026:** the fan now lands on terminals, so there's no external USB-C at all. The flashing port stays internal for the sealed compartment (NFR-04), not for mis-plug protection
+- Status: **Superseded by D-030** (USB-C is now external, as the power input and flash/log port). Earlier amended by D-026
 - Context: The S6 control cable is USB-C (stock controller J1). If the fan cable went into a node USB port, the fan's +10 V and GND would land on non-isolated node pins, bypassing SR-09.
 - Decision: The ESP32-S3 native USB-C is inside the electronics compartment, reachable only with the lid off. OTA is the normal update path (NFR-11). Power comes in on a barrel jack (D-018).
 - Alternatives considered: External flashing port with a label (relies on the label). A non-USB connector for the fan (needs a custom or cut fan cable).
@@ -261,6 +261,14 @@ Template:
 - Decision: After G2, phase 3 runs in this order: (1) PCBA vendor check (JLC Economic rules, Q-14); (2) KiCad schematic, ERC clean; (3) priced parts list from the schematic: LCSC basic/preferred/extended status, stock, price, fees, plus off-board parts; Andrew reviews it as a checkpoint; (4) only then PCB layout, mech and firmware. G4 still approves the final BOM.
 - Alternatives considered: phase order as in CLAUDE.md (design everything, then source).
 - Consequences: Part swaps to cut extended-part fees (e.g. LTV-814 → PC817 + diode, 5→3.3 V buck → AMS1117, enabled LDO → AMS1117 + AO3401) are made in the schematic, not after layout. The firmware host-test work also waits; it doesn't depend on hardware, but Andrew wants the cost picture first.
+
+## D-030: Single external USB-C for power and flash/log; 3.3 V only
+- Date: 2026-10-28
+- Status: Accepted (Andrew). Amends D-018 (adapter, on-board supply) and NFR-04; supersedes D-020
+- Context: Nothing on the node needs 5 V except the indicator LEDs, which can run from a 5 V input directly. D-018's two reasons for 12 V were the mis-plug risk next to a USB-C fan cable (gone with D-026) and cable drop into a 5 V rail (moot once everything regulates to 3.3 V).
+- Decision: Power comes from a listed 5 V USB-C adapter (≥ 2 A) through the node's only external USB-C, which is also the native-USB flash/log port. On board: polyfuse, TVS, one 5→3.3 V regulator (buck or low-dropout LDO, picked in the schematic), and a P-FET load-switched 3.3 V sensor rail. The receptacle sits behind a compressed foam gasket in the wall, facing the cabinet; its mouth is an accepted NFR-04 exception (Andrew: reduced IP5X intent is OK if sealing adds complexity).
+- Alternatives considered: 12 V barrel with an internal USB (D-018/D-020 as was: two regulators, lid-off flashing). A gasketed panel-mount USB-C pigtail (better seal, more parts and a cable inside).
+- Consequences: Fewer parts (no 12→5 V buck, no reverse-polarity FET, no barrel jack, no VBUS OR-ing), and flashing/logs without opening the lid. The input cable needs 24 AWG or heavier power conductors and ≤ 3 m. Running from a PC port during flashing means a lower indicator cap. No 12 V headroom for future loads.
 
 ---
 

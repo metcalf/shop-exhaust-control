@@ -12,7 +12,7 @@ flowchart LR
     REC["Always-on 120 V receptacle (IR-05)"]
     S6["AC Infinity S6 fan<br/>UIS port: +10 V, GND, speed, tach"]
     XFMR["24 VAC lighting transformer<br/>(switches with Lutron lights)"]
-    PSU["Listed 12 V / ≥1 A adapter (D-018)"]
+    PSU["Listed 5 V USB-C adapter, ≥2 A (D-030)"]
     REC --- S6
     REC --- PSU
   end
@@ -25,10 +25,10 @@ flowchart LR
       BAR1{{"≥3 mm barrier, optos"}}
       subgraph NODE["Node side (GND, 12/5/3.3 V)"]
         MCU["ESP32-S3-WROOM-1-N16R8<br/>Wi-Fi + BLE (D-022)"]
-        PWR["Fuse, RP-FET, TVS<br/>12→5 V buck, 5→3.3 V buck,<br/>5→3.3 V LDO (sensor, switched)"]
+        PWR["Polyfuse, TVS<br/>5→3.3 V regulator,<br/>load switch (sensor)"]
         PANEL["2.8&quot; IPS display (no touch), EC11 encoder,<br/>4 buttons"]
         LEDS["12× WS2812B → light bar"]
-        USB["USB-C, internal only (D-020)"]
+        USB["USB-C: power in + flash/log,<br/>external (D-030)"]
       end
       OCC_IF["24 VAC input: TVS, R, AC opto"]
       DC_IF["Wired DC_RUNNING backup: TVS, R, AC opto"]
@@ -44,7 +44,7 @@ flowchart LR
   S6 <== "4-wire fan cable, hard-wired to terminals, ≤10 ft" ==> FAN_IF
   FAN_IF -.- BAR1 -.- MCU
   XFMR -- "2-wire 24 VAC" --> OCC_IF -.-> MCU
-  PSU -- "12 V barrel" --> PWR --> MCU
+  PSU -- "USB-C cable ≤3 m" --> USB --> PWR --> MCU
   SEN -- "I²C <10 cm, sealed grommet" --- MCU
   MCU --- PANEL
   MCU --> LEDS
@@ -71,10 +71,10 @@ flowchart LR
 - **Fan interface:** `docs/interfaces.md` §2.1. Three optos cross the barrier (speed, tach, presence). The fan side is powered by the fan's +10 V, so the default (unlit LED) state is fan off.
 - **Occupancy:** AC-input opto from 24 VAC (`docs/interfaces.md` §2.2).
 - **Wired DC backup:** the same AC-input opto circuit, accepting 12–24 V AC/DC (`docs/interfaces.md` §2.3, D-025).
-- **Power:** 12 V in, two bucks and a switched sensor LDO (`docs/interfaces.md` §3). Peak ≈ 5 W, typical ≈ 1.5 W.
+- **Power:** 5 V USB-C in (also the flash/log port), one 5→3.3 V regulator and a load-switched sensor rail (`docs/interfaces.md` §3, D-030). Peak ≈ 5.5 W for milliseconds, typical ≈ 1.7 W.
 - **Panel:** display module on a header; encoder and tact switches mounted on the PCB front, behind the bezel. Board-edge LEDs feed the light bar.
-- **PCBA (NFR-05):** SMT on one side from JLC basic/preferred parts where possible. Through-hole (barrel jack, terminal block, display header, encoder) is hand-soldered or done as a THT add-on. The tier rules are checked in the phase 3 vendor research.
-- **Off-board wiring:** fan cable hard-wired into a 4-pos terminal (D-026), 2-conductor thermostat wire to the 24 VAC terminals, optional 2-conductor DC backup, 12 V barrel. WireViz drawing in `electrical/` in phase 3 (D-010).
+- **PCBA (NFR-05):** SMT on one side from JLC basic/preferred parts where possible. Through-hole (terminal blocks, display header, encoder) is hand-soldered or done as a THT add-on. The tier rules are checked in the phase 3 vendor research.
+- **Off-board wiring:** fan cable hard-wired into a 4-pos terminal (D-026), 2-conductor thermostat wire to the 24 VAC terminals, optional 2-conductor DC backup, USB-C cable for power. WireViz drawing in `electrical/` in phase 3 (D-010).
 
 ## 4. Firmware (ESP-IDF, C++)
 
@@ -130,7 +130,7 @@ firmware/
 | Spoofed BLE frame | False boost only | Accepted risk; allow-list option | `interfaces.md` §1 |
 | 24 VAC input lost | Reads vacant | Trusted signal, no handling (Q-17); display shows Vacant | FR-07 |
 | Fan-port mains fault (port not SELV) | Hazard on fan-side circuits | ≥ 3 mm barrier, rated optos; nothing fan-side is touchable; flashing USB is on the node side | SR-09, AC-26 |
-| Fan wires mis-terminated at J-FAN | Fan won't run, or runs full; fan-side parts stressed | Color-coded terminal labels; TVS on each fan-side line; AC-18 bench check before install. No USB-C fan cable reaches the node, so it can't meet the flashing port (D-020, D-026) | SR-09, AC-18 |
+| Fan wires mis-terminated at J-FAN | Fan won't run, or runs full; fan-side parts stressed | Color-coded terminal labels; TVS on each fan-side line; AC-18 bench check before install. No USB-C fan cable reaches the node, so it can't meet the USB port (D-026, D-030) | SR-09, AC-18 |
 | Adapter fault | Node dead → fan off | Listed adapter, input fuse, TVS | SR-01, SR-08 |
 
 ## 7. Traceability (M and S requirements)
@@ -160,12 +160,12 @@ firmware/
 | NFR-07, SR-08 | Fan-powered fail-off; boot to Auto | AC-18 |
 | NFR-08 | Cost estimate (§8) | AC-24 |
 | NFR-09 | Location, inlet orientation (interfaces §5) | AC-17 |
-| NFR-11 | esp-iot-core OTA; internal USB | AC-19 |
+| NFR-11 | esp-iot-core OTA; external USB-C flash/log port (D-030) | AC-19 |
 | SR-01, SR-01a, SR-07 | No mains in the design; listed adapter (D-018) | AC-21 |
 | SR-02 | Enclosure outside the cabinet and airstream | AC-15 |
 | SR-04 | Fault table and fallback (control-logic §6, §4) | AC-20 |
 | SR-05, SR-06 | Statements here, in the README and on the panel's About page | AC-25 |
-| SR-09 | Barrier, optos, internal USB (D-020) | AC-26 |
+| SR-09 | Barrier, optos; USB on the node side only (D-030) | AC-26 |
 | IR-01, IR-02 | BLE payload v1.0 (interfaces §1.1); wired backup input (§2.3, D-025) | AC-22, AC-06 |
 | IR-04, IR-05 | Three short LV cables; always-on receptacle | AC-23 |
 
@@ -183,7 +183,7 @@ These are **estimates from memory, not checked against distributors** (except th
 | PCB fab + PCBA fees (setup, stencil, extended-part fees) | 35 |
 | Enclosure, MJF PA12, two parts + bracket | 40 |
 | Gasket, heat-set inserts, screws, diffuser | 10 |
-| 12 V listed adapter + barrel extension | 15 |
+| 5 V USB-C listed adapter (≥ 2 A) + 3 m USB-C data cable | 15 |
 | 4-conductor extension for the fan cable if needed, and 18/2 thermostat wire for occupancy (and the DC backup) | 15 |
 | Shipping and duties (PCBA and print in one JLC order) | 35 |
 | **Total** | **≈ 270** (range ≈ 230–300) |
@@ -193,6 +193,7 @@ Under the $300 ceiling, but not "well below" it. Most of it is fixed overhead (P
 ## 9. To verify in phase 3 (not blocking G2)
 
 - SEN6x datasheet: raw VOC command and its scaling (D-017), algorithm-state backup/restore as the fallback, device-status bits, manual fan-clean command, connector part and pinout.
+- USB-C receptacle (16-pin, JLC-stocked, shell suits the gasket), 5→3.3 V regulator choice (buck vs LDO), VBUS TVS, optional CC-advertisement read for the indicator cap (D-030).
 - H11L1-class opto: inverting output polarity, VCC 5 V supply current, propagation delay; a JLC-stocked part with VDE 0884 / IEC 60747-5-5.
 - Fan-side LDO input rating (≥ 16 V) and quiescent current.
 - ESP32-S3 GPIO reset states and boot glitches on the GPIOs chosen for `FAN_PWM` and `SEN_PWR_EN`; LEDC configured at duty 0 before the pin is routed.

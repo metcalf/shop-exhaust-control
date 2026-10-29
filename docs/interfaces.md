@@ -53,14 +53,13 @@ GPIOs assume an ESP32-S3-WROOM-1-N16R8 (D-022): GPIO 0/3/45/46 (strapping), 19/2
 | `OCC_IN` | In | AC-input opto, RC-filtered | 3.3 V, low = 24 VAC present | J-OCC (2-pos pluggable terminal, 3.5 mm) | 7 | Rectifier-less bidirectional-LED opto; MOV/TVS across the input. Firmware debounce C-20 |
 | `DC_IN` | In | AC-input opto, RC-filtered (§2.3) | 3.3 V, low = asserted | J-DC (2-pos pluggable terminal, 5.0 mm) | 1 | Wired `DC_RUNNING` backup (D-025). Firmware debounce C-31 |
 | SEN65 I²C SDA / SCL | Bidir | I²C 100 kHz, 10 kΩ pull-ups | 3.3 V (sensor rail) | J-SEN (module's 6-pin cable; connector verified in phase 3) | 8 / 9 | Run < 10 cm (sensor bay directly below the board) |
-| `SEN_PWR_EN` | Out | LDO enable for the sensor rail | 3.3 V | — | 10 | Lets firmware power-cycle the module to recover a fault (SR-04). Pull-down: rail off during boot until firmware enables |
+| `SEN_PWR_EN` | Out | Load-switch enable for the sensor rail (AO3401-class P-FET) | 3.3 V | — | 10 | Lets firmware power-cycle the module to recover a fault (SR-04). Pull-down: rail off during boot until firmware enables |
 | Display SPI SCLK / MOSI / CS / DC / RST | Out | SPI 40 MHz | 3.3 V | J-DISP (8-pin 0.1" header, module) | 12 / 11 / 13 / 14 / 21 | 2.8" 240×320 IPS, ST7789/ILI9341-class module, no touch (D-022) |
 | Display backlight | Out | PWM to N-FET | 3.3 V | J-DISP | 47 | Dim when vacant; off after C-21 vacant |
 | Encoder A / B / push | In | Quadrature + push, RC debounce 10 kΩ/10 nF | 3.3 V | on board (EC11-class) | 15 / 16 / 17 | PCNT for quadrature |
 | Buttons 1–4 | In | Momentary tact, RC debounce | 3.3 V | on board | 18 / 38 / 39 / 40 | Assignments are config (initially Auto, Quiet, Boost, spare) (D-009) |
-| Indicator data | Out | WS2812B-class, via 74AHCT1G125 | 5 V | on board (12 LEDs, board edge) | 48 | RMT `led_strip`. Firmware caps total LED current at 300 mA |
-| USB (flash/debug) | Bidir | ESP32-S3 native USB | 5 V VBUS | J-USB (USB-C, **internal only**, lid off) | 19 / 20 | D-020. VBUS joins the 5 V rail through a Schottky; ESD array on D±/CC |
-| Power in | In | 12 V DC | 12 V nominal, 9–15 V accepted | J-PWR (5.5 × 2.1 mm barrel, centre +) | — | Fuse, reverse-polarity P-FET, TVS. Listed external adapter (D-018) |
+| Indicator data | Out | WS2812B-class, via 74AHCT1G125 (indicator drive under review: count and addressable vs plain RGB) | 5 V (USB input) | on board (12 LEDs, board edge) | 48 | RMT `led_strip`. Firmware caps total LED current at 300 mA |
+| USB: power in + flash/log | Bidir | ESP32-S3 native USB (USB-Serial-JTAG), 5 V VBUS | 5 V nominal, ≥ 4.4 V at the board under peak load | J-USB (USB-C receptacle, 16-pin, **external**, gasketed opening) | 19 / 20 | D-030. The only power input. 5.1 kΩ Rd on CC1/CC2; ESD array on D± and CC; polyfuse and TVS on VBUS |
 | Spare | — | — | — | test pads | 2, 41, 42 | Reserved (e.g. a second I²C sensor) |
 
 **S6 control port (UIS), measured by Andrew 2026-10-25 (Q-15):** black = GND, red = +10 V from the fan (low current), yellow = speed (fan pulls up via 2.2 kΩ; the controller pulls it low; 5 kHz PWM, high-time duty = speed; 20/46/100 % at levels 1/4/10), white = tach (50 % square, ~30/75/144 Hz at levels 1/4/10; stock controller pulls it up 10 kΩ to its 5 V). Unplugged = full speed. The fan end of the cable is USB-C (stock controller J1 is a USB-C receptacle, `docs/site/ac infinity controller pcb.jpg`), but the node doesn't use USB-C: Andrew hard-wires the four conductors into J-FAN by color (Q-25, D-026), so the USB-C contact map isn't needed. J-FAN is labelled `GND (BLK) / +10V (RED) / SPD (YEL) / TACH (WHT)`. Fan GND vs. mains (Q-22, Q-30): unplugged, open to L, N and earth on resistance and diode checks; plugged in, ~65 VAC open-circuit to N/earth, which looks like Y-capacitor coupling from an isolated supply. Q-31 confirms it with a loaded measurement (SR-09, D-028).
@@ -109,8 +108,8 @@ The same circuit as §2.2, with the series resistance sized so 12 V DC still lig
 ## 3. Power (D-018)
 
 - **Mains:** none in the custom enclosure or on the PCB (SR-01, Q-18 (a)). The fan and the node's adapter both plug into the always-on receptacle in the fan cabinet (IR-05, D-013). SR-01a is not triggered.
-- **Adapter:** UL-listed 12 V DC wall adapter, ≥ 1 A (12 W), Class 2 / LPS, 5.5 × 2.1 mm centre-positive plug; cord or a listed barrel extension reaches the controller (≤ 10 ft, IR-04).
-- **On board:** input fuse (1.5 A) → reverse-polarity P-FET → TVS (15 V) → 12 V→5 V sync buck (≥ 2 A) → (a) 5 V→3.3 V sync buck (≥ 1 A) for the ESP32, display and logic; (b) 5 V→3.3 V LDO (≥ 500 mA, enable-switched) for the SEN65 only, so its 350 mA / 2 ms peaks stay off the MCU rail and the module can be power-cycled; (c) 5 V to the indicator LEDs.
+- **Adapter (D-030):** UL-listed 5 V USB-C wall adapter, ≥ 2 A, LPS. USB-C cable ≤ 3 m (IR-04's ≤ 10 ft), with USB 2.0 data and 24 AWG or heavier power conductors (≈ 0.5 V round-trip drop at the 1.1 A worst-case peak on 24 AWG). For flashing or wired logs, swap the adapter for a PC on the same cable; remote logging over Wi-Fi is the normal path.
+- **On board:** J-USB → polyfuse (1.5 A) → TVS (5 V standoff) → 5 V input rail. (a) 5 V → 3.3 V regulator, ≥ 1 A, for the ESP32, display, logic and sensor: a small sync buck or a low-dropout LDO (≤ 0.4 V dropout at 1 A; not AMS1117), chosen in the schematic from JLC stock. (b) AO3401-class P-FET load switch plus an LC/bulk filter from 3.3 V to the SEN65, so its 350 mA / 2 ms peaks stay off the MCU's supply pins and firmware can power-cycle it. (c) The indicator runs from the 5 V input. No 12 V and no separate 5 V rail; no reverse-polarity FET (USB-C is keyed).
 - **Budget** (typical / peak):
 
 | Load | Rail | Typical | Peak | Source |
@@ -118,13 +117,12 @@ The same circuit as §2.2, with the series resistance sized so 12 V DC still lig
 | ESP32-S3 module, Wi-Fi + BLE scan | 3.3 V main | 110 mA | 360 mA (TX) | ESP32-S3 datasheet (verify) |
 | Display logic + backlight | 3.3 V main | 80 mA | 100 mA | typical 2.8" module (verify) |
 | Node-side opto drive, pull-ups | 3.3 V main | 5 mA | 12 mA | §2 |
-| SEN65 measuring | 3.3 V sensor | 90 mA | 350 mA for 2 ms (110 mA max sustained) | SEN6x DS Table 12 |
-| Indicator, 12 LEDs | 5 V | 60 mA | 300 mA (firmware cap) | WS2812B ~12–20 mA/channel |
-| **Total at 12 V input** (bucks ~88 %) | 12 V | **≈ 0.13 A (1.5 W)** | **≈ 0.42 A (5.0 W)** | |
+| SEN65 measuring | 3.3 V (switched) | 90 mA | 350 mA for 2 ms (110 mA max sustained) | SEN6x DS Table 12 |
+| Indicator | 5 V input | 60 mA | 300 mA (firmware cap) | WS2812B ~12–20 mA/channel; revisit with the indicator decision |
+| **Total at 5 V input** (LDO case; a buck is ~25 % lower) | 5 V | **≈ 0.35 A (1.7 W)** | **≈ 1.1 A (5.5 W), ms-scale** | |
 
-The 12 V/1 A adapter has > 2× peak margin. About 1.5 W dissipates in the sealed electronics compartment (a few kelvin of rise); the sensor bay is thermally separated (`docs/architecture.md` §5) and the SEN65 temperature offset is tuned at commissioning (FR-20).
+A ≥ 2 A adapter has ~2× peak margin. On a PC USB 2.0 port (500 mA) the typical load fits; firmware caps the indicator lower when it can't tell which source it's on (reading the CC advertisement via ADC is a phase 3 option). About 1.7 W dissipates in the sealed electronics compartment (a few kelvin of rise); the sensor bay is thermally separated (`docs/architecture.md` §5) and the SEN65 temperature offset is tuned at commissioning (FR-20).
 - **Fan side:** powered by the fan's +10 V (§2.1), not by the node.
-- **USB:** when the internal USB-C is plugged in for flashing, VBUS feeds the 5 V rail through a Schottky (OR-ed with the buck output), enough to boot and flash; firmware limits the indicator while running from USB only.
 
 ## 4. Home Assistant (FR-12, FR-13, IR-03)
 
@@ -173,6 +171,6 @@ Precedence: the panel is the only command source in v1, so no rule is needed. If
 - **Enclosure form (D-019):** one enclosure in two compartments. Upper: sealed electronics compartment, PCB vertical behind the front bezel (display, encoder, 4 buttons), gasketed lid, no vents (NFR-04). Lower: sensor bay, open to the room through a front grille, with the SEN65 inlet facing into the room, not toward the hood (NFR-09). The bay is below the electronics, as Sensirion recommends (sensor below heat sources).
 - **Sensor bay:** the SEN65 sits in a cradle behind a tool-less cover (thumb screw or snap). Its cable plugs in at the module end and passes into the electronics compartment through a sealed grommet in the dividing wall (no air path, NFR-04). Removal: open the cover, unplug, lift out, < 5 min (NFR-03). Module orientation per Sensirion's mechanical guidelines (inlets/outlet not blocked, inlet and outlet separated, no airflow > 1 m/s across it).
 - **Indicator:** a diffused light bar along the bottom-front edge of the electronics compartment, lit by the 12 board-edge LEDs through a light pipe, visible down the shop's length (FR-15).
-- **Cable entry:** rear or top face, toward the cabinet: J-FAN (4-conductor fan cable, hard-wired), J-OCC (2-conductor thermostat wire to the 24 VAC terminals), J-DC (2-conductor, only if the wired DC backup is used), J-PWR (barrel). Each gets a printed strain-relief clamp and a gasketed pass-through. The internal J-USB is reachable only with the lid off (D-020).
+- **Cable entry:** rear or top face, toward the cabinet: J-FAN (4-conductor fan cable, hard-wired), J-OCC (2-conductor thermostat wire to the 24 VAC terminals), J-DC (2-conductor, only if the wired DC backup is used), J-USB (USB-C power and flash/log, D-030). The terminal cables each get a printed strain-relief clamp and a gasketed pass-through. J-USB is board-mounted behind a wall opening with a compressed foam gasket around the receptacle shell; the receptacle mouth itself is open (NFR-04 exception), facing the cabinet rather than the room.
 - **Mounting:** a printed bracket screws to the cabinet bottom (4 wood screws) and the enclosure slides onto it and locks with one screw, so the unit comes down without unscrewing from the cabinet.
 - **Positions:** display, encoder, button, LED and connector positions come from the `.kicad_pcb` in phase 3, never retyped (D-011).
