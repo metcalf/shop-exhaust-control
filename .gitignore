@@ -32,3 +32,7 @@ Thumbs.db
 *.o
 *.so
 *.py[cod]
+
+# Python #
+######################
+.venv/

@@ -172,7 +172,7 @@ Template:
 
 ## D-019: One enclosure: sealed electronics above an open sensor bay
 - Date: 2026-10-25
-- Status: Proposed — needs Andrew (sets the enclosure's shape and cutouts). Mounting amended by D-033: wall cleat on the fridge side panel, not a cabinet bracket
+- Status: Accepted with G2 (Andrew, 2026-10-28). Mounting amended by D-033: wall cleat on the fridge side panel, not a cabinet bracket
 - Context: NFR-03/04/09, D-015 (under the north cabinets), Sensirion's guidance to keep the module below heat sources.
 - Decision: One PA12 enclosure hung from a cabinet bracket. The sealed electronics compartment is on top, with the panel on the front face and the light bar along its bottom edge. The open sensor bay is below, with a front grille and a tool-less cover; the module cable crosses through a sealed grommet. Cables enter at the back or top with strain reliefs.
 - Alternatives considered: A separate sensor pod on a short cable (better thermal separation, but I²C over a longer run and two enclosures). Sensor bay beside the electronics (shorter enclosure, but at the same height as the heat).
@@ -204,7 +204,7 @@ Template:
 
 ## D-023: Fan-powered, fail-off isolated fan interface
 - Date: 2026-10-25
-- Status: Proposed — needs Andrew. Q-26 answered: the stock controller draws ≈ 9.3 mA from the port, so the ≤ 9 mA budget is within demonstrated capacity
+- Status: Accepted with G2 (Andrew, 2026-10-28). Q-26 answered: the stock controller draws ≈ 9.3 mA from the port, so the ≤ 9 mA budget is within demonstrated capacity
 - Context: SR-08 requires the fan to be off with the node unpowered, with the hold-off powered from the fan side. SR-09 requires isolation. FR-18 needs the tach.
 - Decision: A fan-side N-MOSFET holds the speed line low by default (gate pulled up from a 5 V LDO on the fan's +10 V). A Schmitt-output opto driven by the node's PWM releases it, so the LED-on fraction is the fan duty. Two more optos carry the tach and a fan-present signal back. ≥ 3 mm barrier (`docs/interfaces.md` §2.1).
 - Alternatives considered: An isolated DC-DC powering the fan side from the node (fails on, since the hold-off dies with node power). A relay on the speed line (slow; can't PWM at 5 kHz). A digital isolator (needs a few mA on both sides, no better than the opto here).
@@ -287,8 +287,8 @@ Template:
 - Consequences: Taking the unit down means lid off and unscrewing the conductors. The J-OCC/J-DC mis-plug question and the pitch-keying go away. One terminal part family for the BOM.
 
 ## D-033: Controller on the refrigerator side panel next to the hood
-- Date: 2026-10-29
-- Status: Accepted (Andrew, Q-27/Q-32, 2026-10-29). Amends D-015's spot and approved NFR-09, IR-04
+- Date: 2026-10-28
+- Status: Accepted (Andrew, Q-27/Q-32, 2026-10-28). Amends D-015's spot and approved NFR-09, IR-04
 - Context: Andrew proposes the side of the refrigerator panel beside the hood (`docs/site/mounting location option - next to intake.jpg`): within reach, near the airflow, still visible from most of the shop. NFR-09 wants the sensor inlet ≥ 3 ft from the hood's edge; the panel looks closer.
 - Decision: Wall-mount a few inches back from the panel's front edge, center ~60" up (hood intake ~66"); the panel face is ~18" laterally from the hood's edge, so the inlet is ≈ 2 ft from the hood. Display faces across the kids' workbench; the sensor inlet and indicator are on the room-facing end. NFR-09's distance becomes "as far from the hood as the mount allows" (≈ 2 ft), validated by AC-17.
 - Alternatives considered: Under the north cabinets ≥ 3 ft from the hood (D-015 as written; harder to reach).
@@ -301,7 +301,7 @@ Template:
 |------|------|-------------|-------|
 | Phase 0 survey | 2026-10-25 | Andrew (with G1) | Survey and photos committed d9833fd |
 | G1 Requirements | 2026-10-25 | Andrew | `docs/requirements.md` as of this commit, including the SEN65 consequences (FR-14 baseline survival, FR-08 sensor sleep during Spray minimum run-on) |
-| G2 Architecture | | | |
+| G2 Architecture | 2026-10-28 | Andrew | `docs/architecture.md`, `docs/interfaces.md`, `docs/control-logic.md` and D-017…D-033 as of this commit; review `reviews/G2-review.md` (B-1…B-3 resolved, should-fix items triaged in STATE.md). D-019 and D-023 accepted with G2. Phase 3 order per D-029 |
 | G3 Mains/safety | | | |
 | G4 BOM | | | |
 | G5 First power-up | | | |

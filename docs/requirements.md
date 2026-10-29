@@ -1,6 +1,6 @@
 # Requirements — Shop Exhaust Fan Controller
 
-**Status:** APPROVED at G1 (Andrew, 2026-10-25). Changes now need a decision entry and Andrew's OK. Amended 2026-10-26 from Andrew's Q-28 answers: FR-08, FR-18, SR-04, IR-01, AC-05, AC-06, AC-07, AC-20, P-19 (D-024, D-025). Amended 2026-10-28 from Q-29/Q-30 and G2 review S-1: NFR-07, SR-08, SR-09, AC-18 (D-027, D-028); NFR-04 USB-C exception (D-030). Amended 2026-10-29: NFR-09 distance and IR-04 location (D-033).
+**Status:** APPROVED at G1 (Andrew, 2026-10-25). Changes now need a decision entry and Andrew's OK. Amended 2026-10-26 from Andrew's Q-28 answers: FR-08, FR-18, SR-04, IR-01, AC-05, AC-06, AC-07, AC-20, P-19 (D-024, D-025). Amended 2026-10-28 from Q-29/Q-30 and G2 review S-1: NFR-07, SR-08, SR-09, AC-18 (D-027, D-028); NFR-04 USB-C exception (D-030). Amended 2026-10-28: NFR-09 distance and IR-04 location (D-033).
 
 **Conventions**
 - IDs: `FR` functional, `NFR` non-functional, `SR` safety, `IR` interface. IDs are never reused; dropped entries stay with a note.

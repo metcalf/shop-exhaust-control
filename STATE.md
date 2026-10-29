@@ -1,15 +1,33 @@
 # Project State
 
 **Updated:** 2026-10-28
-**Phase:** 2, architecture. **Ready for G2 sign-off:** all three blocking review findings are resolved (B-1 D-027, B-2 D-028, B-3 fixed). Should-fix items are triaged below.
-**Waiting on:** Andrew's G2 approval
+**Phase:** 3, detailed design (**G2 approved 2026-10-28**). Phase 3 runs in the D-029 order: vendor check → schematic → priced parts list (Andrew checkpoint) → only then layout, mech, firmware.
+**Waiting on:** nothing from Andrew until the priced parts list is ready.
 
-## Next actions
-1. **Andrew, G2:** approve `docs/architecture.md`, `docs/control-logic.md`, `docs/interfaces.md` and D-017…D-028 (D-019 enclosure form and D-023 fail-off interface are "needs Andrew"). Review: `reviews/G2-review.md`.
-2. **Claude, phase 3 order after G2 (D-029):** vendor check → schematic (ERC clean) → priced parts list for Andrew's review → then layout, mech, firmware. Fold in the hardware findings before the schematic: S-2 (worst-case fan-side current from datasheet maxima; needs Q-26), S-4 (isolation-domain table, every barrier crossing), S-5 (`DC_IN` resistor/CTR/pull-up at 12 VDC, 12 VAC, 26.4 VAC), S-13 is applied (D-031). S-14 and S-17 are done; S-1 accepted (D-028).
-3. **Claude, firmware backlog, handled at implementation rather than as doc revisions (process note 2026-10-28):** S-3 overspeed / tach at 0 %, S-6 frozen-sequence DC frames (record in D-021 when the DC project starts), S-7 SprayRunOn upper bound while occupied (FR-08 change, ask Andrew then), S-8, S-9, S-10, S-11, S-12, S-15, S-16 (MQTT keepalive ≤ 30 s; check `BaseMqttClient`); panel lock against kids at the bench (D-033).
-4. **Claude, with the schematic:** PCBA vendor comparison including JLCPCB Economic tier rules (Q-14, NFR-05) first, plus `docs/architecture.md` §9. Check the claim that JLC Economic reflow is too hot for ESP32 modules (`sourcing/fan-pwm-thread.md`). H11L1 stays unless the priced list shows a significant saving from PC817 at ~1 kHz. Swap to basic parts where it's free (LTV-814 → PC817 + diode; 5→3.3 V buck → AMS1117; switched sensor rail → AMS1117 + AO3401) and check H11L1 SMD stock early.
-5. **Andrew:** no open questions.
+## Next actions (in order; each is Claude's unless marked)
+1. **PCBA vendor check** → `sourcing/pcba-vendor.md`. JLCPCB Economic vs Standard: current rules (one-sided SMT, THT support, extended-part loading fee, whether "preferred extended" parts are fee-free), and whether the Economic reflow profile is unsuitable for ESP32 modules (claim in `sourcing/fan-pwm-thread.md`). Brief comparison with PCBWay or one other low-cost assembler. The `sourcing` subagent on a cheap model is fine for this. Cite sources and the date checked.
+2. **Toolchain (D-010, treated as accepted; reversible):** KiCad 10.0.7 is installed at `/Applications/KiCad/KiCad.app/Contents/MacOS/kicad-cli` (D-010 assumed KiCad 9). Create a repo-local `.venv` (gitignored) and install `kiutils` and `easyeda2kicad`. First check that `kiutils` reads and writes KiCad 10 schematics. If it doesn't, pick a fallback (e.g. writing S-expressions from templates, or KiCad's Python API) and log it as a decision.
+3. **Schematic** in `pcb/` (2-layer board, D-008), from `docs/interfaces.md` §2–3:
+   - Basic-part swaps: LTV-814 → PC817 + antiparallel diode; sensor rail = AO3401 load switch (D-031). The 5→3.3 V regulator is a buck or low-dropout LDO, chosen from JLC stock (D-030).
+   - Check H11L1 SMD stock first. If it isn't stocked, the fallback is a digital isolator with a defined default output (fail-off preserved), not a 6N137.
+   - Fold in the G2 review hardware findings:
+     - S-2: fan-side budget from datasheet maxima, ≤ 9 mA (Q-26).
+     - S-4: isolation-domain table, every barrier crossing; no pours, Y caps or metal fasteners across.
+     - S-5: `DC_IN` worst-case CTR at 12 VDC, 12 VAC and 26.4 VAC; CTR-ranked part, higher pull-up.
+     - S-13: already applied.
+     - S-14: boot config, BOOT/EN switches, EN RC; LEDC at duty 0 before routing.
+     - S-17: already applied.
+     - Also the remaining items in `docs/architecture.md` §9.
+   - Then ERC clean with `kicad-cli`, rendered sheet SVGs reviewed, and scripted netlist assertions (D-010). Commit the reports.
+4. **Priced parts list** from the schematic → `sourcing/priced-parts.md` (or a `bom.csv` draft). For each part: LCSC number, basic/preferred/extended, stock, unit price, loading fee, date checked. Add off-board parts (display module, SEN65, adapter, cable, enclosure estimate) and a total against NFR-08 ($300). **Stop here for Andrew's review** (D-029). No layout, mech or firmware before he OKs it.
+5. **Firmware backlog, for implementation later (not now):**
+   - G2 review items: S-3 overspeed / tach at 0 %; S-6 frozen-sequence DC frames (record in D-021 when the DC project starts); S-7 SprayRunOn upper bound while occupied (an FR-08 change, ask Andrew then); S-8, S-9, S-10, S-11, S-12, S-15; S-16 MQTT keepalive ≤ 30 s (check `BaseMqttClient`).
+   - Panel lock against kids at the bench (D-033).
+
+## Notes for an unattended run
+- The schematic is more than one night's work. Commit progress in coherent steps and leave STATE.md saying exactly where it stopped.
+- CLAUDE.md's phase table still puts sourcing after the full detailed design. D-029 (Andrew) overrides that order for this project. Don't edit CLAUDE.md; Andrew hasn't said whether to.
+- No mains anywhere (D-018), so G3 is light: the receptacle circuit, adapter listing and 24 VAC hookup. It isn't needed before the schematic.
 
 ## Blockers
 - None.
@@ -39,5 +57,6 @@
 - 2026-10-28: Indicator plain RGB (3 FETs), short strip along a display edge, no illuminated encoder; SEN65 load switch kept for recovery, S-13 applied, `SEN_PWR_EN` polarity fixed (D-031).
 - 2026-10-28: Field wiring on fixed 3.5 mm screw terminals, not pluggable (D-032, Andrew).
 - 2026-10-28: Read the rollitup Cloudline/ESP32 thread: PC817 at 1 kHz isn't validated there; H11L1 at 5 kHz stays unless cost says otherwise (`sourcing/fan-pwm-thread.md`).
-- 2026-10-29: Q-31 (≈ 60 µA leakage) confirms SELV (D-028). Q-26: stock controller draws ≈ 9.3 mA from the port, so the fail-off budget fits (D-023). Q-27: Andrew proposes the fridge side panel by the hood (D-033 proposed; Q-32 for measurements and NFR-09).
-- 2026-10-29: Q-32: fridge-panel mount accepted (D-033): ~18" from the hood edge, center ~60" up, inlet ≈ 2 ft from the hood; NFR-09 and IR-04 amended. Kids' workbench below; panel lock on the firmware backlog.
+- 2026-10-28: Q-31 (≈ 60 µA leakage) confirms SELV (D-028). Q-26: stock controller draws ≈ 9.3 mA from the port, so the fail-off budget fits (D-023). Q-27: Andrew proposes the fridge side panel by the hood (D-033 proposed; Q-32 for measurements and NFR-09).
+- 2026-10-28: Q-32: fridge-panel mount accepted (D-033): ~18" from the hood edge, center ~60" up, inlet ≈ 2 ft from the hood; NFR-09 and IR-04 amended. Kids' workbench below; panel lock on the firmware backlog.
+- 2026-10-28: **G2 approved** (Andrew). D-019 and D-023 accepted with it. Phase 3 started; STATE set up for the nightly run (vendor check → toolchain → schematic → priced parts list, then stop for Andrew).
