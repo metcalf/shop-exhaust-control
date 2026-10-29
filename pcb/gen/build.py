@@ -115,14 +115,14 @@ part("TVS15", (X + 20, Y + 35), {"1": "GND_F", "2": "+10V_F"}, rot=90)
 part("TVS15", (X + 28, Y + 35), {"1": "GND_F", "2": "FAN_SPD"}, rot=90)
 part("TVS15", (X + 36, Y + 35), {"1": "GND_F", "2": "FAN_TACH_F"}, rot=90)
 part("LDO5F", (X + 55, Y + 5), {"VIN": "+10V_F", "VOUT": "+5F", "GND": "GND_F"})
-cap("1u", (X + 45, Y + 18), "+10V_F", "GND_F", key="C0805_25V")
+cap("1u", (X + 45, Y + 18), "+10V_F", "GND_F")   # 0603 1 uF is 50 V
 cap("1u", (X + 68, Y + 18), "+5F", "GND_F")
 # PWM: Q-FAN holds yellow low (fan off) unless the opto is lit
 part("OPTO_PWM", (X + 100, Y + 10), {"1": "FAN_LED_A", "2": "GND", "4": "Q_FAN_G", "5": "GND_F",
                                       "6": "+5F"})
 cap("100n", (X + 110, Y + 30), "+5F", "GND_F")
 res("10k", (X + 120, Y - 5), "+5F", "Q_FAN_G")
-part("NFET", (X + 130, Y + 15), {"G": "Q_FAN_G", "D": "FAN_SPD", "S": "GND_F"})
+part("NFET_LL", (X + 130, Y + 15), {"G": "Q_FAN_G", "D": "FAN_SPD", "S": "GND_F"})
 res("390", (X + 85, Y - 5), "FAN_PWM", "FAN_LED_A")
 res("10k", (X + 85, Y + 30), "FAN_PWM", "GND")
 # Tach: white low -> LED lit -> FAN_TACH low
@@ -181,12 +181,12 @@ cap("10u", (X + 45, Y + 25), "+3V3", "GND", key="C0805")
 
 # ---------------------------------------------------------------- controls
 X, Y = 300, 165
-sh.note("CONTROLS: EC11 encoder + 4 buttons (D-009). 10k pull-up, 10 nF at the pin", (X - 10, Y - 15))
+sh.note("CONTROLS: EC11 encoder + 4 buttons (D-009). 10k pull-up, 100 nF at the pin", (X - 10, Y - 15))
 part("ENC", (X, Y + 10), {"A": "ENC_A", "B": "ENC_B", "C": "GND", "S1": "ENC_SW", "S2": "GND"},
      )
 for i, n in enumerate(["ENC_A", "ENC_B", "ENC_SW", "BTN1", "BTN2", "BTN3", "BTN4"]):
     res("10k", (X + 25 + 9 * i, Y - 5), "+3V3", n)
-    cap("10n", (X + 25 + 9 * i, Y + 25), n, "GND")
+    cap("100n", (X + 25 + 9 * i, Y + 25), n, "GND")
 for i, n in enumerate(["BTN1", "BTN2", "BTN3", "BTN4"]):
     part("TACT", (X + 30 + 22 * i, Y + 50), {"1": n, "2": "GND"}, value=f"B{i + 1}")
 

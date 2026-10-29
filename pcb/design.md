@@ -6,12 +6,12 @@ Datasheet figures below come from the sourcing notes. Where a value is assumed r
 
 ## 1. Power (D-030, D-037)
 - J1 USB-C (HRO TYPE-C-31-M-12) → F1 polyfuse 1.5 A hold → `+5V`. Rd 5.1 kΩ on CC1 and CC2 (sink). D1 SMAJ5.0A on `+5V`. U2 USBLC6-2SC6 on D±. Shield goes straight to GND: the enclosure is plastic and there's no chassis.
-- **3.3 V: SY8089AAAC sync buck** (2 A, SOT-23-5), 2.2 µH (3.4 A Isat), 10 µF in, 2 × 22 µF out. FB 453 k / 100 k gives 0.6 × 5.53 = 3.32 V, with 22 pF feed-forward. Why not an LDO: at 0.35 A typical, an LDO dissipates ≈ 0.6 W, too much for SOT-23-5 in a sealed box (sourcing/power.md). Peak load ≈ 0.8 A at 3.3 V (module TX 360 mA + display 100 mA + SEN65 350 mA for 2 ms), within the 2 A rating.
+- **3.3 V: SY8089AAAC sync buck** (2 A, SOT-23-5), 2.2 µH (3.4 A Isat), 10 µF in, 2 × 22 µF out. FB 100 k / 22 k gives 0.6 × 5.55 = 3.33 V (453 k isn't stocked), with 22 pF feed-forward. Why not an LDO: at 0.35 A typical, an LDO dissipates ≈ 0.6 W, too much for SOT-23-5 in a sealed box (sourcing/power.md). Peak load ≈ 0.8 A at 3.3 V (module TX 360 mA + display 100 mA + SEN65 350 mA for 2 ms), within the 2 A rating.
 - `VBUS_SENSE` (GPIO2, ADC1): 100 k / 100 k divider from `+5V`, 100 nF. Reads 2.5 V at 5 V and draws 25 µA. Firmware lowers the indicator cap when `+5V` sags below ~4.6 V (a weak PC port). This replaces the CC-read option in D-030 and uses the last spare GPIO.
 - **Open (O-4):** SY8089's abs max is 6 V, but SMAJ5.0A clamps at ≈ 9.2 V. Ceramic-only input plus a 3 m cable can ring on hot-plug. The polyfuse (~0.1 Ω) damps some of it. Decide before layout whether to add 47–100 µF of polymer/electrolytic bulk on `+5V`.
 
 ## 2. Fan interface, fan domain (SR-08, SR-09, D-023; G2 review S-2)
-Circuit as in `docs/interfaces.md` §2.1, with these parts: U4 HT7550-1 (Vin ≤ 30 V, Iq ≤ 3 µA), U5 H11L1S-TA1-L, Q1 2N7002 (gate driven to 5 V, where RDS(on) is specified), U6 and U7 PC817C-S, D5 1N4148W, three SMF15A on red, yellow and white to GND_F.
+Circuit as in `docs/interfaces.md` §2.1, with these parts: U4 HT7550-1 (Vin ≤ 30 V, Iq ≤ 3 µA), U5 H11L1S-TA1-L, Q1 AO3400A (gate driven to 5 V; same part as the indicator switches, one fewer unique part), U6 and U7 PC817C-S, D5 1N4148W, three SMF15A on red, yellow and white to GND_F.
 
 **Fan-side current from red +10 V, datasheet maxima (S-2):**
 
@@ -47,7 +47,7 @@ Path drop, worst case: LED 1.4 V + two bridge diodes ≈ 1.8 V, so ≈ 3.2 V. Th
 ## 4. SEN65 rail (D-031, S-13)
 - Q2 AO3401A high-side (RDS(on) ≤ 85 mΩ at −2.5 V: 30 mV at a 350 mA peak). Gate: 100 k pull-up to +3V3 keeps the rail off through boot; 10 k series from GPIO10; **100 nF gate-source soft start**. Without it, the rail's 10 µF charge-shares with the 44 µF buck output and dips +3V3 by ≈ 0.6 V, near brownout. With a ~1 ms ramp, inrush ≈ 10 µF × 3.3 V / 1 ms ≈ 33 mA.
 - 10 µF + 100 nF on `+3V3_SEN`. A 10 k bleed takes the rail below 0.3 V in ≈ 0.25 s (τ = 0.1 s) and costs 0.33 mA while on. I²C pull-ups (10 k) go to `+3V3_SEN` only (S-13; check.py asserts it).
-- **Open (O-1):** J5 pinout. Pins 1/6 are VDD and 2/5 GND (sourcing/ui-connectors.md); pins 3 = SDA and 4 = SCL are **assumed** pending the SEN6x datasheet (`sourcing/off-board.md`).
+- J5 pinout per the SEN6x datasheet §3, Table 17: 1 VDD, 2 GND, 3 SDA, 4 SCL, 5 GND, 6 VDD (`sourcing/off-board.md`). Supply 3.15–3.6 V.
 
 ## 5. MCU, boot and recovery (G2 review S-14)
 - EN: 10 k to 3V3 and 1 µF to GND (Espressif HW design guide RC), EN tact switch. GPIO0: 10 k pull-up and BOOT tact switch. Test pads for 3V3, 5V, GND, TXD0, RXD0, EN and BOOT (UART0 rescue).
@@ -61,13 +61,13 @@ Six C601699 3528 common-anode RGB LEDs on `+5V`, one resistor per colour per LED
 
 ## 7. Display and controls
 - J6: 1×8 socket. The pinout (VCC, GND, CS, RST, DC, MOSI, SCK, LED) is **tentative** until the module is chosen (O-2, `sourcing/off-board.md`). The backlight is high-side switched from 3.3 V by an AO3401A on GPIO47 (low = on). That works whether the module's LED pin feeds the LEDs directly or a transistor.
-- Encoder (Alps EC11E18244A5) and 4 × 6×6 mm, 9.5 mm-tall tact switches: 10 k pull-up and 10 nF at each pin (τ = 0.1 ms); debounce in firmware and PCNT filter.
+- Encoder (Alps EC11E18244A5) and 4 × 6×6 mm, 9.5 mm-tall tact switches: 10 k pull-up and 100 nF at each pin (τ = 1 ms; the 10 nF Basic part is out of stock, and this reuses an existing value). Quadrature edges at a fast spin (~100 detents/s) are ≥ 2 ms apart, so 1 ms is fine; if counts drop on bench, fit 10 nF on ENC_A/B. Debounce in firmware and the PCNT filter.
 
 ## 8. Open items before layout
 | ID | Item |
 |----|------|
-| O-1 | SEN6x connector SDA/SCL pins (datasheet) |
-| O-2 | Display module choice: header pinout, backlight circuit and current, outline |
+| O-1 | ~~SEN6x connector pinout~~: closed, datasheet Table 17 matches the schematic |
+| O-2 | Display module choice (Q-35): header pinout, backlight circuit and current, outline. The only verified-IPS module found (Newhaven breakout) doesn't fit the 1×8 header |
 | O-3 | Footprints against the LCSC drawings. Stock KiCad footprints are placeholders: H11L1S/PC817C-S lead span (SMDIP W9.53), MB10S (MBS vs the MBLS footprint used), 3528 RGB pin map against the LED_ARGB symbol numbering, 5.1 mm tact, KF128L and XY350V terminals (the Phoenix PT footprint used differs), GH header, HRO USB-C pin map. Use `easyeda2kicad` footprints where they exist |
 | O-4 | VBUS hot-plug overshoot against SY8089's 6 V abs max (§1) |
 | O-5 | Opto package creepage. Pad-to-pad across the 9.53 mm gull-wing span is ≈ 7 mm, which comfortably exceeds the 3 mm basic barrier (D-028). Confirm from the drawings |

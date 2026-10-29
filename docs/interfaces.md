@@ -100,6 +100,8 @@ Behavior:
 J-FAN sits on the fan side of the barrier, with ≥ 3 mm to any node-side copper. Its conductors carry nothing the fan's own cable doesn't already expose.
 
 ### 2.2 Occupancy input (FR-07)
+*Schematic (D-036) supersedes the parts below for §2.2 and §2.3: SMBJ48CA → 2 × 2.7 k → MB10S bridge → PC817C-S, 47 k pull-up, 1 µF, one circuit for both inputs. Values and worst cases are in `pcb/design.md` §3.*
+
 24 VAC from the lighting transformer's secondary (the same terminals that drive the old fan relay coil, Q-16) → 2-pos terminal → bidirectional TVS (48 V standoff, SMBJ48CA-class: lightly loaded Class 2 secondaries read 26–29 VAC, up to ~41 V peak at high line) → 2 × 2.2 kΩ (1206, series) → AC-input opto (LTV-814/PC814-class) → phototransistor with 10 kΩ pull-up and 1 µF to GND (τ ≈ 10 ms bridges the zero crossings) → GPIO7. Input draw ≈ 5–6 mA rms. Same ≥ 3 mm barrier as §2.1. Firmware debounce C-20 (0.5 s), well inside AC-04's 2 s.
 
 ### 2.3 Wired `DC_RUNNING` input (IR-01 backup, D-025)

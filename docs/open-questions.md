@@ -7,6 +7,10 @@ Claude batches questions here. Each has an ID, why it matters, and the default C
 
 | ID | Question | Why it matters | Default if unanswered | Blocks | Answer |
 |----|----------|----------------|-----------------------|--------|--------|
+| Q-33 | D-029 checkpoint: OK to start layout on the schematic and priced list in `sourcing/priced-parts.md`? It includes JLC **Standard** PCBA (Economic can't place the ESP32-S3 module, D-034), **2** assembled boards, and a total of ≈ $276–352 against the $300 ceiling (levers listed there). | D-029 stops here for your review. Layout fixes the footprints and the board outline. | None: layout waits for your OK. Assumed when you OK it: Standard, 2 boards, enclosure still MJF unless you say FDM. | Layout, mech, firmware | |
+| Q-34 | SEN65 stock: DigiKey has 0 (60 due 2027-01-20). Can you check Mouser or another channel, or should we fall back to the SEN66 ($62, in stock, same connector and pinout; adds CO₂)? | The sensor is the long-lead item. The board doesn't change either way. | Order the SEN65 wherever it's in stock; SEN66 if none by G4. | G4 | |
+| Q-35 | Display module: (a) a generic 2.8" ST7789 **IPS** SPI module with an 8-pin header (≈ $10; you pick one with a panel datasheet that says IPS, and send me the link and pinout), or (b) Newhaven NHD-2.8-CSXP-BREAKOUT ($29, verified IPS, but SPI needs 6 resistor moves, D/C is on a second header, backlight always on, ≈ 200 mA at 5 V)? | Sets the J6 header, the backlight drive and the bezel outline. | (a), with J6 the 1×8 as drawn. I adapt the pinout to your link. | Layout (J6, outline) | |
+| Q-36 | Power cable reach: the Raspberry Pi 15 W supply has a captive 1.5 m (5 ft) cable. Does that reach from the cabinet receptacle to the fridge panel along the route you plan? | If not, we need an adapter with a USB-C port plus a 2 m cable (+$27). | If it doesn't reach: a listed port adapter plus the StarTech 2 m cable. | G4 | |
 
 ## Answered
 

@@ -300,7 +300,7 @@ Template:
 - Context: Q-21 aimed for JLC Economic PCBA. The vendor check (`sourcing/pcba-vendor.md`) found the ESP32-S3-WROOM-1-N16R8 (C2913202) listed as "Standard Only", so Economic can't place it.
 - Decision: JLCPCB Standard PCBA, all parts on the top side; JLC also places or wave-solders the THT parts. Estimated ≈ $150–180 for 5 boards, components included.
 - Alternatives considered: Economic without the module, which Andrew hotplate-reflows himself: saves ≈ $20 but adds a manual step on the most expensive part. Switching to an Economic-eligible module (C3-WROOM-02): loses PSRAM and GPIOs, so it would reopen D-022. PCBWay: quote-based, with setup ≈ $90–150 (unverified), so likely dearer.
-- Consequences: setup ≈ $26 plus $8 stencil, and $1.53 per unique part (Basic included). Using Basic passives keeps the parts list short.
+- Consequences: setup ≈ $26 plus $8 stencil. The vendor note says $1.53 per unique part on Standard, Basic included; that's unverified, and JLC has historically waived Basic. Either way, fewer unique parts is the lever (`sourcing/priced-parts.md`).
 
 ## D-035: Schematic as code (kiutils generator, label per pin)
 - Date: 2026-10-28

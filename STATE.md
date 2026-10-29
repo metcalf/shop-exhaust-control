@@ -1,35 +1,34 @@
 # Project State
 
-**Updated:** 2026-10-28
-**Phase:** 3, detailed design (**G2 approved 2026-10-28**). Phase 3 runs in the D-029 order: vendor check → schematic → priced parts list (Andrew checkpoint) → only then layout, mech, firmware.
-**Waiting on:** nothing from Andrew until the priced parts list is ready.
+**Updated:** 2026-10-28 (nightly)
+**Phase:** 3, detailed design (**G2 approved 2026-10-28**). D-029 order: vendor check ✓ → schematic ✓ → priced parts list ✓ → **stopped for Andrew** → layout, mech, firmware.
+**Waiting on:** Andrew: Q-33 (OK to start layout), Q-35 (display module) block layout; Q-34 and Q-36 are for G4.
 
 ## Next actions (in order; each is Claude's unless marked)
-1. **PCBA vendor check** → `sourcing/pcba-vendor.md`. JLCPCB Economic vs Standard: current rules (one-sided SMT, THT support, extended-part loading fee, whether "preferred extended" parts are fee-free), and whether the Economic reflow profile is unsuitable for ESP32 modules (claim in `sourcing/fan-pwm-thread.md`). Brief comparison with PCBWay or one other low-cost assembler. The `sourcing` subagent on a cheap model is fine for this. Cite sources and the date checked.
-2. **Toolchain (D-010, treated as accepted; reversible):** KiCad 10.0.7 is installed at `/Applications/KiCad/KiCad.app/Contents/MacOS/kicad-cli` (D-010 assumed KiCad 9). Create a repo-local `.venv` (gitignored) and install `kiutils` and `easyeda2kicad`. First check that `kiutils` reads and writes KiCad 10 schematics. If it doesn't, pick a fallback (e.g. writing S-expressions from templates, or KiCad's Python API) and log it as a decision.
-3. **Schematic** in `pcb/` (2-layer board, D-008), from `docs/interfaces.md` §2–3:
-   - Basic-part swaps: LTV-814 → PC817 + antiparallel diode; sensor rail = AO3401 load switch (D-031). The 5→3.3 V regulator is a buck or low-dropout LDO, chosen from JLC stock (D-030).
-   - Check H11L1 SMD stock first. If it isn't stocked, the fallback is a digital isolator with a defined default output (fail-off preserved), not a 6N137.
-   - Fold in the G2 review hardware findings:
-     - S-2: fan-side budget from datasheet maxima, ≤ 9 mA (Q-26).
-     - S-4: isolation-domain table, every barrier crossing; no pours, Y caps or metal fasteners across.
-     - S-5: `DC_IN` worst-case CTR at 12 VDC, 12 VAC and 26.4 VAC; CTR-ranked part, higher pull-up.
-     - S-13: already applied.
-     - S-14: boot config, BOOT/EN switches, EN RC; LEDC at duty 0 before routing.
-     - S-17: already applied.
-     - Also the remaining items in `docs/architecture.md` §9.
-   - Then ERC clean with `kicad-cli`, rendered sheet SVGs reviewed, and scripted netlist assertions (D-010). Commit the reports.
-4. **Priced parts list** from the schematic → `sourcing/priced-parts.md` (or a `bom.csv` draft). For each part: LCSC number, basic/preferred/extended, stock, unit price, loading fee, date checked. Add off-board parts (display module, SEN65, adapter, cable, enclosure estimate) and a total against NFR-08 ($300). **Stop here for Andrew's review** (D-029). No layout, mech or firmware before he OKs it.
-5. **Firmware backlog, for implementation later (not now):**
+1. **Andrew:** review `sourcing/priced-parts.md` and the schematic (`pcb/reports/svg/exhaust.svg`, `pcb/design.md`, `pcb/SAFETY.md`), then answer Q-33…Q-36.
+2. Once Q-33 is OK'd: **layout**.
+   - Fix the footprints against the LCSC drawings, using `easyeda2kicad` (in `.venv`) where stock ones differ (design.md O-3).
+   - Settle O-4 (input bulk cap for hot-plug) and O-6 (GPIO47/48 voltage), and adapt J6 to the Q-35 display.
+   - Write the creepage DRC rules from `pcb/SAFETY.md` and lay out the 2-layer board.
+   - Run DRC, export Gerbers/BOM/CPL. After layout starts the `.kicad_sch` becomes the source (D-035); keep running `pcb/gen/check.py` on it.
+3. After layout: mech (build123d, positions from the `.kicad_pcb`), then the firmware host-tested logic.
+4. **Firmware backlog, for implementation later (not now):**
    - G2 review items: S-3 overspeed / tach at 0 %; S-6 frozen-sequence DC frames (record in D-021 when the DC project starts); S-7 SprayRunOn upper bound while occupied (an FR-08 change, ask Andrew then); S-8, S-9, S-10, S-11, S-12, S-15; S-16 MQTT keepalive ≤ 30 s (check `BaseMqttClient`).
+   - S-14 boot config: TWDT panic, RTC WDT, LEDC at duty 0 before routing.
+   - VBUS_SENSE-based indicator cap (D-037); SEN rail power-cycle sequence (design.md §4).
+
+## Schematic status (where it stopped)
+- `pcb/gen/run.sh` regenerates `pcb/exhaust.kicad_sch`, runs ERC (0 violations) and the netlist assertions (all pass), and exports the SVG and raw BOM to `pcb/reports/`. 137 parts, 40 unique LCSC parts.
+- G2 review hardware items folded in: S-2 (fan side ≤ 4.3 mA at datasheet max), S-4 (`pcb/SAFETY.md`, every crossing asserted), S-5 (D-036), S-14 (EN RC, BOOT/EN switches, strapping pins asserted unconnected), S-13 and S-17 (already applied). Interfaces §2.2–2.3 still name the LTV-814; D-036 supersedes it, and the doc gets updated at layout.
+- Known cosmetic issue: field text on rotated parts needs GUI touch-up.
 
 ## Notes for an unattended run
-- The schematic is more than one night's work. Commit progress in coherent steps and leave STATE.md saying exactly where it stopped.
-- CLAUDE.md's phase table still puts sourcing after the full detailed design. D-029 (Andrew) overrides that order for this project. Don't edit CLAUDE.md; Andrew hasn't said whether to.
-- No mains anywhere (D-018), so G3 is light: the receptacle circuit, adapter listing and 24 VAC hookup. It isn't needed before the schematic.
+- If Q-33 is still unanswered, there's no layout, mech or firmware work allowed (D-029). Allowed prep: nothing material, so do nothing beyond re-checking stock, and say so.
+- CLAUDE.md's phase table still puts sourcing after the full detailed design. D-029 (Andrew) overrides that for this project. Don't edit CLAUDE.md.
+- No mains anywhere (D-018), so G3 is light: receptacle, adapter listing (the RPi supply's UL file number is still unfound) and the 24 VAC hookup.
 
 ## Blockers
-- None.
+- Layout is blocked on Q-33 (D-029 checkpoint) and Q-35 (display).
 
 ## Log
 - 2026-10-22: Repo created from the kickoff conversation. See `docs/context.md`.
@@ -60,3 +59,4 @@
 - 2026-10-28: Q-32: fridge-panel mount accepted (D-033): ~18" from the hood edge, center ~60" up, inlet ≈ 2 ft from the hood; NFR-09 and IR-04 amended. Kids' workbench below.
 - 2026-10-28: **G2 approved** (Andrew). D-019 and D-023 accepted with it. Phase 3 started; STATE set up for the nightly run (vendor check → toolchain → schematic → priced parts list, then stop for Andrew).
 - 2026-10-28: No panel lock (Andrew). Front carries display, controls and the light strip (wrapping the room-side corner); sensor inlet on the bay's corner-side (north) end, sheltered, not facing down (D-033, Andrew). NFR-09 reworded to placement criteria (open inlet, no strong draft, outlet separated, AC-17) instead of a fixed distance and direction.
+- 2026-10-28 (nightly): Phase 3 vendor check (JLC Standard, since the module is Standard Only; D-034), KiCad 10 toolchain with a sandbox workaround (D-035), generated schematic (ERC clean, netlist assertions pass) with G2 hardware items S-2/S-4/S-5/S-14 folded in, D-036 (bridge + PC817C inputs), D-037 (SY8089 buck, VBUS sense). Priced parts list: board ≈ $156 for 2, total ≈ $276–352. Stopped for Andrew (Q-33…Q-36).

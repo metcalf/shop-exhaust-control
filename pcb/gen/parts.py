@@ -55,8 +55,8 @@ P = {
                  "C2897371", "display 1x8", "J"),
     "TP": ("Connector:TestPoint", "TestPoint:TestPoint_Pad_D1.5mm", "", "", "TP"),
 
-    # SEN6x connector: 1/6 VDD, 2/5 GND (sourcing/ui-connectors.md); 3 SDA, 4 SCL assumed - verify
-    # against the SEN6x datasheet before layout (pcb/design.md open items)
+    # SEN6x connector (SEN6x datasheet §3 Table 17, sourcing/off-board.md):
+    # 1 VDD, 2 GND, 3 SDA, 4 SCL, 5 GND, 6 VDD
     "SEN_PINOUT": {"Pin_1": "+3V3_SEN", "Pin_2": "GND", "Pin_3": "SEN_SDA", "Pin_4": "SEN_SCL",
                    "Pin_5": "GND", "Pin_6": "+3V3_SEN"},
     "SEN_NC": (),
@@ -67,15 +67,15 @@ P = {
 }
 
 # 3.3 V buck: SY8089AAAC (sourcing/power.md). TLV62569DBV symbol has the same SOT-23-5 pinout
-# (1 EN, 2 GND, 3 LX, 4 VIN, 5 FB). Vout = 0.6 V x (1 + 453k/100k) = 3.32 V.
+# (1 EN, 2 GND, 3 LX, 4 VIN, 5 FB). Vout = 0.6 V x (1 + 100k/22k) = 3.33 V (453k isn't stocked).
 P["REG33"] = ("Regulator_Switching:TLV62569DBV", "Package_TO_SOT_SMD:SOT-23-5", "C78988", "SY8089AAAC", "U")
 P["REG33_NETS"] = {"VIN": "+5V", "EN": "+5V", "SW": "BUCK_LX", "FB": "BUCK_FB", "GND": "GND"}
 P["REG33_NC"] = ()
 P["REG33_EXTRAS"] = [
     ("C0805", "10u", ("+5V", "GND")),
     ("L", "2.2u", ("BUCK_LX", "+3V3")),
-    ("R0603", "453k", ("+3V3", "BUCK_FB")),
-    ("R0603", "100k", ("BUCK_FB", "GND")),
+    ("R0603", "100k", ("+3V3", "BUCK_FB")),
+    ("R0603", "22k", ("BUCK_FB", "GND")),
     ("C0603", "22p", ("+3V3", "BUCK_FB")),
     ("C1206", "22u", ("+3V3", "GND")),
     ("C1206", "22u", ("+3V3", "GND")),
