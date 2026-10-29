@@ -274,8 +274,8 @@ Template:
 - Date: 2026-10-28
 - Status: Accepted (Andrew)
 - Context: FR-15 needs one band color (or a red fault flash) readable down the shop; nothing needs per-LED effects. The 12-LED bar along the enclosure's bottom edge had no derivation behind its count. Separately: does the SEN65 need a power switch when sleep uses the module's Idle command?
-- Decision: Plain RGB LEDs driven by three LEDC PWM channels through low-side N-FETs from the 5 V input; no WS2812B or level shifter. A short diffused strip aligned with one edge of the display; length, diffuser depth and LED count are set in mech (~4–8 LEDs). An illuminated RGB encoder is evaluated in sourcing as an extra or alternative glow. The SEN65 load switch stays, for unattended recovery of a hung module only (a node reboot doesn't reset it); S-13's back-powering fixes are applied.
-- Alternatives considered: WS2812B bar (extended part plus shifter; effects not wanted). No sensor switch (two fewer parts; a hung sensor then needs a USB replug).
+- Decision: Plain RGB LEDs driven by three LEDC PWM channels through low-side N-FETs from the 5 V input; no WS2812B or level shifter. A short diffused strip aligned with one edge of the display; length, diffuser depth and LED count are set in mech (~4–8 LEDs). No illuminated encoder (Andrew: only worth it as a simpler or cheaper replacement for the strip, and a lit shaft isn't readable down the shop, FR-15). The SEN65 load switch stays, for unattended recovery of a hung module only (a node reboot doesn't reset it); S-13's back-powering fixes are applied.
+- Alternatives considered: WS2812B bar (extended part plus shifter; effects not wanted). Illuminated RGB encoder as the indicator (too small and dim for FR-15 at ~30 ft; costs more than a plain EC11 plus a few LEDs). No sensor switch (two fewer parts; a hung sensor then needs a USB replug).
 - Consequences: GPIO 48/41/42 for R/G/B; one spare (GPIO 2) left. The LEDs and FETs are probably JLC basic parts, but each LED needs a resistor per color. `SEN_PWR_EN` is active low with a gate pull-up (the earlier "pull-down" was wrong for a P-FET).
 
 ---

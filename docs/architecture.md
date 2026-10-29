@@ -198,7 +198,7 @@ Under the $300 ceiling, but not "well below" it. Most of it is fixed overhead (P
 - Fan-side LDO input rating (≥ 16 V) and quiescent current.
 - ESP32-S3 GPIO reset states and boot glitches on the GPIOs chosen for `FAN_PWM` and `SEN_PWR_EN`; LEDC configured at duty 0 before the pin is routed.
 - Boot config: task watchdog panic on, RTC watchdog on; reset-reason handling for the RTC mode snapshot (D-027). On the board: BOOT (GPIO0) and EN tact switches or pads, EN RC per the Espressif hardware design guide (G2 review S-14).
-- Indicator: plain RGB LED part (JLC basic if possible), and an illuminated RGB EC11-class encoder (clear shaft) as an option, with a knob that passes the light (D-031).
+- Indicator: plain RGB LED part (JLC basic if possible) (D-031).
 - Display module choice: 2.8" 240×320 **IPS confirmed from the panel datasheet, not the listing**, no touch layer; header pinout, backlight drive and current, mechanical outline (D-022).
 - JLC Economic PCBA rules (STATE action), opto/creepage footprints, and the antenna keep-out on the module footprint.
 - Wired DC input resistor values against the opto's CTR at 12 V DC and LED rating at 24 VAC + 10 % (`docs/interfaces.md` §2.3).

@@ -36,4 +36,4 @@
 - 2026-10-28: Display 2.0" → 2.8" 240×320 IPS, no touch (Andrew; D-022 amended). Power budget ≈ 1.5 W typical, cost ≈ $270.
 - 2026-10-28: Phase 3 reordered (D-029, Andrew): schematic and a priced parts list come before layout, mech and firmware.
 - 2026-10-28: Power: single external 5 V USB-C for power and flash/log, 3.3 V only, load-switched sensor rail; NFR-04 USB-C mouth exception (D-030, Andrew; supersedes D-020, amends D-018). Indicator count/drive under discussion.
-- 2026-10-28: Indicator plain RGB (3 FETs), short strip along a display edge, illuminated encoder as a sourcing option; SEN65 load switch kept for recovery, S-13 applied, `SEN_PWR_EN` polarity fixed (D-031).
+- 2026-10-28: Indicator plain RGB (3 FETs), short strip along a display edge, no illuminated encoder; SEN65 load switch kept for recovery, S-13 applied, `SEN_PWR_EN` polarity fixed (D-031).
