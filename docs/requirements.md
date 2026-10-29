@@ -32,7 +32,7 @@ Automatically control the shop exhaust fan (AC Infinity CLOUDLINE PRO S6) based 
 - **Auto** is the resting state; the sensors do most of the work. While **occupied**, the fan holds a low ventilation floor and rises with air quality, VOCs and DC boost. The fan turns **off only when the shop is vacant** and the air-quality criteria are met. Normal running favors low, quiet speeds; high speed only when needed (survey §2).
 - A **hold** sets a level for a duration ("max for 20 min", "off for 1 h"), then returns to Auto. Entry on the encoder: press, turn to set level, press, turn to set time, press. Each step defaults to the last value used, so repeating a hold is three presses.
 - A **scene** is a named hold plus what happens after it. The set is expected to grow. Initial: **Quiet** (speed capped for a time), **Boost** (max for a time), **Spray** (max, then run-on per FR-08, even if vacant).
-- **Panel:** rotary encoder with push, about 4 unlit buttons, ~2" display (D-009). Initial buttons: **Auto** (cancel to Auto), **Quiet**, **Boost**, spare. Scenes without a button start from the encoder menu.
+- **Panel:** rotary encoder with push, about 4 unlit buttons, a small display (2.8", D-022; D-009). Initial buttons: **Auto** (cancel to Auto), **Quiet**, **Boost**, spare. Scenes without a button start from the encoder menu.
 - **Ambient indicator:** a color indicator readable down the length of the shop, showing the air-quality band.
 
 ## 4. Functional requirements

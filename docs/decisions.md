@@ -194,13 +194,13 @@ Template:
 - Alternatives considered: A constant 500 ms interval with a higher scan duty (more radio time taken from Wi-Fi). Extended advertising (BLE 5; not needed for 21 bytes).
 - Consequences: The DC project implements the encoder from this table. The exhaust side tests the parser and timeout on the host.
 
-## D-022: ESP32-S3-WROOM-1-N16R8, 2.0" ST7789 module, LVGL
+## D-022: ESP32-S3-WROOM-1-N16R8, 2.8" IPS display module, LVGL
 - Date: 2026-10-25
 - Status: Proposed (G2)
 - Context: D-008 named the ESP32-S3. D-016 flagged NimBLE RAM, with a PSRAM module as the fallback. Andrew's hvac_control already uses LVGL.
-- Decision: The N16R8 module (octal PSRAM, so GPIO 35–37 are unavailable). A 2.0" 240×320 IPS ST7789-class SPI display module on a header. LVGL via `esp_lcd`.
-- Alternatives considered: N8 without PSRAM (cheaper by ~$1; RAM is tight with NimBLE, TLS OTA and LVGL). A bare FPC panel (cheaper, but a fine-pitch connector and backlight circuit on our board).
-- Consequences: GPIO plan in `docs/interfaces.md` §2. The display module's outline feeds the enclosure in phase 3.
+- Decision: The N16R8 module (octal PSRAM, so GPIO 35–37 are unavailable). A 2.8" 240×320 **IPS** SPI display module (ST7789 or ILI9341-IPS class) on a header, **no touch** (Andrew, 2026-10-28; was 2.0"). LVGL via `esp_lcd`.
+- Alternatives considered: N8 without PSRAM (cheaper by ~$1; RAM is tight with NimBLE, TLS OTA and LVGL). A bare FPC panel (cheaper, but a fine-pitch connector and backlight circuit on our board). 2.0" IPS (smaller enclosure; same 240×320, so text is ~30 % smaller at the user's distance under the cabinet). 2.8" TN (common and cheap, but washes out viewed from below). Resistive touch (dulls the image; the encoder and buttons cover input, D-009).
+- Consequences: GPIO plan in `docs/interfaces.md` §2. The display module's outline feeds the enclosure in phase 3; the bezel and board grow to about 50 × 86 mm for the module. Backlight ~2× the 2.0" draw (power budget updated, ≈ 1.5 W typical). Sourcing must confirm IPS from the panel datasheet. Cost ≈ +$3 per board.
 
 ## D-023: Fan-powered, fail-off isolated fan interface
 - Date: 2026-10-25

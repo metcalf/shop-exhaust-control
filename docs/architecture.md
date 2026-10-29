@@ -26,7 +26,7 @@ flowchart LR
       subgraph NODE["Node side (GND, 12/5/3.3 V)"]
         MCU["ESP32-S3-WROOM-1-N16R8<br/>Wi-Fi + BLE (D-022)"]
         PWR["Fuse, RP-FET, TVS<br/>12→5 V buck, 5→3.3 V buck,<br/>5→3.3 V LDO (sensor, switched)"]
-        PANEL["2.0&quot; IPS display, EC11 encoder,<br/>4 buttons"]
+        PANEL["2.8&quot; IPS display (no touch), EC11 encoder,<br/>4 buttons"]
         LEDS["12× WS2812B → light bar"]
         USB["USB-C, internal only (D-020)"]
       end
@@ -71,7 +71,7 @@ flowchart LR
 - **Fan interface:** `docs/interfaces.md` §2.1. Three optos cross the barrier (speed, tach, presence). The fan side is powered by the fan's +10 V, so the default (unlit LED) state is fan off.
 - **Occupancy:** AC-input opto from 24 VAC (`docs/interfaces.md` §2.2).
 - **Wired DC backup:** the same AC-input opto circuit, accepting 12–24 V AC/DC (`docs/interfaces.md` §2.3, D-025).
-- **Power:** 12 V in, two bucks and a switched sensor LDO (`docs/interfaces.md` §3). Peak ≈ 4.8 W, typical ≈ 1.3 W.
+- **Power:** 12 V in, two bucks and a switched sensor LDO (`docs/interfaces.md` §3). Peak ≈ 5 W, typical ≈ 1.5 W.
 - **Panel:** display module on a header; encoder and tact switches mounted on the PCB front, behind the bezel. Board-edge LEDs feed the light bar.
 - **PCBA (NFR-05):** SMT on one side from JLC basic/preferred parts where possible. Through-hole (barrel jack, terminal block, display header, encoder) is hand-soldered or done as a THT add-on. The tier rules are checked in the phase 3 vendor research.
 - **Off-board wiring:** fan cable hard-wired into a 4-pos terminal (D-026), 2-conductor thermostat wire to the 24 VAC terminals, optional 2-conductor DC backup, 12 V barrel. WireViz drawing in `electrical/` in phase 3 (D-010).
@@ -88,7 +88,7 @@ firmware/
     gas_index/                Sensirion gas index algorithm (BSD-3, vendored C), D-017
     hass/                     HassMessages (pure) + MqttExhaustHomeClient (BaseMqttClient)
     drivers/                  Sen6x (I²C), FanPort (LEDC 5 kHz + tach ISR + present), Occupancy,
-                              Panel (PCNT encoder, buttons), Display (esp_lcd ST7789 + LVGL), Indicator (RMT)
+                              Panel (PCNT encoder, buttons), Display (esp_lcd ST7789/ILI9341 + LVGL), Indicator (RMT)
     dc_link/                  NimBLE passive scanner → DcLinkParser
   test/                       host GoogleTest (control-logic.md §10), results committed
 ```
@@ -178,15 +178,15 @@ These are **estimates from memory, not checked against distributors** (except th
 | Item | Est. USD |
 |------|---------:|
 | SEN65 (SEN66 is $62; SEN65 assumed lower) | 45 |
-| On-board parts per board: ESP32-S3 module 5, display module 8, encoder + knob 4, switches 2, LEDs + shifter 2, optos 4, power 5, connectors 2, passives/ESD 3 | 35 |
-| Second assembled board (JLC PCBA minimum quantity is 2; a spare) | 35 |
+| On-board parts per board: ESP32-S3 module 5, display module 11, encoder + knob 4, switches 2, LEDs + shifter 2, optos 4, power 5, connectors 2, passives/ESD 3 | 38 |
+| Second assembled board (JLC PCBA minimum quantity is 2; a spare; display module optional) | 38 |
 | PCB fab + PCBA fees (setup, stencil, extended-part fees) | 35 |
 | Enclosure, MJF PA12, two parts + bracket | 40 |
 | Gasket, heat-set inserts, screws, diffuser | 10 |
 | 12 V listed adapter + barrel extension | 15 |
 | 4-conductor extension for the fan cable if needed, and 18/2 thermostat wire for occupancy (and the DC backup) | 15 |
 | Shipping and duties (PCBA and print in one JLC order) | 35 |
-| **Total** | **≈ 265** (range ≈ 225–300) |
+| **Total** | **≈ 270** (range ≈ 230–300) |
 
 Under the $300 ceiling, but not "well below" it. Most of it is fixed overhead (PCBA fees, the second board, shipping and duties) and the sensor. The levers, in order: one JLC order for PCBA and print (shipping); minimize extended parts (fees); a smaller enclosure, or FDM instead of MJF; a cheaper display module. Tariffs and shipping are the main uncertainty.
 
@@ -197,6 +197,6 @@ Under the $300 ceiling, but not "well below" it. Most of it is fixed overhead (P
 - Fan-side LDO input rating (≥ 16 V) and quiescent current.
 - ESP32-S3 GPIO reset states and boot glitches on the GPIOs chosen for `FAN_PWM` and `SEN_PWR_EN`; LEDC configured at duty 0 before the pin is routed.
 - Boot config: task watchdog panic on, RTC watchdog on; reset-reason handling for the RTC mode snapshot (D-027). On the board: BOOT (GPIO0) and EN tact switches or pads, EN RC per the Espressif hardware design guide (G2 review S-14).
-- Display module choice (header pinout, backlight drive) and mechanical outline.
+- Display module choice: 2.8" 240×320 **IPS confirmed from the panel datasheet, not the listing**, no touch layer; header pinout, backlight drive and current, mechanical outline (D-022).
 - JLC Economic PCBA rules (STATE action), opto/creepage footprints, and the antenna keep-out on the module footprint.
 - Wired DC input resistor values against the opto's CTR at 12 V DC and LED rating at 24 VAC + 10 % (`docs/interfaces.md` §2.3).

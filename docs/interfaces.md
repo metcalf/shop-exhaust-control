@@ -54,7 +54,7 @@ GPIOs assume an ESP32-S3-WROOM-1-N16R8 (D-022): GPIO 0/3/45/46 (strapping), 19/2
 | `DC_IN` | In | AC-input opto, RC-filtered (§2.3) | 3.3 V, low = asserted | J-DC (2-pos pluggable terminal, 5.0 mm) | 1 | Wired `DC_RUNNING` backup (D-025). Firmware debounce C-31 |
 | SEN65 I²C SDA / SCL | Bidir | I²C 100 kHz, 10 kΩ pull-ups | 3.3 V (sensor rail) | J-SEN (module's 6-pin cable; connector verified in phase 3) | 8 / 9 | Run < 10 cm (sensor bay directly below the board) |
 | `SEN_PWR_EN` | Out | LDO enable for the sensor rail | 3.3 V | — | 10 | Lets firmware power-cycle the module to recover a fault (SR-04). Pull-down: rail off during boot until firmware enables |
-| Display SPI SCLK / MOSI / CS / DC / RST | Out | SPI 40 MHz | 3.3 V | J-DISP (8-pin 0.1" header, module) | 12 / 11 / 13 / 14 / 21 | 2.0" 240×320 IPS, ST7789V-class module (D-022) |
+| Display SPI SCLK / MOSI / CS / DC / RST | Out | SPI 40 MHz | 3.3 V | J-DISP (8-pin 0.1" header, module) | 12 / 11 / 13 / 14 / 21 | 2.8" 240×320 IPS, ST7789/ILI9341-class module, no touch (D-022) |
 | Display backlight | Out | PWM to N-FET | 3.3 V | J-DISP | 47 | Dim when vacant; off after C-21 vacant |
 | Encoder A / B / push | In | Quadrature + push, RC debounce 10 kΩ/10 nF | 3.3 V | on board (EC11-class) | 15 / 16 / 17 | PCNT for quadrature |
 | Buttons 1–4 | In | Momentary tact, RC debounce | 3.3 V | on board | 18 / 38 / 39 / 40 | Assignments are config (initially Auto, Quiet, Boost, spare) (D-009) |
@@ -116,13 +116,13 @@ The same circuit as §2.2, with the series resistance sized so 12 V DC still lig
 | Load | Rail | Typical | Peak | Source |
 |------|------|---------|------|--------|
 | ESP32-S3 module, Wi-Fi + BLE scan | 3.3 V main | 110 mA | 360 mA (TX) | ESP32-S3 datasheet (verify) |
-| Display logic + backlight | 3.3 V main | 30 mA | 50 mA | typical 2" module |
+| Display logic + backlight | 3.3 V main | 80 mA | 100 mA | typical 2.8" module (verify) |
 | Node-side opto drive, pull-ups | 3.3 V main | 5 mA | 12 mA | §2 |
 | SEN65 measuring | 3.3 V sensor | 90 mA | 350 mA for 2 ms (110 mA max sustained) | SEN6x DS Table 12 |
 | Indicator, 12 LEDs | 5 V | 60 mA | 300 mA (firmware cap) | WS2812B ~12–20 mA/channel |
-| **Total at 12 V input** (bucks ~88 %) | 12 V | **≈ 0.11 A (1.3 W)** | **≈ 0.40 A (4.8 W)** | |
+| **Total at 12 V input** (bucks ~88 %) | 12 V | **≈ 0.13 A (1.5 W)** | **≈ 0.42 A (5.0 W)** | |
 
-The 12 V/1 A adapter has > 2× peak margin. About 1.3 W dissipates in the sealed electronics compartment (a few kelvin of rise); the sensor bay is thermally separated (`docs/architecture.md` §5) and the SEN65 temperature offset is tuned at commissioning (FR-20).
+The 12 V/1 A adapter has > 2× peak margin. About 1.5 W dissipates in the sealed electronics compartment (a few kelvin of rise); the sensor bay is thermally separated (`docs/architecture.md` §5) and the SEN65 temperature offset is tuned at commissioning (FR-20).
 - **Fan side:** powered by the fan's +10 V (§2.1), not by the node.
 - **USB:** when the internal USB-C is plugged in for flashing, VBUS feeds the 5 V rail through a Schottky (OR-ed with the buck output), enough to boot and flash; firmware limits the indicator while running from USB only.
 
