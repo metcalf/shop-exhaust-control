@@ -134,7 +134,7 @@ Template:
 
 ## D-015: Controller at the north (exhaust) end
 - Date: 2026-10-25
-- Status: Accepted (Andrew, 2026-10-25), replaces D-014 (panel above the miter station). Spot: under the north-wall upper cabinets, < 10 ft of cable to the fan cabinet (Q-23)
+- Status: Accepted (Andrew, 2026-10-25), replaces D-014 (panel above the miter station). Spot: under the north-wall upper cabinets, < 10 ft of cable to the fan cabinet (Q-23). **Spot amended by D-033** (refrigerator side panel); the north-end choice stands
 - Context: Makeup air enters at the south end and the hood exhausts at the north, so air flows the length of the shop. A sensor at the miter station (D-014) would be blind to everything downstream of it: the lathe, the north bench (soldering) and spraying north of it.
 - Decision: Panel, ambient indicator and sensors go together at the north end, out of the hood's capture zone. Spot: hung under the north-wall upper cabinets (Q-23), at least 3 ft from the hood's edge, facing south down the shop. The enclosure hangs from the cabinet bottom with the display and controls angled toward the user, and the sensor inlet faces into the room. All site wiring (fan port, 24 VAC, supply) is local to the fan cabinet. Whether the DC gets its own panel or shares this one is deferred to the DC project.
 - Alternatives considered:
@@ -172,7 +172,7 @@ Template:
 
 ## D-019: One enclosure: sealed electronics above an open sensor bay
 - Date: 2026-10-25
-- Status: Proposed — needs Andrew (sets the enclosure's shape and cutouts; dimensions wait on Q-27)
+- Status: Proposed — needs Andrew (sets the enclosure's shape and cutouts). Mounting amended by D-033: wall cleat on the fridge side panel, not a cabinet bracket
 - Context: NFR-03/04/09, D-015 (under the north cabinets), Sensirion's guidance to keep the module below heat sources.
 - Decision: One PA12 enclosure hung from a cabinet bracket. The sealed electronics compartment is on top, with the panel on the front face and the light bar along its bottom edge. The open sensor bay is below, with a front grille and a tool-less cover; the module cable crosses through a sealed grommet. Cables enter at the back or top with strain reliefs.
 - Alternatives considered: A separate sensor pod on a short cable (better thermal separation, but I²C over a longer run and two enclosures). Sensor bay beside the electronics (shorter enclosure, but at the same height as the heat).
@@ -288,11 +288,11 @@ Template:
 
 ## D-033: Controller on the refrigerator side panel next to the hood
 - Date: 2026-10-29
-- Status: Proposed — needs Andrew (amends D-015's spot and relaxes approved NFR-09; Q-32 has the measurements)
+- Status: Accepted (Andrew, Q-27/Q-32, 2026-10-29). Amends D-015's spot and approved NFR-09, IR-04
 - Context: Andrew proposes the side of the refrigerator panel beside the hood (`docs/site/mounting location option - next to intake.jpg`): within reach, near the airflow, still visible from most of the shop. NFR-09 wants the sensor inlet ≥ 3 ft from the hood's edge; the panel looks closer.
-- Decision: Wall-mount on the panel's front half (toward the room), panel at standing height, sensor bay below with its inlet facing the room, indicator on the room-facing edge so it reads down the shop. NFR-09's distance becomes "as far from the hood as the panel allows", validated by AC-17.
+- Decision: Wall-mount a few inches back from the panel's front edge, center ~60" up (hood intake ~66"); the panel face is ~18" laterally from the hood's edge, so the inlet is ≈ 2 ft from the hood. Display faces across the kids' workbench; the sensor inlet and indicator are on the room-facing end. NFR-09's distance becomes "as far from the hood as the mount allows" (≈ 2 ft), validated by AC-17.
 - Alternatives considered: Under the north cabinets ≥ 3 ft from the hood (D-015 as written; harder to reach).
-- Consequences: The enclosure becomes a flat wall mount, not a cabinet-hung unit (D-019's compartments stay; the slide-off bracket becomes a wall cleat). Local sources at the bench below (soldering) will read high before the hood clears them, which raises the fan; accepted unless AC-17 or commissioning shows it misleads clear-down. Cable route from the fan cabinet down the panel edge, < 10 ft.
+- Consequences: The enclosure becomes a flat wall mount, not a cabinet-hung unit (D-019's compartments stay; the slide-off bracket becomes a wall cleat). The kids' workbench below (glue, markers, hot glue) will show as local VOC/PM and can raise the fan; accepted unless AC-17 or commissioning shows it misleads clear-down. At ~60" over a kids' bench, the panel is in children's reach: holds expire and the logic returns to Auto, and a panel lock is on the firmware backlog. Cable route from the fan cabinet down the panel edge, < 10 ft.
 
 ---
 

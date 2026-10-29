@@ -108,11 +108,11 @@ firmware/
 
 ## 5. Mechanical concept (D-019, details in phase 3)
 
-- One printed enclosure (MJF PA12, D-011) with two compartments: a **sealed electronics compartment** on top (gasketed lid, no vents, sealed encoder shaft and membrane-covered buttons; IP5X intent, NFR-04), and an **open sensor bay** below it with a front grille, its inlet facing south into the room (NFR-09).
+- One printed enclosure (MJF PA12, D-011) with two compartments: a **sealed electronics compartment** on top (gasketed lid, no vents, sealed encoder shaft and membrane-covered buttons; IP5X intent, NFR-04), and an **open sensor bay** below it, its inlet on the room-facing end, facing south into the room (NFR-09).
 - Bay below the electronics, with an insulating air gap in the dividing wall: it keeps the SEN65 below and away from the ~1.3 W of electronics heat, as Sensirion recommends, and the RH/T offset is tuned at commissioning (FR-20).
 - Tool-less bay cover. The module unplugs at its own end, and its cable crosses into the electronics compartment through a sealed grommet (NFR-03, NFR-04).
-- Front face toward the room: display, encoder and buttons, with a short light strip along one edge of the display (D-031).
-- The enclosure hangs from a cabinet bracket and comes off with one screw (`docs/interfaces.md` §5). Dimensions wait on Q-27.
+- Display, encoder and buttons on the face toward the kids' bench; the light strip on the room-side edge, wrapping onto the room-facing end (D-031, D-033).
+- Wall-mounted on a cleat on the refrigerator side panel, one locking screw (`docs/interfaces.md` §5, D-033).
 - No part of the controller is in the exhaust airstream (SR-02): it's outside the cabinet, ≥ 3 ft from the hood.
 
 ## 6. Failure modes

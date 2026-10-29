@@ -7,9 +7,9 @@
 ## Next actions
 1. **Andrew, G2:** approve `docs/architecture.md`, `docs/control-logic.md`, `docs/interfaces.md` and D-017…D-028 (D-019 enclosure form and D-023 fail-off interface are "needs Andrew"). Review: `reviews/G2-review.md`.
 2. **Claude, phase 3 order after G2 (D-029):** vendor check → schematic (ERC clean) → priced parts list for Andrew's review → then layout, mech, firmware. Fold in the hardware findings before the schematic: S-2 (worst-case fan-side current from datasheet maxima; needs Q-26), S-4 (isolation-domain table, every barrier crossing), S-5 (`DC_IN` resistor/CTR/pull-up at 12 VDC, 12 VAC, 26.4 VAC), S-13 is applied (D-031). S-14 and S-17 are done; S-1 accepted (D-028).
-3. **Claude, firmware backlog, handled at implementation rather than as doc revisions (process note 2026-10-28):** S-3 overspeed / tach at 0 %, S-6 frozen-sequence DC frames (record in D-021 when the DC project starts), S-7 SprayRunOn upper bound while occupied (FR-08 change, ask Andrew then), S-8, S-9, S-10, S-11, S-12, S-15, S-16 (MQTT keepalive ≤ 30 s; check `BaseMqttClient`).
+3. **Claude, firmware backlog, handled at implementation rather than as doc revisions (process note 2026-10-28):** S-3 overspeed / tach at 0 %, S-6 frozen-sequence DC frames (record in D-021 when the DC project starts), S-7 SprayRunOn upper bound while occupied (FR-08 change, ask Andrew then), S-8, S-9, S-10, S-11, S-12, S-15, S-16 (MQTT keepalive ≤ 30 s; check `BaseMqttClient`); panel lock against kids at the bench (D-033).
 4. **Claude, with the schematic:** PCBA vendor comparison including JLCPCB Economic tier rules (Q-14, NFR-05) first, plus `docs/architecture.md` §9. Check the claim that JLC Economic reflow is too hot for ESP32 modules (`sourcing/fan-pwm-thread.md`). H11L1 stays unless the priced list shows a significant saving from PC817 at ~1 kHz. Swap to basic parts where it's free (LTV-814 → PC817 + diode; 5→3.3 V buck → AMS1117; switched sensor rail → AMS1117 + AO3401) and check H11L1 SMD stock early.
-5. **Andrew:** Q-32 (fridge-panel measurements and the NFR-09 relaxation, D-033; before mech).
+5. **Andrew:** no open questions.
 
 ## Blockers
 - None.
@@ -40,3 +40,4 @@
 - 2026-10-28: Field wiring on fixed 3.5 mm screw terminals, not pluggable (D-032, Andrew).
 - 2026-10-28: Read the rollitup Cloudline/ESP32 thread: PC817 at 1 kHz isn't validated there; H11L1 at 5 kHz stays unless cost says otherwise (`sourcing/fan-pwm-thread.md`).
 - 2026-10-29: Q-31 (≈ 60 µA leakage) confirms SELV (D-028). Q-26: stock controller draws ≈ 9.3 mA from the port, so the fail-off budget fits (D-023). Q-27: Andrew proposes the fridge side panel by the hood (D-033 proposed; Q-32 for measurements and NFR-09).
+- 2026-10-29: Q-32: fridge-panel mount accepted (D-033): ~18" from the hood edge, center ~60" up, inlet ≈ 2 ft from the hood; NFR-09 and IR-04 amended. Kids' workbench below; panel lock on the firmware backlog.
