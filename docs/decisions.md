@@ -254,6 +254,14 @@ Template:
 - Alternatives considered: Reinforced barrier and fan-side cover regardless (unnecessary if Q-31 confirms). Feed Q1/U1 from +10 V to close S-1 (stays an option if Q-26 shows the port current is tight, since it also cuts the draw).
 - Consequences: If Q-31 reads above the ES1 touch-current limit (0.5 mA), B-2's reinforced fix applies before layout. AC-18 records fan power-up behavior instead of requiring it to be off.
 
+## D-029: Phase 3 starts with the schematic and a priced parts list
+- Date: 2026-10-28
+- Status: Accepted (Andrew)
+- Context: The part choices (ESP32 module, H11L1-class opto, regulators, display) drive cost, JLC extended-part fees, board size and enclosure dimensions. Pricing was planned for phase 4, after the mech and firmware work that depends on those parts.
+- Decision: After G2, phase 3 runs in this order: (1) PCBA vendor check (JLC Economic rules, Q-14); (2) KiCad schematic, ERC clean; (3) priced parts list from the schematic: LCSC basic/preferred/extended status, stock, price, fees, plus off-board parts; Andrew reviews it as a checkpoint; (4) only then PCB layout, mech and firmware. G4 still approves the final BOM.
+- Alternatives considered: phase order as in CLAUDE.md (design everything, then source).
+- Consequences: Part swaps to cut extended-part fees (e.g. LTV-814 → PC817 + diode, 5→3.3 V buck → AMS1117, enabled LDO → AMS1117 + AO3401) are made in the schematic, not after layout. The firmware host-test work also waits; it doesn't depend on hardware, but Andrew wants the cost picture first.
+
 ---
 
 ## Gate approvals

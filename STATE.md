@@ -6,9 +6,9 @@
 
 ## Next actions
 1. **Andrew, G2:** approve `docs/architecture.md`, `docs/control-logic.md`, `docs/interfaces.md` and D-017…D-028 (D-019 enclosure form and D-023 fail-off interface are "needs Andrew"). Review: `reviews/G2-review.md`.
-2. **Claude, hardware findings before the phase 3 schematic:** S-2 (worst-case fan-side current from datasheet maxima; needs Q-26), S-4 (isolation-domain table, every barrier crossing), S-5 (`DC_IN` resistor/CTR/pull-up at 12 VDC, 12 VAC, 26.4 VAC), S-13 (SEN65 back-powered through I²C with its rail off). S-14 and S-17 are done; S-1 accepted (D-028).
+2. **Claude, phase 3 order after G2 (D-029):** vendor check → schematic (ERC clean) → priced parts list for Andrew's review → then layout, mech, firmware. Fold in the hardware findings before the schematic: S-2 (worst-case fan-side current from datasheet maxima; needs Q-26), S-4 (isolation-domain table, every barrier crossing), S-5 (`DC_IN` resistor/CTR/pull-up at 12 VDC, 12 VAC, 26.4 VAC), S-13 (SEN65 back-powered through I²C with its rail off). S-14 and S-17 are done; S-1 accepted (D-028).
 3. **Claude, firmware backlog, handled at implementation rather than as doc revisions (process note 2026-10-28):** S-3 overspeed / tach at 0 %, S-6 frozen-sequence DC frames (record in D-021 when the DC project starts), S-7 SprayRunOn upper bound while occupied (FR-08 change, ask Andrew then), S-8, S-9, S-10, S-11, S-12, S-15, S-16 (MQTT keepalive ≤ 30 s; check `BaseMqttClient`).
-4. **Claude, before phase 3 PCB:** PCBA vendor comparison including JLCPCB Economic tier rules (Q-14, NFR-05), plus `docs/architecture.md` §9.
+4. **Claude, with the schematic:** PCBA vendor comparison including JLCPCB Economic tier rules (Q-14, NFR-05) first, plus `docs/architecture.md` §9. Swap to basic parts where it's free (LTV-814 → PC817 + diode; 5→3.3 V buck → AMS1117; switched sensor rail → AMS1117 + AO3401) and check H11L1 SMD stock early.
 5. **Andrew:** Q-31 (2 kΩ loaded leakage check, before layout), Q-26 (port current, before schematic), Q-27 (mounting, before mech).
 
 ## Blockers
@@ -34,3 +34,4 @@
 - 2026-10-26: G2 reviewer run: 3 blocking (B-1 resets end Spray, SR-03; B-2 SR-09 basic-only barrier with unknown SELV and lid-off service; B-3 high PM classed as `sensor_range` fault). Fixed B-3 in control-logic §6 and AC-02 test; Q-29/Q-30 for B-1/B-2.
 - 2026-10-28: Applied Q-29 (D-027: hold/scene and remaining time survive non-power resets via RTC memory; OTA not deferred; stuck tasks just reboot) and Q-22/Q-30 (D-028: port treated as SELV, basic barrier kept, Q-31 loaded check before layout). S-1 fan power-up burst accepted. S-14 boot-config items added to architecture §9; S-17 TVS → SMBJ48CA. Review triaged into hardware-now / firmware-backlog after Andrew's process note.
 - 2026-10-28: Display 2.0" → 2.8" 240×320 IPS, no touch (Andrew; D-022 amended). Power budget ≈ 1.5 W typical, cost ≈ $270.
+- 2026-10-28: Phase 3 reordered (D-029, Andrew): schematic and a priced parts list come before layout, mech and firmware.
