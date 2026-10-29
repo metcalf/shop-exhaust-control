@@ -22,7 +22,6 @@
 4. **Priced parts list** from the schematic → `sourcing/priced-parts.md` (or a `bom.csv` draft). For each part: LCSC number, basic/preferred/extended, stock, unit price, loading fee, date checked. Add off-board parts (display module, SEN65, adapter, cable, enclosure estimate) and a total against NFR-08 ($300). **Stop here for Andrew's review** (D-029). No layout, mech or firmware before he OKs it.
 5. **Firmware backlog, for implementation later (not now):**
    - G2 review items: S-3 overspeed / tach at 0 %; S-6 frozen-sequence DC frames (record in D-021 when the DC project starts); S-7 SprayRunOn upper bound while occupied (an FR-08 change, ask Andrew then); S-8, S-9, S-10, S-11, S-12, S-15; S-16 MQTT keepalive ≤ 30 s (check `BaseMqttClient`).
-   - Panel lock against kids at the bench (D-033).
 
 ## Notes for an unattended run
 - The schematic is more than one night's work. Commit progress in coherent steps and leave STATE.md saying exactly where it stopped.
@@ -58,5 +57,6 @@
 - 2026-10-28: Field wiring on fixed 3.5 mm screw terminals, not pluggable (D-032, Andrew).
 - 2026-10-28: Read the rollitup Cloudline/ESP32 thread: PC817 at 1 kHz isn't validated there; H11L1 at 5 kHz stays unless cost says otherwise (`sourcing/fan-pwm-thread.md`).
 - 2026-10-28: Q-31 (≈ 60 µA leakage) confirms SELV (D-028). Q-26: stock controller draws ≈ 9.3 mA from the port, so the fail-off budget fits (D-023). Q-27: Andrew proposes the fridge side panel by the hood (D-033 proposed; Q-32 for measurements and NFR-09).
-- 2026-10-28: Q-32: fridge-panel mount accepted (D-033): ~18" from the hood edge, center ~60" up, inlet ≈ 2 ft from the hood; NFR-09 and IR-04 amended. Kids' workbench below; panel lock on the firmware backlog.
+- 2026-10-28: Q-32: fridge-panel mount accepted (D-033): ~18" from the hood edge, center ~60" up, inlet ≈ 2 ft from the hood; NFR-09 and IR-04 amended. Kids' workbench below.
 - 2026-10-28: **G2 approved** (Andrew). D-019 and D-023 accepted with it. Phase 3 started; STATE set up for the nightly run (vendor check → toolchain → schematic → priced parts list, then stop for Andrew).
+- 2026-10-28: No panel lock (Andrew). Front carries display, controls and the light strip (wrapping the room-side corner); sensor inlet on the bay's bottom (D-033).
