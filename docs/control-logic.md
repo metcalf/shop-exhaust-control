@@ -42,7 +42,7 @@ This is the contract for the pure C++ component `exhaust_logic` (no ESP-IDF head
   - the shop is vacant and `now − t_vacant ≥ P-21` (the extension counts against the vacant limit). If PM or VOC is still above its off-threshold, raise **clear-down incomplete**.
 - **Spray protects the sensor:** the Sampler holds the SEN65 in Idle from Spray start until `t_min − C-07`, so a warmed-up, valid PM and VOC reading is ready at `t_min` (FR-08, confirmed Q-28 (b)).
 - **Auto press** returns to Auto from any mode, including Spray and SprayRunOn, with no run-on (FR-08, D-024). It's an explicit user override, not a sensor or network path, so SR-03 still holds. Leaving Spray this way means the SEN65 starts from Idle: PM demand needs P-06 and VOC demand C-07 before they count, so Auto runs on floor and DC demand for the first minute.
-- **Reset or power loss:** always Auto. No hold or scene resumes (NFR-07).
+- **Reset (NFR-07, D-027):** after a power-on or brown-out reset, Auto. After any other reset (software, panic, watchdog, OTA reboot), the current mode resumes with its remaining time. The Controller exposes `ModeSnapshot` (mode, hold level, remaining D, and for SprayRunOn the time since `t_end`) and `restore(snapshot, now)`. The platform layer keeps the snapshot in RTC no-init memory with a magic and CRC, refreshes it every tick, and restores it only when the reset reason isn't power-on/brown-out and the CRC is valid. Boot time (fan held off in hardware, a few seconds) isn't counted against D. Everything else (occupancy edges, PM/VOC state) restarts as at power-up.
 - Spray, holds, Quiet and Boost run whether occupied or vacant. Holds aren't vacant-limited (FR-19). Quiet's Auto part is.
 
 ## 3. Occupancy and vacancy (FR-07, FR-19)
@@ -189,7 +189,7 @@ Layout, matching hvac_control: `firmware/components/exhaust_logic/` (pure C++20)
 | AC-05 | Spray from every mode; sensors faulted, absent or offline; full within 2 s; run-on ≥ P-09 and until criteria; module Idle until `t_min − C-07`; Auto press or a new hold/scene during Spray and SprayRunOn takes effect at once |
 | AC-06 | DC assert/de-assert/link timeout on each of `dc_ble` and `dc_wired`, and both; floor P-10 for P-11 after; PM above P-10 wins; holds override |
 | AC-10 | VOC raw step → index > P-12 → ≥ P-13; release below off-level |
-| AC-18 (logic part) | Boot output 0; reset mid-hold returns Auto |
+| AC-18 (logic part) | Boot output 0; `restore` mid-hold, mid-Spray and mid-SprayRunOn resumes with the remaining time and keeps `t_min`; no snapshot or a bad CRC → Auto |
 | AC-20 | Sensor fault with PM and VOC high: occupied → P-01 floor; vacant → off; DC boost still applied (≤ P-22 vacant); within P-18 + 5 s; no clear-down incomplete notice |
 | AC-22 (sim part) | `DcLinkParser`: valid/invalid frames, other `0xFFFF` users, version handling, timeout |
 | AC-27 | Vacant PM pinned high → ≤ P-22, off at P-21, notice; vacant Spray with VOC high → full through P-09, off at P-21; vacant hold runs its duration; reset on occupancy |

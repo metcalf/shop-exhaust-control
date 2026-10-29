@@ -1,14 +1,15 @@
 # Project State
 
-**Updated:** 2026-10-26
-**Phase:** 2, architecture (G1 approved 2026-10-25). G2 draft complete with Q-25/Q-28 applied; **G2 review done** (`reviews/G2-review.md`: 3 blocking, 17 should-fix, 19 notes). B-3 fixed; B-1/B-2 wait on Andrew (Q-29, Q-30)
-**Waiting on:** Andrew: Q-29, Q-30 (Q-22 measurement), then G2 review
+**Updated:** 2026-10-28
+**Phase:** 2, architecture. **Ready for G2 sign-off:** all three blocking review findings are resolved (B-1 D-027, B-2 D-028, B-3 fixed). Should-fix items are triaged below.
+**Waiting on:** Andrew's G2 approval
 
 ## Next actions
-1. **Claude:** apply Q-29/Q-30 once answered (B-1, B-2); work the should-fix items S-1…S-17 in `reviews/G2-review.md` (S-1 fan-power-up ordering and S-2 port current first, both SR-08).
-2. **Andrew, at G2:** review `docs/architecture.md`, `docs/control-logic.md`, `docs/interfaces.md` and D-017…D-026 (D-019 and D-023 are "needs Andrew"). Q-27 (mounting measurements) is needed before phase 3 mech, not G2.
-3. **Claude, before phase 3 PCB:** brief PCBA vendor comparison including JLCPCB Economic tier rules (Q-14, NFR-05), plus the verify list in `docs/architecture.md` §9.
-4. **Andrew (optional):** Q-22 (fan-port GND to the mains prongs), Q-26 (stock controller current on red).
+1. **Andrew, G2:** approve `docs/architecture.md`, `docs/control-logic.md`, `docs/interfaces.md` and D-017…D-028 (D-019 enclosure form and D-023 fail-off interface are "needs Andrew"). Review: `reviews/G2-review.md`.
+2. **Claude, hardware findings before the phase 3 schematic:** S-2 (worst-case fan-side current from datasheet maxima; needs Q-26), S-4 (isolation-domain table, every barrier crossing), S-5 (`DC_IN` resistor/CTR/pull-up at 12 VDC, 12 VAC, 26.4 VAC), S-13 (SEN65 back-powered through I²C with its rail off). S-14 and S-17 are done; S-1 accepted (D-028).
+3. **Claude, firmware backlog, handled at implementation rather than as doc revisions (process note 2026-10-28):** S-3 overspeed / tach at 0 %, S-6 frozen-sequence DC frames (record in D-021 when the DC project starts), S-7 SprayRunOn upper bound while occupied (FR-08 change, ask Andrew then), S-8, S-9, S-10, S-11, S-12, S-15, S-16 (MQTT keepalive ≤ 30 s; check `BaseMqttClient`).
+4. **Claude, before phase 3 PCB:** PCBA vendor comparison including JLCPCB Economic tier rules (Q-14, NFR-05), plus `docs/architecture.md` §9.
+5. **Andrew:** Q-31 (2 kΩ loaded leakage check, before layout), Q-26 (port current, before schematic), Q-27 (mounting, before mech).
 
 ## Blockers
 - None.
@@ -31,3 +32,4 @@
 - 2026-10-26: Nightly harness: subagents allowed; session closes on an explicit done signal, idle watchdog, subagent spawns gated at 70% 5h usage (`scripts/README.md`).
 - 2026-10-26: Applied Q-28 (D-024: Auto press and new holds/scenes override Spray and its run-on; a sensor fault drops only PM/VOC demand, P-19 dropped; `fan_port` fault into FR-18) and wired opto `DC_RUNNING` backup input used for AC-06 (D-025, amends D-016/IR-01). Q-25: fan hard-wired to a 4-pos terminal, no USB-C (D-026). Fixed the 24 VAC input TVS (≥ 40 V standoff). G2 reviewer started.
 - 2026-10-26: G2 reviewer run: 3 blocking (B-1 resets end Spray, SR-03; B-2 SR-09 basic-only barrier with unknown SELV and lid-off service; B-3 high PM classed as `sensor_range` fault). Fixed B-3 in control-logic §6 and AC-02 test; Q-29/Q-30 for B-1/B-2.
+- 2026-10-28: Applied Q-29 (D-027: hold/scene and remaining time survive non-power resets via RTC memory; OTA not deferred; stuck tasks just reboot) and Q-22/Q-30 (D-028: port treated as SELV, basic barrier kept, Q-31 loaded check before layout). S-1 fan power-up burst accepted. S-14 boot-config items added to architecture §9; S-17 TVS → SMBJ48CA. Review triaged into hardware-now / firmware-backlog after Andrew's process note.

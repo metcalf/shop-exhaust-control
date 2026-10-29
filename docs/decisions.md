@@ -208,7 +208,7 @@ Template:
 - Context: SR-08 requires the fan to be off with the node unpowered, with the hold-off powered from the fan side. SR-09 requires isolation. FR-18 needs the tach.
 - Decision: A fan-side N-MOSFET holds the speed line low by default (gate pulled up from a 5 V LDO on the fan's +10 V). A Schmitt-output opto driven by the node's PWM releases it, so the LED-on fraction is the fan duty. Two more optos carry the tach and a fan-present signal back. ≥ 3 mm barrier (`docs/interfaces.md` §2.1).
 - Alternatives considered: An isolated DC-DC powering the fan side from the node (fails on, since the hold-off dies with node power). A relay on the speed line (slow; can't PWM at 5 kHz). A digital isolator (needs a few mA on both sides, no better than the opto here).
-- Consequences: If the port can't supply the current (Q-26), the fallback is a smaller budget: drop the presence LED and raise the pull-up values. Phase 3 verifies the opto polarity and timing (architecture §9). AC-18 scopes it.
+- Consequences: A brief full-speed burst is possible when fan mains returns before the node's hold-off rail is up; accepted (D-028, G2 review S-1). If the port can't supply the current (Q-26), the fallback is a smaller budget: drop the presence LED and raise the pull-up values. Phase 3 verifies the opto polarity and timing (architecture §9). AC-18 scopes it.
 
 ## D-024: Q-28 control-logic calls: user overrides always win; sensor faults drop only sensed demand
 - Date: 2026-10-26
@@ -237,6 +237,22 @@ Template:
 - Decision: J-FAN is a 4-pos 3.5 mm pluggable terminal on the fan side of the barrier, labelled GND (BLK) / +10V (RED) / SPD (YEL) / TACH (WHT). Andrew hard-wires the four conductors (from the S6's Q-15 color map).
 - Alternatives considered: USB-C receptacle wired to the measured contact map (needs Q-25 and a symmetry check).
 - Consequences: Q-25 is closed with no measurement needed. No USB-C fan cable reaches the node. Mis-termination is the new risk: color labels, fan-side TVS, and the AC-18 bench check. J-FAN (4-pos) can't take the 2-pos J-OCC/J-DC plugs.
+
+## D-027: Holds and scenes survive non-power resets (RTC memory)
+- Date: 2026-10-28
+- Status: Accepted (Andrew, Q-29). Amends approved NFR-07 and AC-18. Resolves G2 review B-1
+- Context: Any reset ended Spray, so an OTA reboot, a stack panic or a watchdog trip could turn the fan off while vapor was present (SR-03).
+- Decision: The current mode and its remaining time (any hold or scene, including Spray and SprayRunOn) live in RTC no-init memory with a CRC and are restored after every reset except power-on and brown-out. OTA isn't deferred, and a stuck task still just reboots (Andrew: no extra recovery machinery).
+- Alternatives considered: Defer OTA during Spray and recover a stuck sensor task in place (proposed; more code paths for the same result).
+- Consequences: A crash or OTA reboot costs a few seconds of fan-off (hardware hold-off during boot). A crash loop during a scene keeps resuming that scene, which is the safe direction for Spray. Power loss still returns to Auto. The Controller stays pure: snapshot/restore is host-tested; the RTC storage is platform code.
+
+## D-028: Fan port treated as SELV on measured evidence; basic barrier kept; power-up burst accepted
+- Date: 2026-10-28
+- Status: Accepted (Andrew, Q-22/Q-30 measurements, S-1), pending Q-31's loaded check. Resolves G2 review B-2; closes S-1
+- Context: B-2: the barrier is basic insulation while the port's SELV status was unknown, and lid-off flashing and AC-18's scope touch the fan side. S-1: when fan mains returns with the node off, the speed line can read high before the LDO-fed hold-off is up.
+- Decision: Unplugged, port GND is open to L, N and earth (resistance and diode). Plugged in, ~65 VAC open-circuit to N/earth, which is consistent with Y-capacitor coupling from an isolated supply into a 10 MΩ meter. On that evidence the port is treated as SELV. The ≥ 3 mm basic barrier is kept for the ground loop and the capacitive float, with no fan-side cover or "unplug before service" rule. S-1's fan power-up burst is accepted (Andrew), so the LDO-fed hold-off stays.
+- Alternatives considered: Reinforced barrier and fan-side cover regardless (unnecessary if Q-31 confirms). Feed Q1/U1 from +10 V to close S-1 (stays an option if Q-26 shows the port current is tight, since it also cuts the draw).
+- Consequences: If Q-31 reads above the ES1 touch-current limit (0.5 mA), B-2's reinforced fix applies before layout. AC-18 records fan power-up behavior instead of requiring it to be off.
 
 ---
 

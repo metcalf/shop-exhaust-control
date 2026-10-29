@@ -101,7 +101,7 @@ firmware/
 | `ble` | continuous scan | NimBLE observer; `DcLinkParser`; posts `dc_running` and RSSI |
 | network | esp-iot-core | Wi-Fi, MQTT, OTA, remote logging; HA state from the snapshot |
 
-- The task watchdog covers `control` and `sensor`. On any reset the opto LED goes dark, so the fan is off in hardware until `control` decides (SR-08, NFR-07).
+- The task watchdog covers `control` and `sensor` and panics on a stall (`CONFIG_ESP_TASK_WDT_PANIC`); a stuck task means a reboot, with no in-place recovery. On any reset the opto LED goes dark, so the fan is off in hardware until `control` decides (SR-08). The active hold or scene survives every reset except power loss, through RTC no-init memory (NFR-07, D-027), so an OTA reboot or a crash during Spray costs a few seconds of fan-off, not the run-on. OTA isn't deferred.
 - Nothing in `control` waits on the network (NFR-01). MQTT publishing reads a copy of the snapshot.
 - BLE/Wi-Fi coexistence: the ESP-IDF software coexistence is on; the 30 % scan duty is tested alongside OTA (AC-22).
 - `P-nn`/`C-nn` and the button map live in one `Config.h`. Changes go by OTA (NFR-10 dropped, NFR-11).
@@ -119,7 +119,8 @@ firmware/
 
 | Failure | Effect | Handling | Req / AC |
 |---------|--------|----------|----------|
-| Node unpowered, crashed, resetting, booting | No control | Fan held **off** by the fan-powered pull-down; HA shows offline via LWT | SR-08, FR-13, AC-18, AC-09 |
+| Node unpowered, crashed, resetting, booting | No control | Fan held **off** by the fan-powered pull-down; HA shows offline via LWT. After a crash or OTA reboot, the hold or scene resumes (D-027) | SR-08, NFR-07, FR-13, AC-18, AC-09 |
+| Fan mains returns with the node unpowered | Possible brief full-speed burst before the fan-side hold-off rail is up | Accepted (D-028) | SR-08, AC-18 |
 | Fan cable unplugged | Fan runs **full** (fan behavior) | `fan_port` fault from loss of `FAN_PRESENT` (displayed; HA) | SR-08, FR-18 |
 | Fan has no mains / motor failed | No exhaust | `fan_port` (no +10 V) or `fan_tach` fault | FR-18, AC-07 |
 | SEN65 fault (no data, status, range) | No PM/VOC | SR-04: PM/VOC demand dropped, floor and DC boost kept (occupied → P-01, vacant → off unless DC); power-cycle retries; Spray uses P-09 alone | SR-04, AC-20 |
@@ -194,7 +195,8 @@ Under the $300 ceiling, but not "well below" it. Most of it is fixed overhead (P
 - SEN6x datasheet: raw VOC command and its scaling (D-017), algorithm-state backup/restore as the fallback, device-status bits, manual fan-clean command, connector part and pinout.
 - H11L1-class opto: inverting output polarity, VCC 5 V supply current, propagation delay; a JLC-stocked part with VDE 0884 / IEC 60747-5-5.
 - Fan-side LDO input rating (≥ 16 V) and quiescent current.
-- ESP32-S3 GPIO reset states and boot glitches on the GPIOs chosen for `FAN_PWM` and `SEN_PWR_EN`.
+- ESP32-S3 GPIO reset states and boot glitches on the GPIOs chosen for `FAN_PWM` and `SEN_PWR_EN`; LEDC configured at duty 0 before the pin is routed.
+- Boot config: task watchdog panic on, RTC watchdog on; reset-reason handling for the RTC mode snapshot (D-027). On the board: BOOT (GPIO0) and EN tact switches or pads, EN RC per the Espressif hardware design guide (G2 review S-14).
 - Display module choice (header pinout, backlight drive) and mechanical outline.
 - JLC Economic PCBA rules (STATE action), opto/creepage footprints, and the antenna keep-out on the module footprint.
 - Wired DC input resistor values against the opto's CTR at 12 V DC and LED rating at 24 VAC + 10 % (`docs/interfaces.md` §2.3).
