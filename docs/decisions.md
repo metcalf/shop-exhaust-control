@@ -226,7 +226,7 @@ Template:
 - Date: 2026-10-26
 - Status: Accepted (Andrew, Q-28 (f)). Amends D-016 and approved IR-01, AC-06
 - Context: D-016 dropped the wired input for simplicity. Andrew wants it kept on the board as a backup in case BLE disappoints, and as the simpler AC-06 bench test.
-- Decision: A second AC-input opto channel (`DC_IN`, GPIO1, J-DC 2-pos 5.0 mm), the same circuit as occupancy but accepting 12–24 V AC or DC of either polarity (`docs/interfaces.md` §2.3). `dc_running = dc_ble OR dc_wired`; an unconnected input reads false, so no configuration. The BLE payload (D-021) is unchanged.
+- Decision: A second AC-input opto channel (`DC_IN`, GPIO1, J-DC 2-pos 3.5 mm screw terminal, D-032), the same circuit as occupancy but accepting 12–24 V AC or DC of either polarity (`docs/interfaces.md` §2.3). `dc_running = dc_ble OR dc_wired`; an unconnected input reads false, so no configuration. The BLE payload (D-021) is unchanged.
 - Alternatives considered: dry-contact input with an isolated local source (needs an isolated supply on the node); no wired input (D-016 as was).
 - Consequences: About $1 per board, one more cable entry and GPIO (spare 1 used). The DC project can drive it with a relay contact switching its own 12–24 V, or straight from the 24 VAC if it has one. AC-06 runs on the wired input; AC-22 still covers BLE once a test sender or the DC node exists. A spoofed BLE frame or a wired assert both only boost.
 
@@ -234,9 +234,9 @@ Template:
 - Date: 2026-10-26
 - Status: Accepted (Andrew, Q-25)
 - Context: J-FAN was a USB-C receptacle, which needed the fan cable's USB-C contact map (Q-25) and created the mis-plug hazard D-020 addressed.
-- Decision: J-FAN is a 4-pos 3.5 mm pluggable terminal on the fan side of the barrier, labelled GND (BLK) / +10V (RED) / SPD (YEL) / TACH (WHT). Andrew hard-wires the four conductors (from the S6's Q-15 color map).
+- Decision: J-FAN is a 4-pos 3.5 mm terminal (fixed screw, D-032) on the fan side of the barrier, labelled GND (BLK) / +10V (RED) / SPD (YEL) / TACH (WHT). Andrew hard-wires the four conductors (from the S6's Q-15 color map).
 - Alternatives considered: USB-C receptacle wired to the measured contact map (needs Q-25 and a symmetry check).
-- Consequences: Q-25 is closed with no measurement needed. No USB-C fan cable reaches the node. Mis-termination is the new risk: color labels, fan-side TVS, and the AC-18 bench check. J-FAN (4-pos) can't take the 2-pos J-OCC/J-DC plugs.
+- Consequences: Q-25 is closed with no measurement needed. No USB-C fan cable reaches the node. Mis-termination is the new risk: color labels, fan-side TVS, and the AC-18 bench check.
 
 ## D-027: Holds and scenes survive non-power resets (RTC memory)
 - Date: 2026-10-28
@@ -277,6 +277,14 @@ Template:
 - Decision: Plain RGB LEDs driven by three LEDC PWM channels through low-side N-FETs from the 5 V input; no WS2812B or level shifter. A short diffused strip aligned with one edge of the display; length, diffuser depth and LED count are set in mech (~4–8 LEDs). No illuminated encoder (Andrew: only worth it as a simpler or cheaper replacement for the strip, and a lit shaft isn't readable down the shop, FR-15). The SEN65 load switch stays, for unattended recovery of a hung module only (a node reboot doesn't reset it); S-13's back-powering fixes are applied.
 - Alternatives considered: WS2812B bar (extended part plus shifter; effects not wanted). Illuminated RGB encoder as the indicator (too small and dim for FR-15 at ~30 ft; costs more than a plain EC11 plus a few LEDs). No sensor switch (two fewer parts; a hung sensor then needs a USB replug).
 - Consequences: GPIO 48/41/42 for R/G/B; one spare (GPIO 2) left. The LEDs and FETs are probably JLC basic parts, but each LED needs a resistor per color. `SEN_PWR_EN` is active low with a gate pull-up (the earlier "pull-down" was wrong for a P-FET).
+
+## D-032: Fixed screw terminals for all field wiring
+- Date: 2026-10-28
+- Status: Accepted (Andrew)
+- Context: J-FAN, J-OCC and J-DC were pluggable. Andrew plans to wire it once, and a plug can't pass back out through a gland sized for its cable, so pluggable saved nothing on removal.
+- Decision: Fixed 3.5 mm screw terminals (one part, 2- and 4-position) for J-FAN, J-OCC and J-DC, inside the sealed compartment behind the cable glands.
+- Alternatives considered: Pluggable terminals (a bench swap without re-terminating; ~$1–2 more and a mis-plug question). Pluggable headers through the rear wall (lid-closed removal, but another sealing gap).
+- Consequences: Taking the unit down means lid off and unscrewing the conductors. The J-OCC/J-DC mis-plug question and the pitch-keying go away. One terminal part family for the BOM.
 
 ---
 
