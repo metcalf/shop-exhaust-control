@@ -1,14 +1,14 @@
 # Project State
 
-**Updated:** 2026-10-28 (nightly)
+**Updated:** 2026-10-29
 **Phase:** 3, detailed design (**G2 approved 2026-10-28**). D-029 order: vendor check ✓ → schematic ✓ → priced parts list ✓ → **stopped for Andrew** → layout, mech, firmware.
-**Waiting on:** Andrew: Q-33 (OK to start layout), Q-35 (display module) block layout; Q-34 and Q-36 are for G4.
+**Waiting on:** Andrew: Q-33 (OK to start layout; assembly-route costs now in `sourcing/priced-parts.md`) and Q-35 (MSP2833/MSP2834 proposed) block layout. Q-34 and Q-36 answered.
 
 ## Next actions (in order; each is Claude's unless marked)
-1. **Andrew:** review `sourcing/priced-parts.md` and the schematic (`pcb/reports/svg/exhaust.svg`, `pcb/design.md`, `pcb/SAFETY.md`), then answer Q-33…Q-36.
+1. **Andrew:** answer Q-33 (layout OK; route A/B/C) and Q-35 (display).
 2. Once Q-33 is OK'd: **layout**.
    - Fix the footprints against the LCSC drawings, using `easyeda2kicad` (in `.venv`) where stock ones differ (design.md O-3).
-   - Settle O-4 (input bulk cap for hot-plug) and O-6 (GPIO47/48 voltage), and adapt J6 to the Q-35 display.
+   - Settle O-4 (input bulk cap for hot-plug) and O-6 (GPIO47/48 voltage; it now also affects the MSP283x backlight high level). Adapt J6 to the Q-35 display: if MSP283x, a 1×14 socket with VCC from +5V, LED straight from GPIO47, and Q3 removed (`sourcing/off-board.md` §2a). Update check.py, design.md §7 and O-2.
    - Write the creepage DRC rules from `pcb/SAFETY.md` and lay out the 2-layer board.
    - Run DRC, export Gerbers/BOM/CPL. After layout starts the `.kicad_sch` becomes the source (D-035); keep running `pcb/gen/check.py` on it.
 3. After layout: mech (build123d, positions from the `.kicad_pcb`), then the firmware host-tested logic.
@@ -23,9 +23,9 @@
 - Known cosmetic issue: field text on rotated parts needs GUI touch-up.
 
 ## Notes for an unattended run
-- If Q-33 is still unanswered, there's no layout, mech or firmware work allowed (D-029). Allowed prep: nothing material, so do nothing beyond re-checking stock, and say so.
+- If Q-33 is still unanswered, there's no layout, mech or firmware work allowed (D-029).
 - CLAUDE.md's phase table still puts sourcing after the full detailed design. D-029 (Andrew) overrides that for this project. Don't edit CLAUDE.md.
-- No mains anywhere (D-018), so G3 is light: receptacle, adapter listing (the RPi supply's UL file number is still unfound) and the 24 VAC hookup.
+- No mains anywhere (D-018), so G3 is light: receptacle, the listing of Andrew's own supply (Q-36) and the 24 VAC hookup.
 
 ## Blockers
 - Layout is blocked on Q-33 (D-029 checkpoint) and Q-35 (display).
@@ -60,3 +60,4 @@
 - 2026-10-28: **G2 approved** (Andrew). D-019 and D-023 accepted with it. Phase 3 started; STATE set up for the nightly run (vendor check → toolchain → schematic → priced parts list, then stop for Andrew).
 - 2026-10-28: No panel lock (Andrew). Front carries display, controls and the light strip (wrapping the room-side corner); sensor inlet on the bay's corner-side (north) end, sheltered, not facing down (D-033, Andrew). NFR-09 reworded to placement criteria (open inlet, no strong draft, outlet separated, AC-17) instead of a fixed distance and direction.
 - 2026-10-28 (nightly): Phase 3 vendor check (JLC Standard, since the module is Standard Only; D-034), KiCad 10 toolchain with a sandbox workaround (D-035), generated schematic (ERC clean, netlist assertions pass) with G2 hardware items S-2/S-4/S-5/S-14 folded in, D-036 (bridge + PC817C inputs), D-037 (SY8089 buck, VBUS sense). Priced parts list: board ≈ $156 for 2, total ≈ $276–352. Stopped for Andrew (Q-33…Q-36).
+- 2026-10-29: Q-34 (SEN65 at Mouser) and Q-36 (Andrew's own supply and cable) applied; total ≈ $266–296. Q-33 follow-up: assembly-route costing (Economic with the module hand-soldered saves ≈ $0–20; DIY on a bare PCB with stencil saves ≈ $30–85). Q-35: proposed the LCDwiki MSP2833/MSP2834 (IPS verified, ILI9341V); no verified-IPS 2.8" ST7789 generic was found.

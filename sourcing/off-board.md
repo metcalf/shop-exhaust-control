@@ -91,6 +91,17 @@ Datasheet: [NHD-2.8-CSXP-BREAKOUT spec, rev 2, 2026-08-26](https://newhavendispl
 
 The mechanical drawing is an image that I read, but the glass-to-hole offsets above are the ones I am least sure of. I recommend Andrew pull the datasheet drawing into the enclosure model rather than using my transcription.
 
+## 2a. Display, proposed generic: LCDwiki MSP2833 (2.8" IPS SPI, no touch)
+
+Checked 2026-10-29 against the LCDwiki EN user manual, the CN spec and the MSP2833 outline drawing ([wiki](https://lcdwiki.com/2.8inch_IPS_SPI_Module_ILI9341), [files](https://www.lcdwiki.com/res/MSP2833_MSP2834)).
+
+- **IPS is stated in the spec and on the drawing** ("Panel Type IPS", "DISPLAY TYPE: 2.8\" IPS TFT"). That's the bar the generic listings failed. The controller is the **ILI9341V, not ST7789**. I found no 2.8" ST7789 generic with an IPS datasheet. ESP-IDF's `esp_lcd_ili9341` and LVGL both cover the ILI9341V, so the firmware cost is nil.
+- **Header: 1×14, 2.54 mm.** 1 VCC, 2 GND, 3 LCD_CS, 4 LCD_RST, 5 LCD_RS (D/C), 6 SDI/MOSI, 7 SCK, 8 LED, 9 SDO/MISO, 10–13 CTP_SCL/RST/SDA/INT (NC on the MSP2833), 14 SD_CS. Pins 1–8 match the current J6 order, so J6 becomes a 1×14 socket with 9–14 NC, and the extra pins add mechanical support.
+- **Power.** "Working Voltage 5.0 V", 0.4 W, backlight 80 mA (4 white LEDs). The on-board LDO makes 3.3 V. The manual says to feed it 5 V: at 3.3 V the backlight dims. It has an on-board level converter, so 3.3 V logic is fine. **So J6 VCC moves to +5V**, which also takes ≈ 80–100 mA off the buck.
+- **Backlight.** The LED pin goes through a BSS138 with a pull-up. Floating or high turns it on and low turns it off, and the manual describes PWM dimming on this pin. **Q3, the AO3401A high-side backlight switch, can go**, with GPIO47 driving LED directly. That's one fewer part, but no unique-part saving, since Q2 still uses the AO3401A. O-6 still matters here: if GPIO47 turned out to be 1.8 V, a high would give the BSS138 only ≈ 1.5 V of V_GS, which is near threshold, so the backlight might come up dim. Floating at boot gives full on.
+- **Outline (MSP2833 drawing, ±0.2).** PCB 50.00 × 86.00 × 1.60. Four holes on a 44.00 × 76.08 pattern, 3.00 from the edges (the hole diameter isn't legible in the text layer; take it from the PDF, likely 3.0 mm). LCD outline 50.00 × 69.20, active area 43.20 × 57.60, header 13 × 2.54 = 33.02 span. Total height with pin header 12.78 mm, or 4.40 mm without. Take the panel-to-hole offsets from the PDF drawing for the bezel, not from this transcription.
+- **Buying it.** I found no retail listing for the MSP2833 itself. Elecrow sells the **touch twin MSP2834** as DLS29028B, $10.90, in stock ([Elecrow](https://elecrow.com/2-8-ips-spi-lcd-capacitive-touch-module-ili9341-driver-240-320-resolution.html)). It has the same header, with the CTP pins left NC. The touch glass adds thickness and may change the glass outline, so pin the bezel model to whichever one you buy. Before ordering, check that the listing's SKU reads MSP2833/MSP2834 and not a lookalike.
+
 ## 3. USB-C wall adapter: Raspberry Pi 15 W USB-C Power Supply, US
 
 - Part: **SC0445** (white, US Type A plug, model KSA-15E-051300HU). SC0218 is the black version of the same supply.

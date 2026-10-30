@@ -7,23 +7,38 @@
 | Block | 2 assembled boards | Basis |
 |-------|-------------------:|-------|
 | PCBA: JLC Standard (D-034) fees, joints, parts (+5 %), 5 bare PCBs, shipping | **≈ $156** | Generated table below (`pcb/gen/price.py`). Fees ≈ $99 of it: setup $25.56, stencil $8.21, THT labour $3.58, and 40 unique parts × $1.53. The per-part fee on Basic parts is unverified; if Basic is fee-free, take off ≈ $30 |
-| SEN65-SIN-T + Sensirion jumper cable | $35.64 | DigiKey $29.55 + $6.09. **DigiKey: 0 in stock, 60 due 2027-01-20.** Mouser not checked live (Q-34) |
-| Display, 2.8" 240×320 IPS SPI, no touch | $10–29 | Generic ST7789 IPS module ≈ $10 (est., IPS unverified) or Newhaven NHD-2.8-CSXP-BREAKOUT $28.95 (verified IPS, but doesn't fit, see Q-35) |
+| SEN65-SIN-T + Sensirion jumper cable | $35.64 | DigiKey price $29.55 + $6.09; buy at Mouser, which Andrew found in stock (Q-34) |
+| Display, 2.8" 240×320 IPS SPI, no touch | ≈ $11–15 | Proposed: LCDwiki MSP2833 (IPS stated in its spec, ILI9341V), or its touch twin MSP2834 (Elecrow DLS29028B, $10.90) with touch unused; see `off-board.md` §2a and Q-35. Newhaven $28.95 is the fallback |
 | Encoder knob | ≈ $3 | est. |
-| Raspberry Pi 15 W USB-C supply SC0445 | $11.12 | Newark. Captive 1.5 m 18 AWG cable. UL file number not yet found. Rated 0–40 °C (SF shop, heated: fine) |
-| USB-C cable 2 m (StarTech USB2C5C2M) | $0–27 | Only needed if the supply has a port rather than a captive cable (Q-36) |
+| USB-C supply and cable | $0 | Andrew supplies both from stock (Q-36). It needs to be listed and deliver ≥ 5 V at 1.5 A (D-030). Confirm the model at G3 |
 | Cable glands PG7 ×3 + locknuts | ≈ $5.50 | Essentra CG-PG7-2-BK, DigiKey |
 | Lid gasket strip | ≈ $5–15 | est. A printed TPU gasket is ≈ $0 |
 | Enclosure, MJF PA12 (two parts + cleat) | ≈ $40 | est. (architecture §8), not quoted; quote with the JLC order |
 | Inserts, screws, diffuser | ≈ $10 | est. |
 | Thermostat wire 18/2, fan-cable extension if needed | ≈ $0–15 | est.; may be on hand |
-| **Total** | **≈ $276–352** | Low end: generic display, captive cable, TPU gasket, wire on hand |
+| **Total** | **≈ $266–296** | With Standard PCBA. Low end: TPU gasket, wire on hand. The table below gives the other assembly routes |
 
-Against NFR-08 ($300 ceiling, "well below" preferred), the low end fits and the high end doesn't. What drives it:
+Against NFR-08 ($300 ceiling, "well below" preferred), the whole range now fits, since Q-36 removed the supply and cable. It isn't "well below" yet. What drives it:
 1. **PCBA fixed fees (≈ $99) dominate the board cost.** Parts are only $11.55 per board. Confirm the Basic-part fee on the live JLC quote; consolidating another few values (e.g. 120/200 Ω → one value, at some loss of colour balance) saves $1.53 each.
 2. **Enclosure ($40, est.).** FDM in PETG/ASA on a printer Andrew has access to would cut most of it (needs a D-011 amendment).
-3. **Display and cable choice** (Q-35, Q-36): up to $46 between options.
+3. **Assembly route** (below): up to ≈ $80.
 4. Five assembled boards instead of two cost ≈ $196 total ($39 per board). Only worth it if spares or the DC project could use them; they can't directly, since the DC board is different.
+
+## Assembly routes (Q-33 follow-up, 2026-10-29)
+
+These are estimates for 2 boards, from the fee schedule in `pcba-vendor.md` §1 and the part classes above. None is a live quote. Unique parts: 40, or 39 without the module. Of those 39, 19 are Extended, and the 7 "Basic?" parts are assumed Basic.
+
+| Route | JLC fees | Other cost vs. the current plan | ≈ Board total (2) | Saves vs. Standard |
+|---|---:|---|---:|---:|
+| **A. Standard, everything placed** (current plan) | $98.55 if Basic parts carry the $1.53 fee; $67.95 if they're free | — | $156, or $125 | — |
+| **B. Economic, you solder the module** | $71.62 ($8.18 setup + $1.53 stencil + $3.58 hand-solder + 19 Extended × $3.07). Basic and "preferred extended" parts are fee-free | Module ×2 from Mouser with the SEN65 order (≈ $15, vs. $10 inside A's parts cost) | ≈ $135 | **≈ $20** if Standard charges Basic; **≈ −$10** (B costs more) if it doesn't. Each Extended part that turns out to be "preferred" takes $3.07 off B |
+| **C. Bare PCB + stencil, you assemble everything** | $0 (5 PCBs ≈ $5–10 + frameless stencil ≈ $7 + shipping ≈ $10–15) | Parts for 2 boards: LCSC ≈ $30–35 plus ≈ $15–20 shipping, or Mouser ≈ $55–70 shipped free with the SEN65 order | ≈ $70–95 | **≈ $60–85**, or **≈ $30–55** if Standard's Basic parts are free |
+
+Labour and risk:
+- **B.** The WROOM-1's castellated edges are easy with an iron. The bottom EPAD (pin 41, GND) isn't. Electrically the edge GND pins carry this load, and the thermal duty is low, but an unsoldered EPAD also leaves the module mechanically weaker. Options: hot air, or a footprint with 3–4 ≥ 0.6 mm vias under the EPAD so you can solder from the back. **Don't hotplate it**: the board would already carry JLC's THT plastics (encoder, sockets, terminal blocks) on the same side. That via change is the only way B touches the layout.
+- **C.** About 105 SMT placements per board. The smallest are 0603, and the only fine pitch is the USB-C receptacle (HRO TYPE-C-31-M-12). Every part is single-sided, so: stencil, place, hotplate (module included), inspect, then hand-solder the about 36 THT joints. Rough guess: 2–3 h per board plus bring-up rework risk. JLC's 70 mm minimum board size for Standard stops mattering.
+- **Unpriced on every route:** US import duty on China-origin goods. It scales with declared value, so it's largest on A, smaller on B and smallest on C if the parts come from Mouser.
+- **Layout is the same on all three routes**, apart from B's optional EPAD vias. The route can be chosen at G4 from a live JLC quote on the real Gerber, BOM and CPL. That quote also answers the Basic-fee question.
 
 ## On-board parts (generated, per board)
 
