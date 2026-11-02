@@ -1,6 +1,6 @@
 # Project State
 
-**Updated:** 2026-10-29
+**Updated:** 2026-11-01
 **Phase:** 3, detailed design (**G2 approved 2026-10-28**). D-029 order: vendor check ✓ → schematic ✓ → priced parts list ✓ → **stopped for Andrew** → layout, mech, firmware.
 **Waiting on:** Andrew: Q-33 (OK to start layout; assembly-route costs now in `sourcing/priced-parts.md`) and Q-35 (MSP2833/MSP2834 proposed) block layout. Q-34 and Q-36 answered.
 
@@ -61,3 +61,4 @@
 - 2026-10-28: No panel lock (Andrew). Front carries display, controls and the light strip (wrapping the room-side corner); sensor inlet on the bay's corner-side (north) end, sheltered, not facing down (D-033, Andrew). NFR-09 reworded to placement criteria (open inlet, no strong draft, outlet separated, AC-17) instead of a fixed distance and direction.
 - 2026-10-28 (nightly): Phase 3 vendor check (JLC Standard, since the module is Standard Only; D-034), KiCad 10 toolchain with a sandbox workaround (D-035), generated schematic (ERC clean, netlist assertions pass) with G2 hardware items S-2/S-4/S-5/S-14 folded in, D-036 (bridge + PC817C inputs), D-037 (SY8089 buck, VBUS sense). Priced parts list: board ≈ $156 for 2, total ≈ $276–352. Stopped for Andrew (Q-33…Q-36).
 - 2026-10-29: Q-34 (SEN65 at Mouser) and Q-36 (Andrew's own supply and cable) applied; total ≈ $266–296. Q-33 follow-up: assembly-route costing (Economic with the module hand-soldered saves ≈ $0–20; DIY on a bare PCB with stencil saves ≈ $30–85). Q-35: proposed the LCDwiki MSP2833/MSP2834 (IPS verified, ILI9341V); no verified-IPS 2.8" ST7789 generic was found.
+- 2026-11-01 (nightly): No-op. Q-33 and Q-35 still open, nothing new from Andrew since 2026-10-29; D-029 blocks layout, mech and firmware, and no other phase-3 prep is allowed before them. No changes to design files.
