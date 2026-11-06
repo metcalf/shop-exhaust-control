@@ -1,11 +1,11 @@
 # Project State
 
-**Updated:** 2026-11-01
+**Updated:** 2026-11-05
 **Phase:** 3, detailed design (**G2 approved 2026-10-28**). D-029 order: vendor check ✓ → schematic ✓ → priced parts list ✓ → **stopped for Andrew** → layout, mech, firmware.
 **Waiting on:** Andrew: Q-33 (OK to start layout; assembly-route costs now in `sourcing/priced-parts.md`) and Q-35 (MSP2833/MSP2834 proposed) block layout. Q-34 and Q-36 answered.
 
 ## Next actions (in order; each is Claude's unless marked)
-1. **Andrew:** answer Q-33 (layout OK; route A/B/C) and Q-35 (display).
+1. **Andrew:** answer Q-33 (layout OK; route A/B/C) and Q-35 (display). Optional: Q-37 (skip blocked nightlies).
 2. Once Q-33 is OK'd: **layout**.
    - Fix the footprints against the LCSC drawings, using `easyeda2kicad` (in `.venv`) where stock ones differ (design.md O-3).
    - Settle O-4 (input bulk cap for hot-plug) and O-6 (GPIO47/48 voltage; it now also affects the MSP283x backlight high level). Adapt J6 to the Q-35 display: if MSP283x, a 1×14 socket with VCC from +5V, LED straight from GPIO47, and Q3 removed (`sourcing/off-board.md` §2a). Update check.py, design.md §7 and O-2.
@@ -62,3 +62,4 @@
 - 2026-10-28 (nightly): Phase 3 vendor check (JLC Standard, since the module is Standard Only; D-034), KiCad 10 toolchain with a sandbox workaround (D-035), generated schematic (ERC clean, netlist assertions pass) with G2 hardware items S-2/S-4/S-5/S-14 folded in, D-036 (bridge + PC817C inputs), D-037 (SY8089 buck, VBUS sense). Priced parts list: board ≈ $156 for 2, total ≈ $276–352. Stopped for Andrew (Q-33…Q-36).
 - 2026-10-29: Q-34 (SEN65 at Mouser) and Q-36 (Andrew's own supply and cable) applied; total ≈ $266–296. Q-33 follow-up: assembly-route costing (Economic with the module hand-soldered saves ≈ $0–20; DIY on a bare PCB with stencil saves ≈ $30–85). Q-35: proposed the LCDwiki MSP2833/MSP2834 (IPS verified, ILI9341V); no verified-IPS 2.8" ST7789 generic was found.
 - 2026-11-01 (nightly): No-op. Q-33 and Q-35 still open, nothing new from Andrew since 2026-10-29; D-029 blocks layout, mech and firmware, and no other phase-3 prep is allowed before them. No changes to design files.
+- 2026-11-05 (nightly): No-op again. Q-33 and Q-35 still open, no repo changes since 2026-11-01; D-029 still blocks layout, mech and firmware. Added Q-37 (skip blocked nightly runs in `scripts/nightly.sh`). No changes to design files.
