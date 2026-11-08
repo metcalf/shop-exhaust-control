@@ -1,6 +1,6 @@
 # Project State
 
-**Updated:** 2026-11-06
+**Updated:** 2026-11-07
 **Phase:** 3, detailed design (**G2 approved 2026-10-28**). D-029 order: vendor check ✓ → schematic ✓ → priced parts list ✓ → **stopped for Andrew** → layout, mech, firmware.
 **Waiting on:** Andrew: Q-33 (OK to start layout; assembly-route costs now in `sourcing/priced-parts.md`) and Q-35 (MSP2833/MSP2834 proposed) block layout. Q-34 and Q-36 answered.
 
@@ -64,3 +64,4 @@
 - 2026-11-01 (nightly): No-op. Q-33 and Q-35 still open, nothing new from Andrew since 2026-10-29; D-029 blocks layout, mech and firmware, and no other phase-3 prep is allowed before them. No changes to design files.
 - 2026-11-05 (nightly): No-op again. Q-33 and Q-35 still open, no repo changes since 2026-11-01; D-029 still blocks layout, mech and firmware. Added Q-37 (skip blocked nightly runs in `scripts/nightly.sh`). No changes to design files.
 - 2026-11-06 (nightly): No-op, the third in a row. Q-33, Q-35 and Q-37 are still open and nothing has been committed since 2026-11-05. D-029 still blocks layout, mech and firmware. No changes to design files.
+- 2026-11-07 (nightly): No-op, the fourth in a row. Q-33, Q-35 and Q-37 are still open and nothing has been committed since 2026-11-06. D-029 still blocks layout, mech and firmware. No changes to design files.
