@@ -165,6 +165,12 @@ if buck:
 check(any({net_of(c, 1), net_of(c, 2)} == {"BUCK_BST", "BUCK_LX"} for c in refs_on("BUCK_BST") if c.startswith("C")),
       "BST cap to SW")
 
+# --- EN/BOOT recovery pads (D-041) ----------------------------------------------
+for n in ("EN", "BOOT"):
+    check(any(r.startswith("TP") for r in refs_on(n)), f"{n}: no test pad")
+    check(not any(r.startswith("SW") for r in refs_on(n)), f"{n}: switch should be pads only")
+check(sum(r.startswith("TP") for r in refs_on("GND")) >= 2, "EN and BOOT each need their own GND pad")
+
 # --- nothing single-ended except intentional no-connects ----------------------
 for n, nodes in nets.items():
     if not n.startswith("unconnected-"):

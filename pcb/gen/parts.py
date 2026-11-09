@@ -40,7 +40,6 @@ P = {
     "ENC": ("Device:RotaryEncoder_Switch",
             "Rotary_Encoder:RotaryEncoder_Alps_EC11E-Switch_Vertical_H20mm", "C255515", "EC11E18244A5", "SW"),
     "TACT": ("Switch:SW_Push", "Button_Switch_THT:SW_PUSH_6mm_H9.5mm", "C2845262", "TC-6610-9.5", "SW"),
-    "TACT_SMD": ("Switch:SW_Push", "Button_Switch_SMD:SW_SPST_PTS645Sx43SMTR92", "C318884", "tact 5.1mm", "SW"),
     "RGB": ("Device:LED_ARGB", "LED_SMD:LED_Cree-PLCC4_3.2x2.8mm_CCW", "C601699", "RGB CA 3528", "D"),
     "TERM2": ("Connector:Screw_Terminal_01x02",
               "TerminalBlock_Phoenix:TerminalBlock_Phoenix_PT-1,5-2-3.5-H_1x02_P3.50mm_Horizontal",

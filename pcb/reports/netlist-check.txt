@@ -1,2 +1,2 @@
-130 parts, 93 nets, barrier parts: U5['fan', 'node'], U6['fan', 'node'], U7['fan', 'node'], U8['node', 'occ'], U9['dci', 'node']
+129 parts, 93 nets, barrier parts: U5['fan', 'node'], U6['fan', 'node'], U7['fan', 'node'], U8['node', 'occ'], U9['dci', 'node']
 all netlist assertions passed

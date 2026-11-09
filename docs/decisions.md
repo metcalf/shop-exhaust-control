@@ -362,3 +362,11 @@ Template:
 - Alternatives considered: bulk cap (violates the limit); RC snubber (needs several times the input capacitance, same limit); leaving the SY8089 (a shorted high side could put 5 V on `+3V3`); 17 V-class bucks (many have a 4.5 V minimum, against the ≥ 4.4 V budget).
 - Consequences: AP63203 is $1.21 @10 against $0.15, but F1 and the 22 pF go away, so there are two fewer unique parts. Standard PCBA for 2 boards goes from ≈ $156 to ≈ $154 (that also includes D-039's removals). Stock is 1,337 on 2026-11-09. A board fault below the adapter's limit is no longer interrupted on the board. That makes Q-36's G3 check that the supply is LPS the protection the design depends on.
 
+## D-041: EN and BOOT on screwdriver pads, no switches
+- Date: 2026-11-09
+- Status: Accepted (Andrew). Fills the "switches or pads" option in G2 review S-14
+- Context: SW1 (EN) and SW2 (BOOT) are only for setup and recovery. Normal flashing uses `esptool`'s reset over USB-Serial-JTAG and updates are OTA, so BOOT only matters if firmware stops USB from responding.
+- Decision: remove both switches. EN and BOOT each get their own adjacent GND pad (TP6 + TP2, TP7 + TP8), about a 0.5 mm gap within a pair and ≥ 10 mm between pairs, so two screwdrivers can hold both at once: short BOOT, tap EN, release BOOT.
+- Alternatives considered: one shared GND pad between EN and BOOT (no room for two tips; would mean holding BOOT while plugging in USB); keeping the switches (parts and space for a rare operation).
+- Consequences: one fewer unique part. Recovery needs the lid off and two tools, which is rare. The other tact switches and the encoder renumber to SW1–SW5. The pad spacing is a layout rule in `pcb/design.md` §5, since the schematic can't enforce it.
+

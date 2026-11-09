@@ -88,13 +88,12 @@ part("ESP", (X, Y), {
 }, nc=("IO2", "IO3", "IO45", "IO46", "IO35", "IO36", "IO37"), r="U1")
 cap("10u", (X + 30, Y - 30), "+3V3", "GND", key="C0805")
 cap("100n", (X + 38, Y - 30), "+3V3", "GND")
-# EN RC per the Espressif hardware design guide; BOOT and EN switches (G2 review S-14)
+# EN RC per the Espressif hardware design guide (G2 review S-14). No switches: EN and BOOT are
+# each shorted to their own adjacent GND pad with a screwdriver (D-041; pad pairs TP6+TP2, TP7+TP8).
 res("10k", (X - 45, Y - 30), "+3V3", "EN")
 cap("1u", (X - 37, Y - 30), "EN", "GND")
-part("TACT_SMD", (X - 45, Y - 15), {"1": "EN", "2": "GND"}, value="EN")
 res("10k", (X - 25, Y - 30), "+3V3", "BOOT")
-part("TACT_SMD", (X - 25, Y - 15), {"1": "BOOT", "2": "GND"}, value="BOOT")
-for i, n in enumerate(["+3V3", "GND", "TXD0", "RXD0", "+5V", "EN", "BOOT"]):
+for i, n in enumerate(["+3V3", "GND", "TXD0", "RXD0", "+5V", "EN", "BOOT", "GND"]):
     part("TP", (X - 40 + 8 * i, Y + 45), {"1": n}, value=n)
 flag("+5V", (X + 50, Y - 30))
 

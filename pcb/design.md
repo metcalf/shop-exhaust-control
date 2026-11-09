@@ -53,7 +53,8 @@ Path drop, worst case: LED 1.4 V + two bridge diodes ≈ 1.8 V, so ≈ 3.2 V. Th
 - J5 pinout per the SEN6x datasheet §3, Table 17: 1 VDD, 2 GND, 3 SDA, 4 SCL, 5 GND, 6 VDD (`sourcing/off-board.md`). Supply 3.15–3.6 V.
 
 ## 5. MCU, boot and recovery (G2 review S-14)
-- EN: 10 k to 3V3 and 1 µF to GND (Espressif HW design guide RC), EN tact switch. GPIO0: 10 k pull-up and BOOT tact switch. Test pads for 3V3, 5V, GND, TXD0, RXD0, EN and BOOT (UART0 rescue).
+- EN: 10 k to 3V3 and 1 µF to GND (Espressif HW design guide RC). GPIO0: 10 k pull-up. No switches (D-041). Test pads for 3V3, 5V, GND, TXD0, RXD0, EN and BOOT (UART0 rescue).
+- **Recovery pads (layout):** two separate pairs, TP6 (EN) + TP2 (GND) and TP7 (BOOT) + TP8 (GND). Each pair has about a 0.5 mm gap, so one screwdriver tip bridges it. Keep the pairs far enough apart (≥ 10 mm, center to center) to hold a screwdriver on each at once, and away from the other test pads, `+3V3`, `+5V` and fan-domain copper. Label them on silkscreen. To enter the bootloader: short BOOT, tap EN, then release BOOT.
 - Strapping: GPIO3, 45 and 46 are not connected, so the internal defaults apply. With GPIO45 low, VDD_SPI is 3.3 V, which is right for the N16R8's 3.3 V flash and PSRAM. GPIO35–37 (octal PSRAM) are not connected. check.py asserts all of these.
 - Reset states: FAN_PWM has a 10 k pull-down (LED dark, fan off). SEN_PWR_EN and DISP_BL have 100 k gate pull-ups (off). IND_R/G/B have 100 k gate pull-downs (dark). So nothing turns on before firmware does.
 - Firmware backlog (not hardware): TWDT panic, RTC WDT, LEDC duty 0 before routing the pin.

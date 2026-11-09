@@ -42,8 +42,6 @@ PRICE = {
     ("2.2u", ""): ("C135262", "Extended", 130370, 0.0537, "power"),
     ("AO3401A", ""): ("C15127", "Basic", 475090, 0.0968, "isolation"),
     ("AO3400A", ""): ("C20917", "Basic", 615350, 0.0897, "passives"),
-    ("EN", "SW_SPST"): ("C318884", "Basic?", 875640, 0.0208, "ui-connectors"),
-    ("BOOT", "SW_SPST"): ("C318884", "Basic?", 875640, 0.0208, "ui-connectors"),
     ("EC11E18244A5", ""): ("C255515", "Extended", 262, 2.1026, "ui-connectors"),
     ("B1", ""): ("C2845262", "Extended", 1120, 0.0240, "ui-connectors"),
     ("B2", ""): ("C2845262", "Extended", 1120, 0.0240, "ui-connectors"),

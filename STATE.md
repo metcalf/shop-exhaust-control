@@ -18,8 +18,8 @@
    - SEN rail power-cycle sequence (design.md §4).
 
 ## Schematic status (where it stopped)
-- `pcb/gen/run.sh` regenerates `pcb/exhaust.kicad_sch`, runs ERC (0 violations) and the netlist assertions (all pass), and exports the SVG and raw BOM to `pcb/reports/`. 130 parts, 38 unique LCSC parts.
-- G2 review hardware items folded in: S-2 (fan side ≤ 4.3 mA at datasheet max), S-4 (`pcb/SAFETY.md`, every crossing asserted), S-5 (D-036), S-14 (EN RC, BOOT/EN switches, strapping pins asserted unconnected), S-13 and S-17 (already applied). Interfaces §2.2–2.3 still name the LTV-814; D-036 supersedes it, and the doc gets updated at layout.
+- `pcb/gen/run.sh` regenerates `pcb/exhaust.kicad_sch`, runs ERC (0 violations) and the netlist assertions (all pass), and exports the SVG and raw BOM to `pcb/reports/`. 129 parts, 37 unique LCSC parts.
+- G2 review hardware items folded in: S-2 (fan side ≤ 4.3 mA at datasheet max), S-4 (`pcb/SAFETY.md`, every crossing asserted), S-5 (D-036), S-14 (EN RC, BOOT/EN recovery pads per D-041, strapping pins asserted unconnected), S-13 and S-17 (already applied). Interfaces §2.2–2.3 still name the LTV-814; D-036 supersedes it, and the doc gets updated at layout.
 - Generator draws wires within blocks and power symbols for GND/+3V3/+5V (D-038, at Andrew's request during his schematic review). Netlist unchanged.
 - Known cosmetic issues: field text on rotated parts needs GUI touch-up; placement wasn't laid out for wiring, so some blocks are still label-heavy.
 
@@ -69,3 +69,4 @@
 - 2026-11-08 (nightly): No-op, the fifth in a row. Q-33, Q-35 and Q-37 are still open and nothing has been committed since 2026-11-07. D-029 still blocks layout, mech and firmware. No changes to design files.
 - 2026-11-09: Removed VBUS_SENSE (Andrew; D-039): divider and filter cap gone, GPIO2 unconnected and spare.
 - 2026-11-09: Removed the VBUS polyfuse, kept `+5V` at one 10 µF (USB sink limit), swapped the buck to AP63203WU-7 (Andrew; D-040). O-4 closed. ERC 0, netlist assertions pass. Standard PCBA for 2 boards ≈ $154, total ≈ $264–294.
+- 2026-11-09: EN/BOOT tact switches replaced by two screwdriver pad pairs, each with its own GND pad (Andrew; D-041). ERC 0, netlist assertions pass. Standard PCBA for 2 boards ≈ $153, total ≈ $263–293.
