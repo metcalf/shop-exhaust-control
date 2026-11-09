@@ -27,7 +27,7 @@ Circuit as in `docs/interfaces.md` §2.1, with these parts: U4 H11L1S-TA1-L, VCC
 | **Total** | **≈ 4.1 mA**, against the ≤ 9 mA budget (Q-26: the port supplies ≈ 9.3 mA) |
 
 - PWM LED drive: (3.3 − 1.5) / 390 Ω ≥ 4.6 mA against H11L1 IF(on) max 1.6 mA: 2.9× margin. GPIO4 has a 10 k pull-down, so the LED stays dark through reset and boot, and the fan stays off (SR-08).
-- Tach and presence outputs: LTV-817 C rank, CTR 200–400 % at 5 mA. *Assumed:* CTR at ~1 mA is ≥ 50 % of that, so ≥ 100 %. That gives IC ≥ 0.85 mA against the 0.15 mA the 22 k pull-up needs: ≥ 5.7×, still ~3× after 50 % aging. Switching time with a 22 k load is ~100 µs order (not characterized), against a ≥ 3.3 ms tach half-period.
+- Tach and presence outputs: LTV-817 C rank, CTR 200–400 % at 5 mA. Typical CTR at IF = 1 mA is 80 % (Andrew, from the Lite-On curve; a typical value, not a minimum). At ≈ 0.9 mA that gives IC ≈ 0.7 mA against the 0.15 mA the 22 k pull-up needs: ≈ 4.7×, still ≈ 2.4× after 50 % aging. Switching time with a 22 k load is ~100 µs order (not characterized), against a ≥ 3.3 ms tach half-period.
 - H11L1 propagation is ≤ 0.5 µs (Lite-On), < 0.3 % of the 200 µs PWM period.
 
 ## 3. 24 VAC occupancy and wired DC inputs (FR-07, IR-01, D-025, D-036; G2 review S-5)
@@ -37,7 +37,7 @@ Path drop, worst case: LED 1.4 V + two bridge diodes ≈ 1.8 V, so ≈ 3.2 V. Th
 
 | Case | Result |
 |------|--------|
-| 12 VDC − 10 % (10.8 V) | IF ≥ (10.8 − 3.2) / 5.4 k = 1.4 mA. With CTR ≥ 100 % (assumed, as §2), IC ≥ 1.4 mA, 20× the 70 µA needed |
+| 12 VDC − 10 % (10.8 V) | IF ≥ (10.8 − 3.2) / 5.4 k = 1.4 mA. With CTR 80 % (typical at 1 mA, as §2), IC ≈ 1.1 mA, ≈ 16× the 70 µA needed |
 | 12 VAC − 10 % (15.3 V pk) | Conducts usefully (IF ≥ 0.3 mA) above 4.8 V, i.e. above 18° of each half-cycle. Gap ≈ 1.7 ms per half-cycle; RC τ = 47 ms, so the output rises ≈ 3.3 × 1.7 / 47 = 0.12 V, well below VIL (0.83 V). No chatter |
 | 24 VAC + 10 % (26.4 V, 37.3 V pk) | IF pk 6.5 mA (LTV-817 max 50 mA). P ≈ 26.4² / 5.4 k ≈ 0.13 W total, 65 mW per 1206 (rated 0.25 W) |
 | Lightly loaded Class 2 secondary, 29 VAC / 41 V pk | IF pk 7.1 mA, 0.155 W total. TVS standoff 48 V > 41 V |

@@ -400,5 +400,5 @@ Template:
 - Context: Andrew spotted the LTV-817 on JLC's line. C109227 (Lite-On LTV-817S-TA1-C) is the same 4-pin phototransistor opto, labelled Basic on its JLC page, with 282,150 at LCSC on 2026-11-09. The Lite-On datasheet (DS70-2012-0050 Rev. B) gives pins 1 anode, 2 cathode, 3 emitter, 4 collector, C rank 200–400 % at IF = 5 mA, 5 kVrms, UL 1577 file E113898 and VDE 60747-5-5.
 - Decision: use C109227 for all four optos (U5–U8), same symbol. Unranked variants (LTV-817S-TA1 and LTV-817S) are ruled out because the margins depend on C rank.
 - Alternatives considered: keeping UMW PC817C-S (cheaper unit price, Extended).
-- Consequences: $0.045 more per opto, one fewer Extended part, and a recognised maker's UL file. The copy of the datasheet read stops before the CTR-vs-IF curves, so `pcb/design.md`'s CTR-at-1-mA assumption stays open until read from the full sheet or the bench. Lead span differs slightly from the footprint (O-3).
+- Consequences: $0.045 more per opto, one fewer Extended part, and a recognised maker's UL file. Andrew read typical CTR at 1 mA as 80 % from the full sheet, which replaces `pcb/design.md`'s assumption: tach and presence margin ≈ 4.7×. Lead span differs slightly from the footprint (O-3).
 

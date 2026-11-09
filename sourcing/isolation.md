@@ -106,4 +106,4 @@ AOS datasheet Rev 3.1 (Dec 2023):
 
 - The only part with a UL file number from a datasheet is the PC817 (UMW, E547318, for the UMW family). The H11L1 is stated as UL 1577 recognized in the Lite-On datasheet, with no file number printed. Get the file numbers from the UL Product iQ database before relying on them for the G3 safety review.
 - Creepage and clearance are not given for either opto. Any reinforced-isolation claim across the barrier needs the manufacturer's figures or the package drawing checked against the IEC 62368-1 table.
-- Items needing a recheck before the G4 BOM freeze: the class of C2488, whether C7435535 carries the VDE option, and the PC817 CTR at 1 mA.
+- Items needing a recheck before the G4 BOM freeze: the class of C2488, and whether C7435535 carries the VDE option. CTR at 1 mA: 80 % typical on the LTV-817 (D-045).
