@@ -366,7 +366,7 @@ Template:
 - Date: 2026-11-09
 - Status: Accepted (Andrew). Fills the "switches or pads" option in G2 review S-14
 - Context: SW1 (EN) and SW2 (BOOT) are only for setup and recovery. Normal flashing uses `esptool`'s reset over USB-Serial-JTAG and updates are OTA, so BOOT only matters if firmware stops USB from responding.
-- Decision: remove both switches. EN and BOOT each get their own adjacent GND pad (TP6 + TP2, TP7 + TP8), about a 0.5 mm gap within a pair and ≥ 10 mm between pairs, so two screwdrivers can hold both at once: short BOOT, tap EN, release BOOT.
+- Decision: remove both switches. EN and BOOT each get their own adjacent GND pad (TP6 + TP2, TP7 + TP8), with the board's minimum copper clearance within a pair (Andrew: easier to bridge) and ≥ 10 mm between pairs, so two screwdrivers can hold both at once: short BOOT, tap EN, release BOOT.
 - Alternatives considered: one shared GND pad between EN and BOOT (no room for two tips; would mean holding BOOT while plugging in USB); keeping the switches (parts and space for a rare operation).
 - Consequences: one fewer unique part. Recovery needs the lid off and two tools, which is rare. The other tact switches and the encoder renumber to SW1–SW5. The pad spacing is a layout rule in `pcb/design.md` §5, since the schematic can't enforce it.
 
