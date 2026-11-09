@@ -15,10 +15,10 @@
 4. **Firmware backlog, for implementation later (not now):**
    - G2 review items: S-3 overspeed / tach at 0 %; S-6 frozen-sequence DC frames (record in D-021 when the DC project starts); S-7 SprayRunOn upper bound while occupied (an FR-08 change, ask Andrew then); S-8, S-9, S-10, S-11, S-12, S-15; S-16 MQTT keepalive ≤ 30 s (check `BaseMqttClient`).
    - S-14 boot config: TWDT panic, RTC WDT, LEDC at duty 0 before routing.
-   - VBUS_SENSE-based indicator cap (D-037); SEN rail power-cycle sequence (design.md §4).
+   - SEN rail power-cycle sequence (design.md §4).
 
 ## Schematic status (where it stopped)
-- `pcb/gen/run.sh` regenerates `pcb/exhaust.kicad_sch`, runs ERC (0 violations) and the netlist assertions (all pass), and exports the SVG and raw BOM to `pcb/reports/`. 137 parts, 40 unique LCSC parts.
+- `pcb/gen/run.sh` regenerates `pcb/exhaust.kicad_sch`, runs ERC (0 violations) and the netlist assertions (all pass), and exports the SVG and raw BOM to `pcb/reports/`. 134 parts, 40 unique LCSC parts.
 - G2 review hardware items folded in: S-2 (fan side ≤ 4.3 mA at datasheet max), S-4 (`pcb/SAFETY.md`, every crossing asserted), S-5 (D-036), S-14 (EN RC, BOOT/EN switches, strapping pins asserted unconnected), S-13 and S-17 (already applied). Interfaces §2.2–2.3 still name the LTV-814; D-036 supersedes it, and the doc gets updated at layout.
 - Generator draws wires within blocks and power symbols for GND/+3V3/+5V (D-038, at Andrew's request during his schematic review). Netlist unchanged.
 - Known cosmetic issues: field text on rotated parts needs GUI touch-up; placement wasn't laid out for wiring, so some blocks are still label-heavy.
@@ -67,3 +67,4 @@
 - 2026-11-06 (nightly): No-op, the third in a row. Q-33, Q-35 and Q-37 are still open and nothing has been committed since 2026-11-05. D-029 still blocks layout, mech and firmware. No changes to design files.
 - 2026-11-07 (nightly): No-op, the fourth in a row. Q-33, Q-35 and Q-37 are still open and nothing has been committed since 2026-11-06. D-029 still blocks layout, mech and firmware. No changes to design files.
 - 2026-11-08 (nightly): No-op, the fifth in a row. Q-33, Q-35 and Q-37 are still open and nothing has been committed since 2026-11-07. D-029 still blocks layout, mech and firmware. No changes to design files.
+- 2026-11-09: Removed VBUS_SENSE (Andrew; D-039): divider and filter cap gone, GPIO2 unconnected and spare.

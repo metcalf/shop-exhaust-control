@@ -7,7 +7,7 @@ Datasheet figures below come from the sourcing notes. Where a value is assumed r
 ## 1. Power (D-030, D-037)
 - J1 USB-C (HRO TYPE-C-31-M-12) → F1 polyfuse 1.5 A hold → `+5V`. Rd 5.1 kΩ on CC1 and CC2 (sink). D1 SMAJ5.0A on `+5V`. U2 USBLC6-2SC6 on D±. Shield goes straight to GND: the enclosure is plastic and there's no chassis.
 - **3.3 V: SY8089AAAC sync buck** (2 A, SOT-23-5), 2.2 µH (3.4 A Isat), 10 µF in, 2 × 22 µF out. FB 100 k / 22 k gives 0.6 × 5.55 = 3.33 V (453 k isn't stocked), with 22 pF feed-forward. Why not an LDO: at 0.35 A typical, an LDO dissipates ≈ 0.6 W, too much for SOT-23-5 in a sealed box (sourcing/power.md). Peak load ≈ 0.8 A at 3.3 V (module TX 360 mA + display 100 mA + SEN65 350 mA for 2 ms), within the 2 A rating.
-- `VBUS_SENSE` (GPIO2, ADC1): 100 k / 100 k divider from `+5V`, 100 nF. Reads 2.5 V at 5 V and draws 25 µA. Firmware lowers the indicator cap when `+5V` sags below ~4.6 V (a weak PC port). This replaces the CC-read option in D-030 and uses the last spare GPIO.
+- No `+5V` sense (D-039). The indicator keeps its fixed 300 mA firmware cap. GPIO2 is unconnected and is the one spare GPIO.
 - **Open (O-4):** SY8089's abs max is 6 V, but SMAJ5.0A clamps at ≈ 9.2 V. Ceramic-only input plus a 3 m cable can ring on hot-plug. The polyfuse (~0.1 Ω) damps some of it. Decide before layout whether to add 47–100 µF of polymer/electrolytic bulk on `+5V`.
 
 ## 2. Fan interface, fan domain (SR-08, SR-09, D-023; G2 review S-2)

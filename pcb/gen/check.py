@@ -126,7 +126,7 @@ check(not has_res("SEN_SDA", "+3V3") and not has_res("SEN_SCL", "+3V3"), "no I2C
 check(has_res("EN", "+3V3"), "EN pull-up")
 
 # --- GPIO plan (docs/interfaces.md §2) ------------------------------------------
-GPIO = {"IO1": "DC_IN", "IO2": "VBUS_SENSE", "IO4": "FAN_PWM", "IO5": "FAN_TACH", "IO6": "FAN_PRESENT",
+GPIO = {"IO1": "DC_IN", "IO4": "FAN_PWM", "IO5": "FAN_TACH", "IO6": "FAN_PRESENT",
         "IO7": "OCC_IN", "IO8": "SEN_SDA", "IO9": "SEN_SCL", "IO10": "SEN_PWR_EN",
         "IO11": "DISP_MOSI", "IO12": "DISP_SCLK", "IO13": "DISP_CS", "IO14": "DISP_DC", "IO21": "DISP_RST",
         "IO47": "DISP_BL", "IO15": "ENC_A", "IO16": "ENC_B", "IO17": "ENC_SW", "IO18": "BTN1",
@@ -138,7 +138,7 @@ ESP_PIN = {"IO0": 27, "IO1": 39, "IO2": 38, "IO4": 4, "IO5": 5, "IO6": 6, "IO7":
            "IO48": 25}
 for io, n in GPIO.items():
     check(net_of("U1", ESP_PIN[io]) == n, f"U1 {io} should be {n}, is {net_of('U1', ESP_PIN[io])}")
-for io_pin in (15, 26, 16, 28, 29, 30):       # IO3, IO45, IO46 strapping; IO35-37 octal PSRAM
+for io_pin in (38, 15, 26, 16, 28, 29, 30):   # IO2 spare (D-039); IO3, IO45, IO46 strapping; IO35-37 octal PSRAM
     check(net_of("U1", io_pin).startswith("unconnected-"), f"U1 pin {io_pin} must be unconnected")
 
 # --- nothing single-ended except intentional no-connects ----------------------

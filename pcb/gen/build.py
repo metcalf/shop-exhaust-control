@@ -58,10 +58,6 @@ part("ESD", (X + 65, Y + 30), {"I/O1": "USB_DP", "I/O2": "USB_DN", "VBUS": "+5V"
 cap("10u", (X + 60, Y + 12), "+5V", "GND", key="C0805")
 flag("VBUS_RAW", (X + 30, Y))
 flag("GND", (X + 45, Y + 50))
-# VBUS sense for the indicator cap when running from a weak source (pcb/design.md §1)
-res("100k", (X + 80, Y), "+5V", "VBUS_SENSE")
-res("100k", (X + 80, Y + 20), "VBUS_SENSE", "GND")
-cap("100n", (X + 92, Y + 20), "VBUS_SENSE", "GND")
 
 # 5 V -> 3.3 V
 sh.begin("reg33")
@@ -83,7 +79,7 @@ X, Y = 175, 70
 sh.note("ESP32-S3-WROOM-1-N16R8 (D-022). GPIO plan: docs/interfaces.md §2", (X - 25, Y - 40))
 part("ESP", (X, Y), {
     "GND": "GND", "3V3": "+3V3", "EN": "EN",
-    "IO0": "BOOT", "IO1": "DC_IN", "IO2": "VBUS_SENSE",
+    "IO0": "BOOT", "IO1": "DC_IN",
     "IO4": "FAN_PWM", "IO5": "FAN_TACH", "IO6": "FAN_PRESENT", "IO7": "OCC_IN",
     "IO8": "SEN_SDA", "IO9": "SEN_SCL", "IO10": "SEN_PWR_EN",
     "IO11": "DISP_MOSI", "IO12": "DISP_SCLK", "IO13": "DISP_CS", "IO14": "DISP_DC",
@@ -92,7 +88,7 @@ part("ESP", (X, Y), {
     "IO18": "BTN1", "IO38": "BTN2", "IO39": "BTN3", "IO40": "BTN4",
     "IO48": "IND_R_G", "IO41": "IND_G_G", "IO42": "IND_B_G",
     "USB_D+": "USB_DP", "USB_D-": "USB_DN", "TXD0": "TXD0", "RXD0": "RXD0",
-}, nc=("IO3", "IO45", "IO46", "IO35", "IO36", "IO37"), r="U1")
+}, nc=("IO2", "IO3", "IO45", "IO46", "IO35", "IO36", "IO37"), r="U1")
 cap("10u", (X + 30, Y - 30), "+3V3", "GND", key="C0805")
 cap("100n", (X + 38, Y - 30), "+3V3", "GND")
 # EN RC per the Espressif hardware design guide; BOOT and EN switches (G2 review S-14)

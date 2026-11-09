@@ -320,7 +320,7 @@ Template:
 
 ## D-037: 3.3 V from an SY8089 buck; VBUS sense on the spare GPIO
 - Date: 2026-10-28
-- Status: Accepted (Claude; reversible before layout). Fills D-030's "buck or LDO" choice
+- Status: Accepted (Claude; reversible before layout). Fills D-030's "buck or LDO" choice. The VBUS sense part is superseded by D-039; the buck stands
 - Context: a 5 → 3.3 V LDO dissipates ≈ 0.6 W at the 0.35 A typical load, which is too much for SOT-23-5 in a sealed box. D-030 left an optional CC read for the indicator cap.
 - Decision: SY8089AAAC (2 A) with a 2.2 µH inductor and 2 × 22 µF output. GPIO2 reads `+5V` through a 100 k / 100 k divider, and firmware lowers the indicator cap when the supply sags.
 - Alternatives considered: TLV757 LDO (thermal); reading CC1/CC2 (two ADC pins, and it doesn't see cable drop).
@@ -345,4 +345,12 @@ Template:
 - Decision: `pcb/gen/build.py` marks blocks with `sh.begin()`. At write time, GND/+3V3/+5V pins get power symbols. Pins sharing a net within a block are joined by orthogonal wires (`pcb/gen/route.py`: no touching other nets' pins or wires, no T-joins to them, no running through symbol bodies, hops ≤ ~40 mm). Each wired group keeps one net label, so net names and cross-block links are unchanged, and anything unroutable falls back to a label.
 - Alternatives considered: hand-placing wires per block (brittle when parts move); leaving it for GUI cleanup after hand-off (review happens before then).
 - Consequences: the netlist is identical before and after (94 nets, same names and members; ERC 0, check.py passes). Labels drop from 359 to 165. Wire quality depends on placement, which wasn't laid out for wiring, so some blocks (indicator, MCU) are still mostly labels, and rotated-part text overlaps remain.
+
+## D-039: No VBUS sense; GPIO2 left spare
+- Date: 2026-11-09
+- Status: Accepted (Andrew). Supersedes D-037's VBUS sense and D-030's lower indicator cap on a PC port
+- Context: D-037 sensed `+5V` so firmware could lower the indicator cap on a weak PC port. The installed node runs from a listed ≥ 2 A adapter, normal logging is over Wi-Fi, and Andrew's PC port supplies 3 A against a 1.1 A worst-case peak. The installed cable makes the threshold unworkable: about 0.55 Ω (3 m of 24 AWG plus the polyfuse) puts `+5V` near 4.7 V with the indicator at its cap (≈ 0.56 A, estimated) and near 4.4 V at peak, from an exactly 5.0 V source. That is within roughly 100 mV (estimated divider and ADC error) of the 4.6 V threshold, so it could dim the indicator on the correct adapter.
+- Decision: remove the divider and filter cap (2 × 100 k, 100 nF) and leave GPIO2 unconnected. The indicator keeps its fixed 300 mA firmware cap.
+- Alternatives considered: keep it for cable-drop diagnostics (a multimeter at commissioning covers that); reading CC1/CC2 (already rejected in D-037). If a lower cap on a PC is ever wanted, firmware may be able to detect a USB host through USB-Serial-JTAG with no hardware (API not yet checked).
+- Consequences: three fewer parts and one spare GPIO before layout. Cost change is negligible, so `sourcing/priced-parts.md` was not regenerated. Sag only dims the LEDs slightly; the buck still regulates 3.3 V.
 
