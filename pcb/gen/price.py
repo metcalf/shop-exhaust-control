@@ -48,7 +48,6 @@ PRICE = {
     ("ESP32-S3-WROOM-1-N16R8", ""): ("C2913202", "Extended", 31339, 4.7466, "passives (confirm)"),
     ("USBLC6-2SC6", ""): ("C2827654", "Extended", 103720, 0.0452, "power"),
     ("AP63203WU-7", ""): ("C780769", "Extended", 1337, 1.2115, "LCSC API 2026-11-09 (D-040)"),
-    ("HT7550-1", ""): ("C41355185", "Extended", 69710, 0.0502, "power"),
     ("H11L1S-TA1-L", ""): ("C7435535", "Extended", 1541, 0.4051, "isolation"),
     ("PC817C-S", ""): ("C3008369", "Extended", 343540, 0.0366, "isolation"),
 }

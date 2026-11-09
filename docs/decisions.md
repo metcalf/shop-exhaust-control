@@ -204,7 +204,7 @@ Template:
 
 ## D-023: Fan-powered, fail-off isolated fan interface
 - Date: 2026-10-25
-- Status: Accepted with G2 (Andrew, 2026-10-28). Q-26 answered: the stock controller draws ≈ 9.3 mA from the port, so the ≤ 9 mA budget is within demonstrated capacity
+- Status: Accepted with G2 (Andrew, 2026-10-28). Q-26 answered: the stock controller draws ≈ 9.3 mA from the port, so the ≤ 9 mA budget is within demonstrated capacity. 5 V LDO removed by D-044
 - Context: SR-08 requires the fan to be off with the node unpowered, with the hold-off powered from the fan side. SR-09 requires isolation. FR-18 needs the tach.
 - Decision: A fan-side N-MOSFET holds the speed line low by default (gate pulled up from a 5 V LDO on the fan's +10 V). A Schmitt-output opto driven by the node's PWM releases it, so the LED-on fraction is the fan duty. Two more optos carry the tach and a fan-present signal back. ≥ 3 mm barrier (`docs/interfaces.md` §2.1).
 - Alternatives considered: An isolated DC-DC powering the fan side from the node (fails on, since the hold-off dies with node power). A relay on the speed line (slow; can't PWM at 5 kHz). A digital isolator (needs a few mA on both sides, no better than the opto here).
@@ -385,4 +385,12 @@ Template:
 - Decision: remove D5. Keep U6 and U7 as separate optos, which also keeps the board flexible across different fans.
 - Alternatives considered: one opto with a shunt or FET inverter (needs the stopped-level behaviour of each fan; saves ≈ 4 parts and GPIO6).
 - Consequences: one fewer part and unique part. Tach LED current goes from 1.1 mA to 1.2 mA at datasheet max, for a fan-side total of ≈ 4.4 mA against the ≤ 9 mA budget.
+
+## D-044: No fan-side regulator; run the fan interface from +10V_F
+- Date: 2026-11-09
+- Status: Accepted (Andrew). Amends D-023
+- Context: The H11L1 operates at 3–15 V (16 V abs max), so it doesn't need `+5F`. Andrew: the datasheet curve shows ICC doesn't rise significantly from 5 V to 10 V, and red measured about 10 V. He also judged that an open-collector tach output tolerates the 10 V the fan generates itself.
+- Decision: remove the HT7550 and `+5F`. The H11L1 VCC, the Q1 gate pull-up, and 10 k feeds to the tach and presence LEDs all run from `+10V_F`. White has no separate pull-up: the tach LED's 10 k feed pulls it up. Q1's gate sits at 10 V (AO3400A ±12 V max).
+- Alternatives considered: 10 k / 10 k dividers to hold Q1's gate and white near 5 V as the stock controller does (one more resistor for an unproven need).
+- Consequences: three fewer unique parts and a fan-side total of ≈ 4.1 mA. White rests near 9 V instead of the stock 5 V, an assumption AC-18 should confirm on the first bench power-up. The part directly on red goes from 30 V tolerance to 16 V. Q1 Vgs margin to its limit is about 2 V. References renumbered: H11L1 is now U4, tach U5, presence U6, OCC U7, DC U8.
 

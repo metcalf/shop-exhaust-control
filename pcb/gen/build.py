@@ -107,24 +107,21 @@ part("TERM4", (X, Y + 15), {"1": "GND_F", "2": "+10V_F", "3": "FAN_SPD", "4": "F
 sh.note("J-FAN 1 GND (BLK), 2 +10V (RED), 3 SPD (YEL), 4 TACH (WHT)", (X - 10, Y + 45), size=1.27)
 flag("GND_F", (X - 5, Y + 35))
 flag("+10V_F", (X + 5, Y))
-part("LDO5F", (X + 55, Y + 5), {"VIN": "+10V_F", "VOUT": "+5F", "GND": "GND_F"})
 cap("1u", (X + 45, Y + 18), "+10V_F", "GND_F")   # 0603 1 uF is 50 V
-cap("1u", (X + 68, Y + 18), "+5F", "GND_F")
 # PWM: Q-FAN holds yellow low (fan off) unless the opto is lit
 part("OPTO_PWM", (X + 100, Y + 10), {"1": "FAN_LED_A", "2": "GND", "4": "Q_FAN_G", "5": "GND_F",
-                                      "6": "+5F"})
-cap("100n", (X + 110, Y + 30), "+5F", "GND_F")
-res("10k", (X + 120, Y - 5), "+5F", "Q_FAN_G")
+                                      "6": "+10V_F"})
+cap("100n", (X + 110, Y + 30), "+10V_F", "GND_F")
+res("10k", (X + 120, Y - 5), "+10V_F", "Q_FAN_G")
 part("NFET_LL", (X + 130, Y + 15), {"G": "Q_FAN_G", "D": "FAN_SPD", "S": "GND_F"})
 res("390", (X + 85, Y - 5), "FAN_PWM", "FAN_LED_A")
 res("10k", (X + 85, Y + 30), "FAN_PWM", "GND")
 # Tach: white low -> LED lit -> FAN_TACH low
-res("10k", (X + 150, Y - 5), "+5F", "FAN_TACH_F")
-res("3.3k", (X + 160, Y - 5), "+5F", "TACH_LED_A")
+res("10k", (X + 160, Y - 5), "+10V_F", "TACH_LED_A")
 part("PC817", (X + 175, Y + 10), {"1": "TACH_LED_A", "2": "FAN_TACH_F", "3": "GND", "4": "FAN_TACH"})
 res("22k", (X + 190, Y - 5), "+3V3", "FAN_TACH")
 # Presence: fan side powered -> LED lit -> FAN_PRESENT low
-res("4.7k", (X + 210, Y - 5), "+5F", "PRES_LED_A")
+res("10k", (X + 210, Y - 5), "+10V_F", "PRES_LED_A")
 part("PC817", (X + 225, Y + 10), {"1": "PRES_LED_A", "2": "GND_F", "3": "GND", "4": "FAN_PRESENT"})
 res("22k", (X + 240, Y - 5), "+3V3", "FAN_PRESENT")
 

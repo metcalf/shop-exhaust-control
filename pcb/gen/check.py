@@ -52,7 +52,7 @@ for r, c in comps.items():
 # Parts may touch nets of only one domain, except the barrier parts listed below,
 # which must touch exactly two (LED side and output side).
 DOMAIN_ROOTS = {
-    "fan": {"GND_F", "+10V_F", "+5F", "FAN_SPD", "FAN_TACH_F", "Q_FAN_G", "TACH_LED_A",
+    "fan": {"GND_F", "+10V_F", "FAN_SPD", "FAN_TACH_F", "Q_FAN_G", "TACH_LED_A",
             "PRES_LED_A"},
     "occ": {"OCC_A", "OCC_B", "OCC_R", "OCC_AC", "OCC_P", "OCC_N"},
     "dci": {"DCI_A", "DCI_B", "DCI_R", "DCI_AC", "DCI_P", "DCI_N"},
@@ -92,20 +92,20 @@ for r in barrier:
     v = comps[r]["value"]
     if v == "H11L1S-TA1-L":
         check(domain(net_of(r, 1)) == "node" and domain(net_of(r, 2)) == "node", f"{r}: LED not node-side")
-        check(domain(net_of(r, 4)) == "fan" and net_of(r, 5) == "GND_F" and net_of(r, 6) == "+5F",
+        check(domain(net_of(r, 4)) == "fan" and net_of(r, 5) == "GND_F" and net_of(r, 6) == "+10V_F",
               f"{r}: output side not fan-powered")
     else:
         check(domain(net_of(r, 3)) == "node" and domain(net_of(r, 4)) == "node",
               f"{r}: transistor not node-side")
 
-# --- fail-off (SR-08): Q_FAN gate pulled up to +5F, drain on the speed line --------
+# --- fail-off (SR-08): Q_FAN gate pulled up to +10V_F, drain on the speed line --------
 qfan = sorted({r for r, _p in pin_net if net_of(r, 3) == "FAN_SPD" and r.startswith("Q")})
 check(len(qfan) == 1, "one FET on FAN_SPD")
 if qfan:
     q = qfan[0]
     check(net_of(q, 1) == "Q_FAN_G" and net_of(q, 2) == "GND_F", "Q_FAN gate/source")
 pullups = [r for r in refs_on("Q_FAN_G") if r.startswith("R")]
-check(any({net_of(r, 1), net_of(r, 2)} == {"Q_FAN_G", "+5F"} for r in pullups), "Q_FAN gate pull-up to +5F")
+check(any({net_of(r, 1), net_of(r, 2)} == {"Q_FAN_G", "+10V_F"} for r in pullups), "Q_FAN gate pull-up to +10V_F")
 check(any({net_of(r, 1), net_of(r, 2)} == {"FAN_PWM", "GND"} for r in refs_on("FAN_PWM") if r.startswith("R")),
       "FAN_PWM pull-down (LED dark through reset)")
 

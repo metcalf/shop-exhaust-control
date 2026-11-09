@@ -9,7 +9,7 @@ This controller is a convenience control, not a life-safety device. Air-quality 
 | Domain | Nets | Source | Class |
 |--------|------|--------|-------|
 | Node | GND, +5V, +3V3, +3V3_SEN, all GPIO nets | USB-C adapter (LPS, SELV) | SELV; touchable via USB-C and the panel |
-| Fan | GND_F, +10V_F, +5F, FAN_SPD, FAN_TACH_F, Q_FAN_G, TACH_LED_A, PRES_LED_A | Fan's control port; SELV on measured evidence (Q-22, Q-30, Q-31, D-028); ~65 VAC capacitive float on GND_F | SELV, separate ground |
+| Fan | GND_F, +10V_F, FAN_SPD, FAN_TACH_F, Q_FAN_G, TACH_LED_A, PRES_LED_A | Fan's control port; SELV on measured evidence (Q-22, Q-30, Q-31, D-028); ~65 VAC capacitive float on GND_F | SELV, separate ground |
 | OCC | OCC_* | Lighting transformer's Class 2 secondary, 24 VAC | SELV (Class 2) |
 | DC | DCI_* | DC controller's contact or output, 12–24 V AC/DC | SELV |
 
@@ -18,11 +18,11 @@ This controller is a convenience control, not a life-safety device. Air-quality 
 
 | Part | Crosses | Isolation rating |
 |------|---------|------------------|
-| U5 H11L1S-TA1-L | Node (LED) → Fan (output, powered from +5F) | UL 1577 5 kVrms |
-| U6 PC817C-S | Fan (LED) → Node (tach output) | UL 1577 5 kVrms |
-| U7 PC817C-S | Fan (LED) → Node (presence output) | UL 1577 5 kVrms |
-| U8 PC817C-S | OCC (LED) → Node | UL 1577 5 kVrms |
-| U9 PC817C-S | DC (LED) → Node | UL 1577 5 kVrms |
+| U4 H11L1S-TA1-L | Node (LED) → Fan (output, powered from +10V_F) | UL 1577 5 kVrms |
+| U5 PC817C-S | Fan (LED) → Node (tach output) | UL 1577 5 kVrms |
+| U6 PC817C-S | Fan (LED) → Node (presence output) | UL 1577 5 kVrms |
+| U7 PC817C-S | OCC (LED) → Node | UL 1577 5 kVrms |
+| U8 PC817C-S | DC (LED) → Node | UL 1577 5 kVrms |
 
 Nothing else crosses: no Y capacitors, no shared pours, no resistors, no shield or mounting-hole connections. Mounting holes are non-plated and unconnected, with plastic or nylon fasteners where they sit near a barrier.
 

@@ -32,7 +32,6 @@ P = {
     "TVS5": ("Device:D_TVS", "Diode_SMD:D_SMA", "C113952", "SMAJ5.0A", "D"),
     "TVS48": ("Device:D_TVS", "Diode_SMD:D_SMB", "C693510", "SMBJ48CA", "D"),
     "ESD": ("Power_Protection:USBLC6-2SC6", "Package_TO_SOT_SMD:SOT-23-6", "C2827654", "USBLC6-2SC6", "U"),
-    "LDO5F": ("Regulator_Linear:HT75xx-1-SOT89", "Package_TO_SOT_SMD:SOT-89-3", "C41355185", "HT7550-1", "U"),
 
     # UI and connectors (sourcing/ui-connectors.md)
     "ENC": ("Device:RotaryEncoder_Switch",
