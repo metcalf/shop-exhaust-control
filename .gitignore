@@ -43,3 +43,6 @@ Thumbs.db
 fp-info-cache
 *.lck
 *.kicad_prl
+
+# KiCad local history
+.history/
