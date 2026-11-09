@@ -14,7 +14,7 @@ Datasheet figures below come from the sourcing notes. Where a value is assumed r
 - **Hot-plug (O-4, closed by D-040):** a live VBUS into a ceramic-only input (A-to-C cable, or a supply that doesn't switch VBUS) rings. *Estimated, not measured:* 6.6 V peak on 3 m of 24 AWG, ≈ 8 V on a short heavy cable before SMAJ5.0A starts conducting. The buck's 35 V rating covers that. Bulk capacitance isn't an option under the USB limit above. If the display ends up on `+5V` (Q-35), check that its on-board regulator tolerates this.
 
 ## 2. Fan interface, fan domain (SR-08, SR-09, D-023; G2 review S-2)
-Circuit as in `docs/interfaces.md` §2.1, with these parts: U4 HT7550-1 (Vin ≤ 30 V, Iq ≤ 3 µA), U5 H11L1S-TA1-L, Q1 AO3400A (gate driven to 5 V; same part as the indicator switches, one fewer unique part), U6 and U7 PC817C-S, D5 1N4148W. No TVS on the fan lines (D-042).
+Circuit as in `docs/interfaces.md` §2.1, with these parts: U4 HT7550-1 (Vin ≤ 30 V, Iq ≤ 3 µA), U5 H11L1S-TA1-L, Q1 AO3400A (gate driven to 5 V; same part as the indicator switches, one fewer unique part), U6 and U7 PC817C-S. No TVS on the fan lines (D-042) and no series diode on tach (D-043).
 
 **Fan-side current from red +10 V, datasheet maxima (S-2):**
 
@@ -22,11 +22,11 @@ Circuit as in `docs/interfaces.md` §2.1, with these parts: U4 HT7550-1 (Vin ≤
 |------|-----|
 | H11L1 ICC (on or off), 5 V | 1.3 mA |
 | Q1 gate pull-up 10 k (flows to GND_F via U5 when lit, or held at +5F) | 0.5 mA |
-| Tach LED, white low: (5.1 − 1.0 − 0.6) / 3.3 k (Vf min) | 1.1 mA |
+| Tach LED, white low: (5.1 − 1.0) / 3.3 k (Vf min) | 1.2 mA |
 | White pull-up 10 k, white low | 0.5 mA |
 | Presence LED: (5.1 − 1.0) / 4.7 k | 0.9 mA |
 | HT7550 Iq | < 0.01 mA |
-| **Total** | **≈ 4.3 mA**, against the ≤ 9 mA budget (Q-26: the port supplies ≈ 9.3 mA) |
+| **Total** | **≈ 4.4 mA**, against the ≤ 9 mA budget (Q-26: the port supplies ≈ 9.3 mA) |
 
 - PWM LED drive: (3.3 − 1.5) / 390 Ω ≥ 4.6 mA against H11L1 IF(on) max 1.6 mA: 2.9× margin. GPIO4 has a 10 k pull-down, so the LED stays dark through reset and boot, and the fan stays off (SR-08).
 - Tach and presence outputs: PC817C CTR ≥ 200 % at 5 mA. *Assumed:* CTR at ~1 mA is ≥ 50 % of that, so ≥ 100 %. That gives IC ≥ 0.85 mA against the 0.15 mA the 22 k pull-up needs: ≥ 5.7×, still ~3× after 50 % aging. Switching time with a 22 k load is ~100 µs order (not characterized), against a ≥ 3.3 ms tach half-period.

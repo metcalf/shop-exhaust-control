@@ -121,8 +121,7 @@ res("10k", (X + 85, Y + 30), "FAN_PWM", "GND")
 # Tach: white low -> LED lit -> FAN_TACH low
 res("10k", (X + 150, Y - 5), "+5F", "FAN_TACH_F")
 res("3.3k", (X + 160, Y - 5), "+5F", "TACH_LED_A")
-part("PC817", (X + 175, Y + 10), {"1": "TACH_LED_A", "2": "TACH_LED_K", "3": "GND", "4": "FAN_TACH"})
-part("D_SIG", (X + 160, Y + 30), {"A": "TACH_LED_K", "K": "FAN_TACH_F"})
+part("PC817", (X + 175, Y + 10), {"1": "TACH_LED_A", "2": "FAN_TACH_F", "3": "GND", "4": "FAN_TACH"})
 res("22k", (X + 190, Y - 5), "+3V3", "FAN_TACH")
 # Presence: fan side powered -> LED lit -> FAN_PRESENT low
 res("4.7k", (X + 210, Y - 5), "+5F", "PRES_LED_A")

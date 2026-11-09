@@ -9,7 +9,7 @@ This controller is a convenience control, not a life-safety device. Air-quality 
 | Domain | Nets | Source | Class |
 |--------|------|--------|-------|
 | Node | GND, +5V, +3V3, +3V3_SEN, all GPIO nets | USB-C adapter (LPS, SELV) | SELV; touchable via USB-C and the panel |
-| Fan | GND_F, +10V_F, +5F, FAN_SPD, FAN_TACH_F, Q_FAN_G, TACH_LED_*, PRES_LED_A | Fan's control port; SELV on measured evidence (Q-22, Q-30, Q-31, D-028); ~65 VAC capacitive float on GND_F | SELV, separate ground |
+| Fan | GND_F, +10V_F, +5F, FAN_SPD, FAN_TACH_F, Q_FAN_G, TACH_LED_A, PRES_LED_A | Fan's control port; SELV on measured evidence (Q-22, Q-30, Q-31, D-028); ~65 VAC capacitive float on GND_F | SELV, separate ground |
 | OCC | OCC_* | Lighting transformer's Class 2 secondary, 24 VAC | SELV (Class 2) |
 | DC | DCI_* | DC controller's contact or output, 12–24 V AC/DC | SELV |
 

@@ -378,3 +378,11 @@ Template:
 - Alternatives considered: keep only red (no named fault it handles either); keep all three as cheap insurance (no fault to insure against, and it costs a unique part).
 - Consequences: three fewer parts and one fewer unique part. ESD while wiring the terminals is unclamped, which is a brief exposure. An unforeseen transient could kill the fan side of a board, which fails off.
 
+## D-043: No series diode on tach; separate presence opto stays
+- Date: 2026-11-09
+- Status: Accepted (Andrew)
+- Context: D5 (1N4148W) in series with U6's LED only blocked reverse bias if the fan drove white above `+5F`. Q-15's stock 10 k pull-up to 5 V points to an open-drain output, so white doesn't go above our pull-up. Even a 10 V push-pull output would put ≈ 5.1 V across the LED, inside the PC817's 6 V limit. Andrew also asked about carrying presence and tach on one opto, with the open-collector output shunting the LED. That reads a steady LED-off as "cable out", which fails if a stopped tach can rest low. Hall-derived tach outputs plausibly can, and no source confirmed otherwise.
+- Decision: remove D5. Keep U6 and U7 as separate optos, which also keeps the board flexible across different fans.
+- Alternatives considered: one opto with a shunt or FET inverter (needs the stopped-level behaviour of each fan; saves ≈ 4 parts and GPIO6).
+- Consequences: one fewer part and unique part. Tach LED current goes from 1.1 mA to 1.2 mA at datasheet max, for a fan-side total of ≈ 4.4 mA against the ≤ 9 mA budget.
+

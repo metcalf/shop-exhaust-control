@@ -6,7 +6,7 @@
 
 | Block | 2 assembled boards | Basis |
 |-------|-------------------:|-------|
-| PCBA: JLC Standard (D-034) fees, joints, parts (+5 %), 5 bare PCBs, shipping | **≈ $151** | Generated table below (`pcb/gen/price.py`). Fees ≈ $92 of it: setup $25.56, stencil $8.21, THT labour $3.58, and 36 unique parts × $1.53. The per-part fee on Basic parts is unverified; if Basic is fee-free, take off ≈ $30 |
+| PCBA: JLC Standard (D-034) fees, joints, parts (+5 %), 5 bare PCBs, shipping | **≈ $149** | Generated table below (`pcb/gen/price.py`). Fees ≈ $91 of it: setup $25.56, stencil $8.21, THT labour $3.58, and 35 unique parts × $1.53. The per-part fee on Basic parts is unverified; if Basic is fee-free, take off ≈ $30 |
 | SEN65-SIN-T + Sensirion jumper cable | $35.64 | DigiKey price $29.55 + $6.09; buy at Mouser, which Andrew found in stock (Q-34) |
 | Display, 2.8" 240×320 IPS SPI, no touch | ≈ $11–15 | Proposed: LCDwiki MSP2833 (IPS stated in its spec, ILI9341V), or its touch twin MSP2834 (Elecrow DLS29028B, $10.90) with touch unused; see `off-board.md` §2a and Q-35. Newhaven $28.95 is the fallback |
 | Encoder knob | ≈ $3 | est. |
@@ -16,22 +16,22 @@
 | Enclosure, MJF PA12 (two parts + cleat) | ≈ $40 | est. (architecture §8), not quoted; quote with the JLC order |
 | Inserts, screws, diffuser | ≈ $10 | est. |
 | Thermostat wire 18/2, fan-cable extension if needed | ≈ $0–15 | est.; may be on hand |
-| **Total** | **≈ $261–291** | With Standard PCBA. Low end: TPU gasket, wire on hand. The table below gives the other assembly routes |
+| **Total** | **≈ $259–289** | With Standard PCBA. Low end: TPU gasket, wire on hand. The table below gives the other assembly routes |
 
 Against NFR-08 ($300 ceiling, "well below" preferred), the whole range now fits, since Q-36 removed the supply and cable. It isn't "well below" yet. What drives it:
-1. **PCBA fixed fees (≈ $92) dominate the board cost.** Parts are only $12.29 per board. Confirm the Basic-part fee on the live JLC quote; consolidating another few values (e.g. 120/200 Ω → one value, at some loss of colour balance) saves $1.53 each.
+1. **PCBA fixed fees (≈ $91) dominate the board cost.** Parts are only $12.28 per board. Confirm the Basic-part fee on the live JLC quote; consolidating another few values (e.g. 120/200 Ω → one value, at some loss of colour balance) saves $1.53 each.
 2. **Enclosure ($40, est.).** FDM in PETG/ASA on a printer Andrew has access to would cut most of it (needs a D-011 amendment).
 3. **Assembly route** (below): up to ≈ $80.
-4. Five assembled boards instead of two cost ≈ $194 total ($39 per board). Only worth it if spares or the DC project could use them; they can't directly, since the DC board is different.
+4. Five assembled boards instead of two cost ≈ $192 total ($38 per board). Only worth it if spares or the DC project could use them; they can't directly, since the DC board is different.
 
 ## Assembly routes (Q-33 follow-up, 2026-10-29)
 
-These are estimates for 2 boards, from the fee schedule in `pcba-vendor.md` §1 and the part classes above. None is a live quote. Unique parts: 36, or 35 without the module. Of those 35, 17 are Extended, and the 6 "Basic?" parts are assumed Basic.
+These are estimates for 2 boards, from the fee schedule in `pcba-vendor.md` §1 and the part classes above. None is a live quote. Unique parts: 35, or 34 without the module. Of those 34, 17 are Extended, and the 6 "Basic?" parts are assumed Basic.
 
 | Route | JLC fees | Other cost vs. the current plan | ≈ Board total (2) | Saves vs. Standard |
 |---|---:|---|---:|---:|
-| **A. Standard, everything placed** (current plan) | $92.43 if Basic parts carry the $1.53 fee; $64.89 if they're free | — | $151, or $123 | — |
-| **B. Economic, you solder the module** | $65.48 ($8.18 setup + $1.53 stencil + $3.58 hand-solder + 17 Extended × $3.07). Basic and "preferred extended" parts are fee-free | Module ×2 from Mouser with the SEN65 order (≈ $15, vs. $10 inside A's parts cost) | ≈ $131 | **≈ $20** if Standard charges Basic; **≈ −$8** (B costs more) if it doesn't. Each Extended part that turns out to be "preferred" takes $3.07 off B |
+| **A. Standard, everything placed** (current plan) | $90.90 if Basic parts carry the $1.53 fee; $64.89 if they're free | — | $149, or $123 | — |
+| **B. Economic, you solder the module** | $65.48 ($8.18 setup + $1.53 stencil + $3.58 hand-solder + 17 Extended × $3.07). Basic and "preferred extended" parts are fee-free | Module ×2 from Mouser with the SEN65 order (≈ $15, vs. $10 inside A's parts cost) | ≈ $131 | **≈ $18** if Standard charges Basic; **≈ −$8** (B costs more) if it doesn't. Each Extended part that turns out to be "preferred" takes $3.07 off B |
 | **C. Bare PCB + stencil, you assemble everything** | $0 (5 PCBs ≈ $5–10 + frameless stencil ≈ $7 + shipping ≈ $10–15) | Parts for 2 boards: LCSC ≈ $30–35 plus ≈ $15–20 shipping, or Mouser ≈ $55–70 shipped free with the SEN65 order | ≈ $70–95 | **≈ $60–85**, or **≈ $30–55** if Standard's Basic parts are free |
 
 Labour and risk:
@@ -47,7 +47,7 @@ Labour and risk:
 | C2913202 | ESP32-S3-WROOM-1-N16R8 | Extended | 1 | 4.7466 | 4.75 | 31,339 | U1 |
 | C255515 | EC11E18244A5 | Extended | 1 | 2.1026 | 2.10 | 262 | SW1 |
 | C780769 | AP63203WU-7 | Extended | 1 | 1.2115 | 1.21 | 1,337 | U3 |
-| C601699 | RGB CA 3528 | Extended | 6 | 0.1061 | 0.64 | 14,300 | D7-D12 |
+| C601699 | RGB CA 3528 | Extended | 6 | 0.1061 | 0.64 | 14,300 | D6-D11 |
 | C7435535 | H11L1S-TA1-L | Extended | 1 | 0.4051 | 0.41 | 1,541 | U5 |
 | C133065 | SM06B-GHS-TB | Extended | 1 | 0.3599 | 0.36 | 25,620 | J5 |
 | C20917 | AO3400A | Basic | 4 | 0.0897 | 0.36 | 615,350 | Q1,Q4-Q6 |
@@ -59,11 +59,11 @@ Labour and risk:
 | C15850 | 10u | Basic? | 4 | 0.0441 | 0.18 | 1,708,660 | C1,C5,C14,C16 |
 | C2897371 | display 1x8 | Extended | 1 | 0.1547 | 0.15 | 10,272 | J6 |
 | C3008369 | PC817C-S | Extended | 4 | 0.0366 | 0.15 | 343,540 | U6-U9 |
-| C693510 | SMBJ48CA | Extended | 2 | 0.0518 | 0.10 | 4,410 | D3,D5 |
+| C693510 | SMBJ48CA | Extended | 2 | 0.0518 | 0.10 | 4,410 | D2,D4 |
 | C14663 | 100n | Basic | 12 | 0.0082 | 0.10 | 42,950 | C2,C6,C10,C13,C15,C17-C23 |
 | C2845262 | B1 | Extended | 4 | 0.0240 | 0.10 | 1,120 | SW2,SW3,SW4,SW5 |
 | C15849 | 1u | Basic | 5 | 0.0141 | 0.07 | 391,100 | C7-C9,C11,C12 |
-| C2488 | MB10S | Basic? | 2 | 0.0272 | 0.05 | 461,500 | D4,D6 |
+| C2488 | MB10S | Basic? | 2 | 0.0272 | 0.05 | 461,500 | D3,D5 |
 | C135262 | 2.2u | Extended | 1 | 0.0537 | 0.05 | 130,370 | L1 |
 | C41355185 | HT7550-1 | Extended | 1 | 0.0502 | 0.05 | 69,710 | U4 |
 | C2827654 | USBLC6-2SC6 | Extended | 1 | 0.0452 | 0.05 | 103,720 | U2 |
@@ -73,7 +73,6 @@ Labour and risk:
 | C22787 | 120 | Basic | 12 | 0.0019 | 0.02 | 669,200 | R33,R34,R36,R37,R39,R40,R42,R43,R45,R... |
 | C17950 | 2.7k | Extended | 4 | 0.0044 | 0.02 | 38,600 | R13,R14,R16,R17 |
 | C25803 | 100k | Basic | 5 | 0.0030 | 0.01 | 9,309,700 | R19,R24,R50-R52 |
-| C81598 | 1N4148W | Basic | 1 | 0.0125 | 0.01 | 2,470,700 | D2 |
 | C31850 | 22k | Basic | 2 | 0.0042 | 0.01 | 1,837,200 | R10,R12 |
 | C25819 | 47k | Basic | 2 | 0.0020 | 0.00 | 584,000 | R15,R18 |
 | C23186 | 5.1k | Basic? | 2 | 0.0016 | 0.00 | 16,428,100 | R1,R2 |
@@ -81,11 +80,11 @@ Labour and risk:
 | C22978 | 3.3k | Basic | 1 | 0.0022 | 0.00 | 2,987,300 | R9 |
 | C23151 | 390 | Basic? | 1 | 0.0017 | 0.00 | 1,845,000 | R6 |
 
-Unique LCSC parts: 36. Components per board: $12.29. Joints/board ≈ 468 SMT, 36 THT.
+Unique LCSC parts: 35. Components per board: $12.28. Joints/board ≈ 464 SMT, 36 THT.
 
-2 assembled boards: fees $92.43 + joints $2.72 + parts $25.81 (+5 % attrition) + PCBs $10.00 + shipping $20.00 ≈ **$151** ($75/board)
+2 assembled boards: fees $90.90 + joints $2.71 + parts $25.79 (+5 % attrition) + PCBs $10.00 + shipping $20.00 ≈ **$149** ($75/board)
 
-5 assembled boards: fees $92.43 + joints $6.80 + parts $64.54 (+5 % attrition) + PCBs $10.00 + shipping $20.00 ≈ **$194** ($39/board)
+5 assembled boards: fees $90.90 + joints $6.77 + parts $64.47 (+5 % attrition) + PCBs $10.00 + shipping $20.00 ≈ **$192** ($38/board)
 
 "Basic?" means the JLC page was ambiguous; confirm at BOM upload. C25804 (10 k Basic) showed 0 LCSC stock on 2026-10-28; JLC keeps its own stock, and the Extended fallback is C98220. The encoder (262 in stock) and H11L1 (1,541) have the thinnest stock: re-check before ordering.
 

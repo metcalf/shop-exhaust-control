@@ -81,7 +81,7 @@ Everything left of the barrier is powered by the fan's own +10 V and referenced 
           │            H11L1-class, VCC = +5F)          ║         ║            └[10k]─ GND
           │                                             ║         ║
  white ───┼──[10k]── +5F (pull-up, as stock)            ║         ║
-          └── U2 LED cathode (via series diode);        ║ U2 CE ──╫── GPIO5 FAN_TACH (10k → 3V3)
+          └── U2 LED cathode;                           ║ U2 CE ──╫── GPIO5 FAN_TACH (10k → 3V3)
               anode ──[1.5k]── +5F                      ║         ║
  +5F ──[R]── U3 LED ── GND_F                            ║ U3 CE ──╫── GPIO6 FAN_PRESENT (10k → 3V3)
 ```
@@ -90,7 +90,7 @@ Behavior:
 - **Node unpowered, in reset or booting:** U1's LED is off → U1 output open → Q1 gate pulled to +5F → Q1 on → yellow held low → **fan off** (SR-08). This needs only fan power.
 - **Running:** LED on → U1 output low → Q1 off → the fan's own pull-up takes yellow high. Fan duty = LED-on fraction, so LEDC duty is the fan duty directly, with no inversion in firmware.
 - **100 %:** LED on continuously. **0 %:** LED off continuously.
-- **Tach:** white low (fan sinking) → U2 LED on → `FAN_TACH` low. Works for an open-drain or a ≤ 10 V push-pull tach output; the series diode blocks reverse bias on U2's LED if the fan drives white above +5F.
+- **Tach:** white low (fan sinking) → U2 LED on → `FAN_TACH` low. Works for an open-drain tach output (D-043). A push-pull output up to 10 V would reverse-bias U2's LED by ≈ 5.1 V, inside the PC817's 6 V limit.
 - **Presence:** U3 is lit whenever the fan side has power. `FAN_PRESENT` high means the fan cable is unplugged (fan then runs **full speed** on its own) or the fan has lost mains; both raise a fault (FR-18 extension, `docs/control-logic.md` §6).
 - **Fan-side current from red +10 V:** ≈ 4–5 mA typical, ≤ 8 mA worst case (U1 supply ~1–2 mA, Q1 gate pull-up 0.5 mA, tach LED ~1 mA average, presence LED 1 mA, LDO Iq µA). Measured (Q-26): the stock controller draws ≈ 9.3 mA from red (13.7 mA in GND with the fan off includes the ≈ 4.5 mA through the fan's 2.2 kΩ speed pull-up, which our Q1 also sinks to GND_F rather than drawing from red). So the port demonstrably supplies ≈ 9 mA; keep the datasheet-maximum fan-side budget ≤ 9 mA in the schematic (G2 review S-2).
 - **Timing:** H11L1-class propagation is ~1–4 µs against a 200 µs PWM period (≤ 2 % of period); rise on yellow is set by the fan's 2.2 kΩ against cable capacitance (< 1 µs for 3 m). AC-18 measures duty at the fan, and any fixed offset is calibrated in firmware.
