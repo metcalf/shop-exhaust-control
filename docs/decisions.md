@@ -410,3 +410,11 @@ Template:
 - Alternatives considered: keep them as cheap insurance against a mains surge coupled through the transformer; scope the 24 VAC terminals at switch-off first (not done).
 - Consequences: two fewer parts, one fewer unique Extended part. A large surge could open a resistor and kill the occupancy input, on a board with a spare. A 120 VAC mis-wire burns the 1206s open instead of clamping across mains.
 
+## D-047: No power switch on the SEN65
+- Date: 2026-11-09
+- Status: Accepted (Andrew). Supersedes D-031's load switch and D-030's load-switched sensor rail; G2 review S-13's pull-up placement no longer applies
+- Context: D-031 kept the switch for unattended recovery of a hung module, with no reported failure behind it. Six threads and two searches (2026-11-09) found no SEN5x/SEN6x that needed a module power cycle; startup failures were wiring, ground, I/O voltage or a software retry. One SEN66 garbage-data report is unresolved with no power cycle tried, and the only power-cycle reports are on SCD4x and SDP8xx. A hang costs little under SR-04: floor and DC boost keep working and the fault shows on the panel.
+- Decision: remove Q2, its gate parts and the bleed resistor. SEN65 VDD and the I²C pull-ups go to `+3V3`; keep 10 µF + 100 nF at J5. GPIO10 is spare. C-12 stays as the retry interval for I²C bus recovery and the module reset command.
+- Alternatives considered: keep it (five cheap parts, but a firmware sequence and a bench check for a failure with no evidence).
+- Consequences: a truly locked-up module needs a USB replug, since a node reboot doesn't reset it. Firmware should reset and retry the module at startup (the Tasmota SEN55 report needed this).
+

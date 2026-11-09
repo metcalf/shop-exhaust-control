@@ -8,17 +8,17 @@
 1. **Andrew:** answer Q-33 (layout OK; route A/B/C) and Q-35 (display). Optional: Q-37 (skip blocked nightlies).
 2. Once Q-33 is OK'd: **layout**.
    - Fix the footprints against the LCSC drawings, using `easyeda2kicad` (in `.venv`) where stock ones differ (design.md O-3).
-   - Settle O-6 (GPIO47/48 voltage; it now also affects the MSP283x backlight high level). Adapt J6 to the Q-35 display: if MSP283x, a 1×14 socket with VCC from +5V, LED straight from GPIO47, and Q3 removed (`sourcing/off-board.md` §2a). Update check.py, design.md §7 and O-2.
+   - Settle O-6 (GPIO47/48 voltage; it now also affects the MSP283x backlight high level). Adapt J6 to the Q-35 display: if MSP283x, a 1×14 socket with VCC from +5V, LED straight from GPIO47, and the backlight FET (now Q2) removed (`sourcing/off-board.md` §2a). Update check.py, design.md §7 and O-2.
    - Write the creepage DRC rules from `pcb/SAFETY.md` and lay out the 2-layer board.
    - Run DRC, export Gerbers/BOM/CPL. After layout starts the `.kicad_sch` becomes the source (D-035); keep running `pcb/gen/check.py` on it.
 3. After layout: mech (build123d, positions from the `.kicad_pcb`), then the firmware host-tested logic.
 4. **Firmware backlog, for implementation later (not now):**
    - G2 review items: S-3 overspeed / tach at 0 %; S-6 frozen-sequence DC frames (record in D-021 when the DC project starts); S-7 SprayRunOn upper bound while occupied (an FR-08 change, ask Andrew then); S-8, S-9, S-10, S-11, S-12, S-15; S-16 MQTT keepalive ≤ 30 s (check `BaseMqttClient`).
    - S-14 boot config: TWDT panic, RTC WDT, LEDC at duty 0 before routing.
-   - SEN rail power-cycle sequence (design.md §4).
+   - SEN65 reset-and-retry at startup; I²C bus recovery and module reset on `sensor_no_data` (D-047).
 
 ## Schematic status (where it stopped)
-- `pcb/gen/run.sh` regenerates `pcb/exhaust.kicad_sch`, runs ERC (0 violations) and the netlist assertions (all pass), and exports the SVG and raw BOM to `pcb/reports/`. 122 parts, 31 unique LCSC parts.
+- `pcb/gen/run.sh` regenerates `pcb/exhaust.kicad_sch`, runs ERC (0 violations) and the netlist assertions (all pass), and exports the SVG and raw BOM to `pcb/reports/`. 117 parts, 31 unique LCSC parts.
 - G2 review hardware items folded in: S-2 (fan side ≤ 4.1 mA at datasheet max), S-4 (`pcb/SAFETY.md`, every crossing asserted), S-5 (D-036), S-14 (EN RC, BOOT/EN recovery pads per D-041, strapping pins asserted unconnected), S-13 and S-17 (already applied). Interfaces §2.2–2.3 still name the LTV-814; D-036 supersedes it, and the doc gets updated at layout.
 - Generator draws wires within blocks and power symbols for GND/+3V3/+5V (D-038, at Andrew's request during his schematic review). Netlist unchanged.
 - Known cosmetic issues: field text on rotated parts needs GUI touch-up; placement wasn't laid out for wiring, so some blocks are still label-heavy.
@@ -75,3 +75,4 @@
 - 2026-11-09: Removed the fan-side HT7550 and `+5F`; the fan interface runs from `+10V_F` (Andrew; D-044). ERC 0, netlist assertions pass. Standard PCBA for 2 boards ≈ $145, total ≈ $255–285.
 - 2026-11-09: Optos changed to LTV-817S-TA1-C (Basic; Andrew; D-045). Added SEN_SDA and SEN_SCL test pads. ERC 0, netlist assertions pass. Standard PCBA for 2 boards still ≈ $145.
 - 2026-11-09: Removed the SMBJ48CA TVS diodes from J-OCC and J-DC (Andrew; D-046). ERC 0, netlist assertions pass. Standard PCBA for 2 boards ≈ $143, total ≈ $253–283.
+- 2026-11-09: Removed the SEN65 power switch; sensor on `+3V3`, GPIO10 spare (Andrew; D-047). ERC 0, netlist assertions pass. Cost unchanged at ≈ $143 for 2 boards.

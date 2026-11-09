@@ -25,7 +25,7 @@ flowchart LR
       BAR1{{"≥3 mm barrier, optos"}}
       subgraph NODE["Node side (GND, 12/5/3.3 V)"]
         MCU["ESP32-S3-WROOM-1-N16R8<br/>Wi-Fi + BLE (D-022)"]
-        PWR["TVS<br/>5→3.3 V regulator,<br/>load switch (sensor)"]
+        PWR["TVS<br/>5→3.3 V regulator"]
         PANEL["2.8&quot; IPS display (no touch), EC11 encoder,<br/>4 buttons"]
         LEDS["Plain RGB LEDs, 3 FETs →<br/>short light strip (D-031)"]
         USB["USB-C: power in + flash/log,<br/>external (D-030)"]
@@ -71,7 +71,7 @@ flowchart LR
 - **Fan interface:** `docs/interfaces.md` §2.1. Three optos cross the barrier (speed, tach, presence). The fan side is powered by the fan's +10 V, so the default (unlit LED) state is fan off.
 - **Occupancy:** AC-input opto from 24 VAC (`docs/interfaces.md` §2.2).
 - **Wired DC backup:** the same AC-input opto circuit, accepting 12–24 V AC/DC (`docs/interfaces.md` §2.3, D-025).
-- **Power:** 5 V USB-C in (also the flash/log port), one 5→3.3 V regulator and a load-switched sensor rail (`docs/interfaces.md` §3, D-030). Peak ≈ 5.5 W for milliseconds, typical ≈ 1.7 W.
+- **Power:** 5 V USB-C in (also the flash/log port), one 5→3.3 V regulator (`docs/interfaces.md` §3, D-030). Peak ≈ 5.5 W for milliseconds, typical ≈ 1.7 W.
 - **Panel:** display module on a header; encoder and tact switches mounted on the PCB front, behind the bezel. Plain RGB LEDs feed a short light strip along one display edge (D-031).
 - **PCBA (NFR-05):** SMT on one side from JLC basic/preferred parts where possible. Through-hole (terminal blocks, display header, encoder) is hand-soldered or done as a THT add-on. The tier rules are checked in the phase 3 vendor research.
 - **Off-board wiring:** fan cable hard-wired into a 4-pos terminal (D-026), 2-conductor thermostat wire to the 24 VAC terminals, optional 2-conductor DC backup, USB-C cable for power. WireViz drawing in `electrical/` in phase 3 (D-010).
@@ -123,7 +123,7 @@ firmware/
 | Fan mains returns with the node unpowered | Possible brief full-speed burst before the fan-side hold-off rail is up | Accepted (D-028) | SR-08, AC-18 |
 | Fan cable unplugged | Fan runs **full** (fan behavior) | `fan_port` fault from loss of `FAN_PRESENT` (displayed; HA) | SR-08, FR-18 |
 | Fan has no mains / motor failed | No exhaust | `fan_port` (no +10 V) or `fan_tach` fault | FR-18, AC-07 |
-| SEN65 fault (no data, status, range) | No PM/VOC | SR-04: PM/VOC demand dropped, floor and DC boost kept (occupied → P-01, vacant → off unless DC); power-cycle retries; Spray uses P-09 alone | SR-04, AC-20 |
+| SEN65 fault (no data, status, range) | No PM/VOC | SR-04: PM/VOC demand dropped, floor and DC boost kept (occupied → P-01, vacant → off unless DC); module reset retries, USB replug if it stays hung (D-047); Spray uses P-09 alone | SR-04, AC-20 |
 | SEN65 fouled (reads high) | Fan runs too long | FR-19 vacant caps (P-22, P-21) and the clear-down incomplete notice | FR-19, AC-27 |
 | Wi-Fi, broker or HA down | No history or alerts | No control impact | NFR-01, AC-12 |
 | DC link lost or DC absent | No boost | Treated as DC off after P-24; boost persists P-11. If BLE proves unreliable, wire the backup input (D-025) | IR-01, AC-22, AC-06 |
@@ -196,7 +196,7 @@ Under the $300 ceiling, but not "well below" it. Most of it is fixed overhead (P
 - USB-C receptacle (16-pin, JLC-stocked, shell suits the gasket), 5→3.3 V regulator choice (buck vs LDO), VBUS TVS, optional CC-advertisement read for the indicator cap (D-030).
 - H11L1-class opto: inverting output polarity, VCC 5 V supply current, propagation delay; a JLC-stocked part with VDE 0884 / IEC 60747-5-5.
 - Fan-side LDO input rating (≥ 16 V) and quiescent current.
-- ESP32-S3 GPIO reset states and boot glitches on the GPIOs chosen for `FAN_PWM` and `SEN_PWR_EN`; LEDC configured at duty 0 before the pin is routed.
+- ESP32-S3 GPIO reset states and boot glitches on the GPIOs chosen for `FAN_PWM`; LEDC configured at duty 0 before the pin is routed.
 - Boot config: task watchdog panic on, RTC watchdog on; reset-reason handling for the RTC mode snapshot (D-027). On the board: BOOT (GPIO0) and EN recovery pads (D-041), EN RC per the Espressif hardware design guide (G2 review S-14).
 - Indicator: plain RGB LED part (JLC basic if possible) (D-031).
 - Display module choice: 2.8" 240×320 **IPS confirmed from the panel datasheet, not the listing**, no touch layer; header pinout, backlight drive and current, mechanical outline (D-022).

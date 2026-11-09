@@ -10,7 +10,7 @@ Datasheet figures below come from the sourcing notes. Where a value is assumed r
 - **3.3 V: AP63203WU-7 sync buck** (D-040; datasheet DS41326 Rev. 2-2): fixed 3.3 V, 2 A, TSOT-26, 3.8–32 V in, 35 V abs max VIN and EN, 1.1 MHz, PFM at light load, ~100 % duty in dropout, UVLO 3.7 V max rising and ≈ 3.1 V falling. EN to VIN, FB straight to `+3V3`, 100 nF BST to SW, 10 µF in, 2 × 22 µF out (Fig. 21, Table 2). Layout: 10 µF tight to VIN/GND, GND plane under the part (datasheet Fig. 25).
 - **Inductor stays 2.2 µH** (C135262; 3.4 A Isat, above the 3.1 A max peak limit; 46 mΩ), not Table 2's 3.9 µH. Eq. 7 ties that value to about 12 V in (ΔI ≈ 0.56 A). At 5 V in, 2.2 µH gives ΔI ≈ 0.46 A and 3.9 µH only ≈ 0.26 A, against the 0.6–1 A guidance. It's inside the datasheet's 2.2–10 µH range.
 - Why not an LDO: at 0.35 A typical, an LDO dissipates ≈ 0.6 W, too much for SOT-23-5 in a sealed box (sourcing/power.md). Peak load ≈ 0.8 A at 3.3 V (module TX 360 mA + display 100 mA + SEN65 350 mA for 2 ms), within the 2 A rating.
-- No `+5V` sense (D-039). The indicator keeps its fixed 300 mA firmware cap. GPIO2 is unconnected and is the one spare GPIO.
+- No `+5V` sense (D-039). The indicator keeps its fixed 300 mA firmware cap. GPIO2 and GPIO10 are unconnected spares (D-039, D-047).
 - **Hot-plug (O-4, closed by D-040):** a live VBUS into a ceramic-only input (A-to-C cable, or a supply that doesn't switch VBUS) rings. *Estimated, not measured:* 6.6 V peak on 3 m of 24 AWG, ≈ 8 V on a short heavy cable before SMAJ5.0A starts conducting. The buck's 35 V rating covers that. Bulk capacitance isn't an option under the USB limit above. If the display ends up on `+5V` (Q-35), check that its on-board regulator tolerates this.
 
 ## 2. Fan interface, fan domain (SR-08, SR-09, D-023; G2 review S-2)
@@ -46,15 +46,14 @@ Path drop, worst case: LED 1.4 V + two bridge diodes ≈ 1.8 V, so ≈ 3.2 V. Th
 | Open input | LED dark, pulled high: reads not asserted |
 
 ## 4. SEN65 rail (D-031, S-13)
-- Q2 AO3401A high-side (RDS(on) ≤ 85 mΩ at −2.5 V: 30 mV at a 350 mA peak). Gate: 100 k pull-up to +3V3 keeps the rail off through boot; 10 k series from GPIO10; **100 nF gate-source soft start**. Without it, the rail's 10 µF charge-shares with the 44 µF buck output and dips +3V3 by ≈ 0.6 V, near brownout. With a ~1 ms ramp, inrush ≈ 10 µF × 3.3 V / 1 ms ≈ 33 mA.
-- 10 µF + 100 nF on `+3V3_SEN`. A 10 k bleed takes the rail below 0.3 V in ≈ 0.25 s (τ = 0.1 s) and costs 0.33 mA while on. I²C pull-ups (10 k) go to `+3V3_SEN` only (S-13; check.py asserts it).
+- Runs directly from `+3V3`, with no power switch (D-047). 10 µF + 100 nF at J5; I²C pull-ups (10 k) to `+3V3`. A locked-up module needs a USB replug; firmware retries bus recovery and the module reset command first.
 - J5 pinout per the SEN6x datasheet §3, Table 17: 1 VDD, 2 GND, 3 SDA, 4 SCL, 5 GND, 6 VDD (`sourcing/off-board.md`). Supply 3.15–3.6 V.
 
 ## 5. MCU, boot and recovery (G2 review S-14)
 - EN: 10 k to 3V3 and 1 µF to GND (Espressif HW design guide RC). GPIO0: 10 k pull-up. No switches (D-041). Test pads for 3V3, 5V, GND, TXD0, RXD0, EN and BOOT (UART0 rescue), and SEN_SDA and SEN_SCL for probing I²C.
 - **Recovery pads (layout):** two separate pairs, TP6 (EN) + TP2 (GND) and TP7 (BOOT) + TP8 (GND). Within a pair, set the gap to the board's minimum copper clearance (the DRC rule set at layout; check the fab's limit, about 0.13 mm at JLC from memory), so a screwdriver tip bridges it easily. Use one solder-mask opening per pair and no paste. Keep the pairs far enough apart (≥ 10 mm, center to center) to hold a screwdriver on each at once, and away from the other test pads, `+3V3`, `+5V` and fan-domain copper. Label them on silkscreen. To enter the bootloader: short BOOT, tap EN, then release BOOT.
 - Strapping: GPIO3, 45 and 46 are not connected, so the internal defaults apply. With GPIO45 low, VDD_SPI is 3.3 V, which is right for the N16R8's 3.3 V flash and PSRAM. GPIO35–37 (octal PSRAM) are not connected. check.py asserts all of these.
-- Reset states: FAN_PWM has a 10 k pull-down (LED dark, fan off). SEN_PWR_EN and DISP_BL have 100 k gate pull-ups (off). IND_R/G/B have 100 k gate pull-downs (dark). So nothing turns on before firmware does.
+- Reset states: FAN_PWM has a 10 k pull-down (LED dark, fan off). DISP_BL has a 100 k gate pull-up (off). IND_R/G/B have 100 k gate pull-downs (dark). So nothing turns on before firmware does.
 - Firmware backlog (not hardware): TWDT panic, RTC WDT, LEDC duty 0 before routing the pin.
 - **Open (O-6):** confirm that GPIO47/48 run at 3.3 V on the N16R8 (VDD_SPI domain question).
 

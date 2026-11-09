@@ -77,7 +77,7 @@ if vacant:        demand = min(demand, P-22)                              (FR-19
 
 States: **Off** (module Idle; vacant and fan off), **Protect** (Idle during Spray, §2), **Warming** (measuring, < P-06 since start: readings not used for PM; VOC needs C-07), **Continuous**, **Window** (a sparse sample: warming plus C-23 of averaging), **Resting** (Idle between windows).
 
-- **Needed** = occupied, or fan duty > 0, or a SprayRunOn wake is due. Not needed → **Off**. Protect overrides everything except a sensor fault's power-cycle.
+- **Needed** = occupied, or fan duty > 0, or a SprayRunOn wake is due. Not needed → **Off**. Protect overrides everything.
 - **Continuous** when the last filtered PM2.5 < P-03, or VocActive, or in SprayRunOn after `t_min − C-07`. AC-02 checks it.
 - **Sparse** otherwise (PM ≥ P-03, VOC inactive). After each window with value `p`, rest for
 
@@ -92,7 +92,7 @@ States: **Off** (module Idle; vacant and fan off), **Protect** (Idle during Spra
 - **Decay fit (FR-05):** least squares on ln(PM2.5) against time over the last ≥ 3 valid points (window means while sparse, 60 s means while continuous) with PM between P-04 and 1,000, no PM rise between points, and fan duty within ±10 % across them. Valid if R² ≥ C-28. Gives `k_fit` (1/h). The last valid fit is published (`decay_rate`, `airflow_est`). The fit resets on a rise (new source) or a duty change > 10 %. Over-estimating k only makes wakes earlier, so `k_hi` is deliberately high.
 - **Saturation (FR-06):** rest = P-07 maximum. On-time per window = P-06 + C-23 = 40 s; at the 10 min P-07 rest that's ≈ 6 % duty, inside AC-02's ≤ 10 %.
 - **Weekly fan clean (NFR-02):** after C-19 of accumulated module measuring time, issue `Clean` at the next point where the module is measuring in Continuous, not in SprayRunOn and not within C-02 of a threshold decision. Hold the last readings through the clean (10 s) plus P-06.
-- **Module power-cycle:** only on a sensor fault (§6).
+- **Module recovery:** only on a sensor fault (§6): I²C bus recovery and the module reset command (D-047).
 
 **VOC index (D-017):** computed on the node by Sensirion's open-source gas index algorithm from the SEN65's raw VOC signal, one step per valid 1 s reading. The algorithm is **paused, not reset**, whenever the module isn't measuring, or is within C-07 of a start. This keeps the learned baseline across Idle (FR-14). The state is saved to NVS every C-29 and restored at boot. The module's own VOC index is published alongside for comparison. If the bench shows the raw signal isn't usable, fall back to the module's algorithm-state backup/restore (D-017).
 
@@ -100,7 +100,7 @@ States: **Off** (module Idle; vacant and fan off), **Protect** (Idle during Spra
 
 | Fault / notice | Raised when | Effect | Cleared when |
 |----------------|-------------|--------|--------------|
-| `sensor_no_data` | Sampler wants Measure, past warm-up, and no valid frame (I²C error, CRC, timeout) for P-18 | SR-04 (§4): PM and VOC demand off, floor and DC boost unchanged; SprayRunOn uses P-09 only. Power-cycle the module (`SEN_PWR_EN`) every C-12 while faulted | C-13 of valid frames |
+| `sensor_no_data` | Sampler wants Measure, past warm-up, and no valid frame (I²C error, CRC, timeout) for P-18 | SR-04 (§4): PM and VOC demand off, floor and DC boost unchanged; SprayRunOn uses P-09 only. Retry I²C bus recovery and the module reset command every C-12 while faulted; a USB replug is the last resort (D-047) | C-13 of valid frames |
 | `sensor_status` | Device-status error bits (fan, laser, gas, RH/T) set for P-18 | as above | bits clear for C-13 |
 | `sensor_range` | Invalid data only, for P-18: the module's "not available" code, physically impossible readings (PM1.0 > PM2.5 > PM10 ordering violated; mass high with number concentrations at zero), or a raw signal stuck at one code. A high PM value is **never** a fault: at or above the range limit it's saturated (FR-06, §4) | as above | C-13 of valid data |
 | `fan_tach` (FR-18) | Duty ≥ C-06 and tach < C-14 × `f_expected(duty)` for P-16, ignoring C-15 after any duty change | Display, indicator, HA. Command unchanged | Tach OK for C-15 |
@@ -150,7 +150,7 @@ Initial values for host tests; tuned at commissioning (phase 6) like `P-nn`.
 | C-06 | Minimum running duty | 10 % | Placeholder; bench-measure the S6's lowest steady speed |
 | C-07 | VOC warm-up after measurement start | 60 s | ≥ P-06; MOX settling. Bench-check with AC-28 |
 | C-11 | Quiet cap | 30 % | Placeholder |
-| C-12 | Sensor power-cycle retry while faulted | 5 min | Recovery without hammering |
+| C-12 | Sensor reset retry while faulted | 5 min | Recovery without hammering |
 | C-13 | Sensor fault clear | 60 s valid data | Symmetric with P-18 |
 | C-14 | Tach fault ratio | 0.5 | "Far below expected" (FR-18) |
 | C-15 | Tach settle after duty change | 10 s | EC fan spin-up |

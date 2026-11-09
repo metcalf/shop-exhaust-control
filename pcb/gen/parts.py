@@ -51,8 +51,8 @@ P = {
 
     # SEN6x connector (SEN6x datasheet §3 Table 17, sourcing/off-board.md):
     # 1 VDD, 2 GND, 3 SDA, 4 SCL, 5 GND, 6 VDD
-    "SEN_PINOUT": {"Pin_1": "+3V3_SEN", "Pin_2": "GND", "Pin_3": "SEN_SDA", "Pin_4": "SEN_SCL",
-                   "Pin_5": "GND", "Pin_6": "+3V3_SEN"},
+    "SEN_PINOUT": {"Pin_1": "+3V3", "Pin_2": "GND", "Pin_3": "SEN_SDA", "Pin_4": "SEN_SCL",
+                   "Pin_5": "GND", "Pin_6": "+3V3"},
     "SEN_NC": (),
 
     # indicator series resistors, ~15 mA per colour at 5 V (pcb/design.md §6)

@@ -52,15 +52,14 @@ GPIOs assume an ESP32-S3-WROOM-1-N16R8 (D-022): GPIO 0/3/45/46 (strapping), 19/2
 | `FAN_PRESENT` | In | Opto phototransistor, 10 kΩ pull-up | 3.3 V, low = fan side powered | J-FAN | 6 | Fan-side +10 V present. Lost when the fan cable is unplugged **or** the fan loses mains (§2.1) |
 | `OCC_IN` | In | AC-input opto, RC-filtered | 3.3 V, low = 24 VAC present | J-OCC (2-pos fixed screw terminal, 3.5 mm) | 7 | Bridge and opto (D-036), no input TVS (D-046). Firmware debounce C-20 |
 | `DC_IN` | In | AC-input opto, RC-filtered (§2.3) | 3.3 V, low = asserted | J-DC (2-pos fixed screw terminal, 3.5 mm) | 1 | Wired `DC_RUNNING` backup (D-025). Firmware debounce C-31 |
-| SEN65 I²C SDA / SCL | Bidir | I²C 100 kHz, 10 kΩ pull-ups | 3.3 V (sensor rail) | J-SEN (module's 6-pin cable; connector verified in phase 3) | 8 / 9 | Run < 10 cm (sensor bay directly below the board). Pull-ups go to the **switched** rail only, so nothing back-powers the module when it's off (G2 review S-13) |
-| `SEN_PWR_EN` | Out | Load-switch gate, active low (AO3401-class P-FET, high side) | 3.3 V | — | 10 | Recovery only: power-cycles a hung module (SR-04, C-12); sleep uses the module's Idle command. 100 kΩ gate pull-up to 3.3 V keeps the rail off through reset and boot until firmware drives it low. Power-cycle sequence: SDA/SCL to hi-Z with internal pull-ups off, rail off ≥ 1 s, a bleed resistor takes the rail below 0.3 V (bench-verify), rail on, wait P-06 |
+| SEN65 I²C SDA / SCL | Bidir | I²C 100 kHz, 10 kΩ pull-ups | 3.3 V (sensor rail) | J-SEN (module's 6-pin cable; connector verified in phase 3) | 8 / 9 | Run < 10 cm (sensor bay directly below the board). Pull-ups to +3V3 (D-047) |
 | Display SPI SCLK / MOSI / CS / DC / RST | Out | SPI 40 MHz | 3.3 V | J-DISP (8-pin 0.1" header, module) | 12 / 11 / 13 / 14 / 21 | 2.8" 240×320 IPS, ST7789/ILI9341-class module, no touch (D-022) |
 | Display backlight | Out | PWM to N-FET | 3.3 V | J-DISP | 47 | Dim when vacant; off after C-21 vacant |
 | Encoder A / B / push | In | Quadrature + push, RC debounce 10 kΩ/10 nF | 3.3 V | on board (EC11-class) | 15 / 16 / 17 | PCNT for quadrature |
 | Buttons 1–4 | In | Momentary tact, RC debounce | 3.3 V | on board | 18 / 38 / 39 / 40 | Assignments are config (initially Auto, Quiet, Boost, spare) (D-009) |
 | Indicator R / G / B | Out | LEDC PWM to three low-side N-FETs (2N7002-class) | 5 V LED supply, 3.3 V gate | on board (plain RGB LEDs, one resistor per color per LED; count set in mech, ~4–8) | 48 / 41 / 42 | D-031. Shares the fan PWM's LEDC timer or its own, ~5 kHz. 100 kΩ gate pull-downs keep it dark through boot. Firmware caps total LED current at 300 mA |
 | USB: power in + flash/log | Bidir | ESP32-S3 native USB (USB-Serial-JTAG), 5 V VBUS | 5 V nominal, ≥ 4.4 V at the board under peak load | J-USB (USB-C receptacle, 16-pin, **external**, gasketed opening) | 19 / 20 | D-030. The only power input. 5.1 kΩ Rd on CC1/CC2; ESD array on D± and CC; TVS on VBUS, no series fuse (D-040) |
-| Spare | — | — | — | test pad | 2 | Reserved |
+| Spare | — | — | — | unconnected | 2, 10 | Reserved |
 
 **S6 control port (UIS), measured by Andrew 2026-10-25 (Q-15):** black = GND, red = +10 V from the fan (low current), yellow = speed (fan pulls up via 2.2 kΩ; the controller pulls it low; 5 kHz PWM, high-time duty = speed; 20/46/100 % at levels 1/4/10), white = tach (50 % square, ~30/75/144 Hz at levels 1/4/10; stock controller pulls it up 10 kΩ to its 5 V). Unplugged = full speed. The fan end of the cable is USB-C (stock controller J1 is a USB-C receptacle, `docs/site/ac infinity controller pcb.jpg`), but the node doesn't use USB-C: Andrew hard-wires the four conductors into J-FAN by color (Q-25, D-026), so the USB-C contact map isn't needed. J-FAN is labelled `GND (BLK) / +10V (RED) / SPD (YEL) / TACH (WHT)`. Fan GND vs. mains (Q-22, Q-30): unplugged, open to L, N and earth on resistance and diode checks; plugged in, ~65 VAC open-circuit to N/earth, which looks like Y-capacitor coupling from an isolated supply. Q-31 confirmed it: ≈ 60 µA into 10 kΩ (SR-09, D-028).
 
@@ -110,7 +109,7 @@ The same circuit as §2.2, with the series resistance sized so 12 V DC still lig
 
 - **Mains:** none in the custom enclosure or on the PCB (SR-01, Q-18 (a)). The fan and the node's adapter both plug into the always-on receptacle in the fan cabinet (IR-05, D-013). SR-01a is not triggered.
 - **Adapter (D-030):** UL-listed 5 V USB-C wall adapter, ≥ 2 A, LPS. USB-C cable ≤ 3 m (IR-04's ≤ 10 ft), with USB 2.0 data and 24 AWG or heavier power conductors (≈ 0.5 V round-trip drop at the 1.1 A worst-case peak on 24 AWG). For flashing or wired logs, swap the adapter for a PC on the same cable; remote logging over Wi-Fi is the normal path.
-- **On board:** J-USB → TVS (5 V standoff) → 5 V input rail, no series fuse, ≤ 10 µF total on the rail (D-040). (a) 5 V → 3.3 V sync buck, AP63203WU-7, for the ESP32, display, logic and sensor. (b) AO3401-class P-FET load switch plus an LC/bulk filter from 3.3 V to the SEN65, so its 350 mA / 2 ms peaks stay off the MCU's supply pins and firmware can power-cycle it. (c) The indicator runs from the 5 V input. No 12 V and no separate 5 V rail; no reverse-polarity FET (USB-C is keyed).
+- **On board:** J-USB → TVS (5 V standoff) → 5 V input rail, no series fuse, ≤ 10 µF total on the rail (D-040). (a) 5 V → 3.3 V sync buck, AP63203WU-7, for the ESP32, display, logic and sensor. (b) The SEN65 runs directly from 3.3 V with 10 µF + 100 nF at its connector, and no power switch (D-047). (c) The indicator runs from the 5 V input. No 12 V and no separate 5 V rail; no reverse-polarity FET (USB-C is keyed).
 - **Budget** (typical / peak):
 
 | Load | Rail | Typical | Peak | Source |
@@ -118,7 +117,7 @@ The same circuit as §2.2, with the series resistance sized so 12 V DC still lig
 | ESP32-S3 module, Wi-Fi + BLE scan | 3.3 V main | 110 mA | 360 mA (TX) | ESP32-S3 datasheet (verify) |
 | Display logic + backlight | 3.3 V main | 80 mA | 100 mA | typical 2.8" module (verify) |
 | Node-side opto drive, pull-ups | 3.3 V main | 5 mA | 12 mA | §2 |
-| SEN65 measuring | 3.3 V (switched) | 90 mA | 350 mA for 2 ms (110 mA max sustained) | SEN6x DS Table 12 |
+| SEN65 measuring | 3.3 V | 90 mA | 350 mA for 2 ms (110 mA max sustained) | SEN6x DS Table 12 |
 | Indicator | 5 V input | 60 mA | 300 mA (firmware cap) | One band color at a time, ~10–20 mA per LED |
 | **Total at 5 V input** (LDO case; a buck is ~25 % lower) | 5 V | **≈ 0.35 A (1.7 W)** | **≈ 1.1 A (5.5 W), ms-scale** | |
 

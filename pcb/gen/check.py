@@ -114,20 +114,16 @@ def has_res(a, b):
     return any({net_of(r, 1), net_of(r, 2)} == {a, b} for r in refs_on(a) if r.startswith("R"))
 
 
-check(has_res("SEN_G", "+3V3"), "SEN P-FET gate pull-up (rail off at boot)")
 check(has_res("DISP_BL", "+3V3"), "backlight P-FET gate pull-up")
-check(any({net_of(c, 1), net_of(c, 2)} == {"SEN_G", "+3V3"} for c in refs_on("SEN_G") if c.startswith("C")),
-      "SEN rail soft-start cap (gate-source)")
 for c in "RGB":
     check(has_res(f"IND_{c}_G", "GND"), f"IND_{c} gate pull-down")
-check(has_res("SEN_SDA", "+3V3_SEN") and has_res("SEN_SCL", "+3V3_SEN"),
-      "I2C pull-ups on the switched rail only (S-13)")
-check(not has_res("SEN_SDA", "+3V3") and not has_res("SEN_SCL", "+3V3"), "no I2C pull-up to +3V3")
+check(has_res("SEN_SDA", "+3V3") and has_res("SEN_SCL", "+3V3"), "I2C pull-ups to +3V3 (D-047)")
+check(net_of("J5", 1) == "+3V3" and net_of("J5", 6) == "+3V3", "SEN65 VDD on +3V3 (D-047)")
 check(has_res("EN", "+3V3"), "EN pull-up")
 
 # --- GPIO plan (docs/interfaces.md §2) ------------------------------------------
 GPIO = {"IO1": "DC_IN", "IO4": "FAN_PWM", "IO5": "FAN_TACH", "IO6": "FAN_PRESENT",
-        "IO7": "OCC_IN", "IO8": "SEN_SDA", "IO9": "SEN_SCL", "IO10": "SEN_PWR_EN",
+        "IO7": "OCC_IN", "IO8": "SEN_SDA", "IO9": "SEN_SCL",
         "IO11": "DISP_MOSI", "IO12": "DISP_SCLK", "IO13": "DISP_CS", "IO14": "DISP_DC", "IO21": "DISP_RST",
         "IO47": "DISP_BL", "IO15": "ENC_A", "IO16": "ENC_B", "IO17": "ENC_SW", "IO18": "BTN1",
         "IO38": "BTN2", "IO39": "BTN3", "IO40": "BTN4", "IO48": "IND_R_G", "IO41": "IND_G_G",
@@ -138,7 +134,7 @@ ESP_PIN = {"IO0": 27, "IO1": 39, "IO2": 38, "IO4": 4, "IO5": 5, "IO6": 6, "IO7":
            "IO48": 25}
 for io, n in GPIO.items():
     check(net_of("U1", ESP_PIN[io]) == n, f"U1 {io} should be {n}, is {net_of('U1', ESP_PIN[io])}")
-for io_pin in (38, 15, 26, 16, 28, 29, 30):   # IO2 spare (D-039); IO3, IO45, IO46 strapping; IO35-37 octal PSRAM
+for io_pin in (38, 18, 15, 26, 16, 28, 29, 30):   # IO2, IO10 spare (D-039, D-047); IO3, IO45, IO46 strapping; IO35-37 octal PSRAM
     check(net_of("U1", io_pin).startswith("unconnected-"), f"U1 pin {io_pin} must be unconnected")
 
 # --- USB input and 3.3 V buck (D-040) -------------------------------------------

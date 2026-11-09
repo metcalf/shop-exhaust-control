@@ -78,14 +78,14 @@ part("ESP", (X, Y), {
     "GND": "GND", "3V3": "+3V3", "EN": "EN",
     "IO0": "BOOT", "IO1": "DC_IN",
     "IO4": "FAN_PWM", "IO5": "FAN_TACH", "IO6": "FAN_PRESENT", "IO7": "OCC_IN",
-    "IO8": "SEN_SDA", "IO9": "SEN_SCL", "IO10": "SEN_PWR_EN",
+    "IO8": "SEN_SDA", "IO9": "SEN_SCL",
     "IO11": "DISP_MOSI", "IO12": "DISP_SCLK", "IO13": "DISP_CS", "IO14": "DISP_DC",
     "IO21": "DISP_RST", "IO47": "DISP_BL",
     "IO15": "ENC_A", "IO16": "ENC_B", "IO17": "ENC_SW",
     "IO18": "BTN1", "IO38": "BTN2", "IO39": "BTN3", "IO40": "BTN4",
     "IO48": "IND_R_G", "IO41": "IND_G_G", "IO42": "IND_B_G",
     "USB_D+": "USB_DP", "USB_D-": "USB_DN", "TXD0": "TXD0", "RXD0": "RXD0",
-}, nc=("IO2", "IO3", "IO45", "IO46", "IO35", "IO36", "IO37"), r="U1")
+}, nc=("IO2", "IO10", "IO3", "IO45", "IO46", "IO35", "IO36", "IO37"), r="U1")
 cap("10u", (X + 30, Y - 30), "+3V3", "GND", key="C0805")
 cap("100n", (X + 38, Y - 30), "+3V3", "GND")
 # EN RC per the Espressif hardware design guide (G2 review S-14). No switches: EN and BOOT are
@@ -146,16 +146,11 @@ ac_input(200, 270, "J4", "DCI_A", "DCI_B", "DCI", "DC_IN",
 # ---------------------------------------------------------------- SEN65
 sh.begin("sen")
 X, Y = 300, 40
-sh.note("SEN65 (D-012) on a switched rail: recovery power-cycle only (D-031, S-13)", (X - 10, Y - 15))
-part("PFET", (X + 15, Y + 5), {"S": "+3V3", "D": "+3V3_SEN", "G": "SEN_G"})
-res("100k", (X, Y - 5), "+3V3", "SEN_G")
-res("10k", (X, Y + 15), "SEN_PWR_EN", "SEN_G")
-cap("100n", (X + 8, Y + 15), "SEN_G", "+3V3")          # soft start: ~1 ms gate ramp, inrush ~30 mA
-cap("10u", (X + 30, Y + 20), "+3V3_SEN", "GND", key="C0805")
-cap("100n", (X + 38, Y + 20), "+3V3_SEN", "GND")
-res("10k", (X + 46, Y + 20), "+3V3_SEN", "GND")          # bleed: rail < 0.3 V within ~0.3 s
-res("10k", (X + 55, Y - 5), "+3V3_SEN", "SEN_SDA")
-res("10k", (X + 63, Y - 5), "+3V3_SEN", "SEN_SCL")
+sh.note("SEN65 (D-012) on +3V3, no power switch (D-047)", (X - 10, Y - 15))
+cap("10u", (X + 30, Y + 20), "+3V3", "GND", key="C0805")
+cap("100n", (X + 38, Y + 20), "+3V3", "GND")
+res("10k", (X + 55, Y - 5), "+3V3", "SEN_SDA")
+res("10k", (X + 63, Y - 5), "+3V3", "SEN_SCL")
 part("SENCONN", (X + 85, Y + 10), P["SEN_PINOUT"], r="J5", nc=P["SEN_NC"])
 
 # ---------------------------------------------------------------- display
