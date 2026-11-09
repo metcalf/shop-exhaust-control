@@ -93,7 +93,7 @@ cap("100n", (X + 38, Y - 30), "+3V3", "GND")
 res("10k", (X - 45, Y - 30), "+3V3", "EN")
 cap("1u", (X - 37, Y - 30), "EN", "GND")
 res("10k", (X - 25, Y - 30), "+3V3", "BOOT")
-for i, n in enumerate(["+3V3", "GND", "TXD0", "RXD0", "+5V", "EN", "BOOT", "GND"]):
+for i, n in enumerate(["+3V3", "GND", "TXD0", "RXD0", "+5V", "EN", "BOOT", "GND", "SEN_SDA", "SEN_SCL"]):
     part("TP", (X - 40 + 8 * i, Y + 45), {"1": n}, value=n)
 flag("+5V", (X + 50, Y - 30))
 

@@ -18,7 +18,7 @@
    - SEN rail power-cycle sequence (design.md §4).
 
 ## Schematic status (where it stopped)
-- `pcb/gen/run.sh` regenerates `pcb/exhaust.kicad_sch`, runs ERC (0 violations) and the netlist assertions (all pass), and exports the SVG and raw BOM to `pcb/reports/`. 122 parts, 32 unique LCSC parts.
+- `pcb/gen/run.sh` regenerates `pcb/exhaust.kicad_sch`, runs ERC (0 violations) and the netlist assertions (all pass), and exports the SVG and raw BOM to `pcb/reports/`. 124 parts, 32 unique LCSC parts.
 - G2 review hardware items folded in: S-2 (fan side ≤ 4.1 mA at datasheet max), S-4 (`pcb/SAFETY.md`, every crossing asserted), S-5 (D-036), S-14 (EN RC, BOOT/EN recovery pads per D-041, strapping pins asserted unconnected), S-13 and S-17 (already applied). Interfaces §2.2–2.3 still name the LTV-814; D-036 supersedes it, and the doc gets updated at layout.
 - Generator draws wires within blocks and power symbols for GND/+3V3/+5V (D-038, at Andrew's request during his schematic review). Netlist unchanged.
 - Known cosmetic issues: field text on rotated parts needs GUI touch-up; placement wasn't laid out for wiring, so some blocks are still label-heavy.
@@ -73,3 +73,4 @@
 - 2026-11-09: Removed the three SMF15A fan-line TVS diodes (Andrew; D-042). ERC 0, netlist assertions pass. Standard PCBA for 2 boards ≈ $151, total ≈ $261–291.
 - 2026-11-09: Removed tach series diode D5; separate presence opto kept for flexibility across fans (Andrew; D-043). ERC 0, netlist assertions pass. Standard PCBA for 2 boards ≈ $149, total ≈ $259–289.
 - 2026-11-09: Removed the fan-side HT7550 and `+5F`; the fan interface runs from `+10V_F` (Andrew; D-044). ERC 0, netlist assertions pass. Standard PCBA for 2 boards ≈ $145, total ≈ $255–285.
+- 2026-11-09: Optos changed to LTV-817S-TA1-C (Basic; Andrew; D-045). Added SEN_SDA and SEN_SCL test pads. ERC 0, netlist assertions pass. Standard PCBA for 2 boards still ≈ $145.

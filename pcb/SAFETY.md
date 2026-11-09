@@ -19,10 +19,10 @@ This controller is a convenience control, not a life-safety device. Air-quality 
 | Part | Crosses | Isolation rating |
 |------|---------|------------------|
 | U4 H11L1S-TA1-L | Node (LED) → Fan (output, powered from +10V_F) | UL 1577 5 kVrms |
-| U5 PC817C-S | Fan (LED) → Node (tach output) | UL 1577 5 kVrms |
-| U6 PC817C-S | Fan (LED) → Node (presence output) | UL 1577 5 kVrms |
-| U7 PC817C-S | OCC (LED) → Node | UL 1577 5 kVrms |
-| U8 PC817C-S | DC (LED) → Node | UL 1577 5 kVrms |
+| U5 LTV-817S-TA1-C | Fan (LED) → Node (tach output) | UL 1577 5 kVrms (E113898) |
+| U6 LTV-817S-TA1-C | Fan (LED) → Node (presence output) | UL 1577 5 kVrms (E113898) |
+| U7 LTV-817S-TA1-C | OCC (LED) → Node | UL 1577 5 kVrms (E113898) |
+| U8 LTV-817S-TA1-C | DC (LED) → Node | UL 1577 5 kVrms (E113898) |
 
 Nothing else crosses: no Y capacitors, no shared pours, no resistors, no shield or mounting-hole connections. Mounting holes are non-plated and unconnected, with plastic or nylon fasteners where they sit near a barrier.
 

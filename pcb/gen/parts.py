@@ -20,7 +20,7 @@ P = {
 
     # isolation (sourcing/isolation.md)
     "OPTO_PWM": ("Isolator:H11L1", "Package_DIP:SMDIP-6_W9.53mm", "C7435535", "H11L1S-TA1-L", "U"),
-    "PC817": ("Isolator:PC817", "Package_DIP:SMDIP-4_W9.53mm", "C3008369", "PC817C-S", "U"),
+    "PC817": ("Isolator:PC817", "Package_DIP:SMDIP-4_W9.53mm", "C109227", "LTV-817S-TA1-C", "U"),
     "BRIDGE": ("Diode_Bridge:MB6S", "Diode_SMD:Diode_Bridge_Vishay_MBLS", "C2488", "MB10S", "D"),
     "NFET": ("Transistor_FET:2N7002", "Package_TO_SOT_SMD:SOT-23", "C8545", "2N7002", "Q"),
     "NFET_LL": ("Transistor_FET:AO3400A", "Package_TO_SOT_SMD:SOT-23", "C20917", "AO3400A", "Q"),

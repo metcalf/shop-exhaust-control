@@ -47,6 +47,8 @@ Other stocked H11L1 SMD parts, for reference only:
 
 ## 2. PC817 phototransistor opto: PC817C-S (C3008369)
 
+**Superseded 2026-11-09 (D-045):** the design uses Lite-On LTV-817S-TA1-C (C109227), Basic on its JLC page, $0.0818 @10, 282,150 in stock at LCSC. The claim below that no Basic part was found applied only to PC817 and the variants listed.
+
 No JLC Basic PC817 or equivalent was found. All SOP-4 PC817 variants checked on jlcpcb.com were Extended: C3008369, C22447129, C20612450, C490097, C115502, C66405 and C20612592 (the last by search result only). The ranked C variant at LCSC is Extended.
 
 UMW PC817 datasheet (Apr 2025):

@@ -49,7 +49,7 @@ PRICE = {
     ("USBLC6-2SC6", ""): ("C2827654", "Extended", 103720, 0.0452, "power"),
     ("AP63203WU-7", ""): ("C780769", "Extended", 1337, 1.2115, "LCSC API 2026-11-09 (D-040)"),
     ("H11L1S-TA1-L", ""): ("C7435535", "Extended", 1541, 0.4051, "isolation"),
-    ("PC817C-S", ""): ("C3008369", "Extended", 343540, 0.0366, "isolation"),
+    ("LTV-817S-TA1-C", ""): ("C109227", "Basic", 282150, 0.0818, "LCSC API 2026-11-09 (D-045)"),
 }
 NO_PART = ("TestPoint", "MountingHole")
 THT = ("C557656", "C474930", "C2897371", "C255515", "C2845262")

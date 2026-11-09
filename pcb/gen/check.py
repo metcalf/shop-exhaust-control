@@ -76,7 +76,7 @@ for (r, p), n in pin_net.items():
 
 barrier = {r for r, ds in part_domains.items() if len(ds) > 1}
 for r in barrier:
-    check(comps[r]["value"] in ("H11L1S-TA1-L", "PC817C-S"),
+    check(comps[r]["value"] in ("H11L1S-TA1-L", "LTV-817S-TA1-C"),
           f"{r} ({comps[r]['value']}) bridges domains {sorted(part_domains[r])}")
     check(len(part_domains[r]) == 2, f"{r} touches {sorted(part_domains[r])}")
 # exactly the four optos cross (U-PWM, tach, presence -> fan; OCC; DC)
@@ -170,6 +170,8 @@ for n in ("EN", "BOOT"):
     check(any(r.startswith("TP") for r in refs_on(n)), f"{n}: no test pad")
     check(not any(r.startswith("SW") for r in refs_on(n)), f"{n}: switch should be pads only")
 check(sum(r.startswith("TP") for r in refs_on("GND")) >= 2, "EN and BOOT each need their own GND pad")
+for n in ("SEN_SDA", "SEN_SCL"):
+    check(any(r.startswith("TP") for r in refs_on(n)), f"{n}: no test pad")
 
 # --- nothing single-ended except intentional no-connects ----------------------
 for n, nodes in nets.items():

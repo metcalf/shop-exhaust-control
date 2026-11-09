@@ -394,3 +394,11 @@ Template:
 - Alternatives considered: 10 k / 10 k dividers to hold Q1's gate and white near 5 V as the stock controller does (one more resistor for an unproven need).
 - Consequences: three fewer unique parts and a fan-side total of ≈ 4.1 mA. White rests near 9 V instead of the stock 5 V, an assumption AC-18 should confirm on the first bench power-up. The part directly on red goes from 30 V tolerance to 16 V. Q1 Vgs margin to its limit is about 2 V. References renumbered: H11L1 is now U4, tach U5, presence U6, OCC U7, DC U8.
 
+## D-045: LTV-817S-TA1-C replaces PC817C-S
+- Date: 2026-11-09
+- Status: Accepted (Andrew). Amends D-036's part number
+- Context: Andrew spotted the LTV-817 on JLC's line. C109227 (Lite-On LTV-817S-TA1-C) is the same 4-pin phototransistor opto, labelled Basic on its JLC page, with 282,150 at LCSC on 2026-11-09. The Lite-On datasheet (DS70-2012-0050 Rev. B) gives pins 1 anode, 2 cathode, 3 emitter, 4 collector, C rank 200–400 % at IF = 5 mA, 5 kVrms, UL 1577 file E113898 and VDE 60747-5-5.
+- Decision: use C109227 for all four optos (U5–U8), same symbol. Unranked variants (LTV-817S-TA1 and LTV-817S) are ruled out because the margins depend on C rank.
+- Alternatives considered: keeping UMW PC817C-S (cheaper unit price, Extended).
+- Consequences: $0.045 more per opto, one fewer Extended part, and a recognised maker's UL file. The copy of the datasheet read stops before the CTR-vs-IF curves, so `pcb/design.md`'s CTR-at-1-mA assumption stays open until read from the full sheet or the bench. Lead span differs slightly from the footprint (O-3).
+

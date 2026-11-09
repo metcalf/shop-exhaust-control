@@ -14,7 +14,7 @@ Datasheet figures below come from the sourcing notes. Where a value is assumed r
 - **Hot-plug (O-4, closed by D-040):** a live VBUS into a ceramic-only input (A-to-C cable, or a supply that doesn't switch VBUS) rings. *Estimated, not measured:* 6.6 V peak on 3 m of 24 AWG, ≈ 8 V on a short heavy cable before SMAJ5.0A starts conducting. The buck's 35 V rating covers that. Bulk capacitance isn't an option under the USB limit above. If the display ends up on `+5V` (Q-35), check that its on-board regulator tolerates this.
 
 ## 2. Fan interface, fan domain (SR-08, SR-09, D-023; G2 review S-2)
-Circuit as in `docs/interfaces.md` §2.1, with these parts: U4 H11L1S-TA1-L, VCC straight from `+10V_F` (3–15 V operating, 16 V abs max), no fan-side regulator (D-044); Q1 AO3400A (gate at 10 V against ±12 V max; same part as the indicator switches, one fewer unique part), U5 (tach) and U6 (presence) PC817C-S. No TVS on the fan lines (D-042) and no series diode on tach (D-043).
+Circuit as in `docs/interfaces.md` §2.1, with these parts: U4 H11L1S-TA1-L, VCC straight from `+10V_F` (3–15 V operating, 16 V abs max), no fan-side regulator (D-044); Q1 AO3400A (gate at 10 V against ±12 V max; same part as the indicator switches, one fewer unique part), U5 (tach) and U6 (presence) LTV-817S-TA1-C (D-045). No TVS on the fan lines (D-042) and no series diode on tach (D-043).
 
 **Fan-side current from red +10 V, datasheet maxima (S-2):**
 
@@ -27,11 +27,11 @@ Circuit as in `docs/interfaces.md` §2.1, with these parts: U4 H11L1S-TA1-L, VCC
 | **Total** | **≈ 4.1 mA**, against the ≤ 9 mA budget (Q-26: the port supplies ≈ 9.3 mA) |
 
 - PWM LED drive: (3.3 − 1.5) / 390 Ω ≥ 4.6 mA against H11L1 IF(on) max 1.6 mA: 2.9× margin. GPIO4 has a 10 k pull-down, so the LED stays dark through reset and boot, and the fan stays off (SR-08).
-- Tach and presence outputs: PC817C CTR ≥ 200 % at 5 mA. *Assumed:* CTR at ~1 mA is ≥ 50 % of that, so ≥ 100 %. That gives IC ≥ 0.85 mA against the 0.15 mA the 22 k pull-up needs: ≥ 5.7×, still ~3× after 50 % aging. Switching time with a 22 k load is ~100 µs order (not characterized), against a ≥ 3.3 ms tach half-period.
+- Tach and presence outputs: LTV-817 C rank, CTR 200–400 % at 5 mA. *Assumed:* CTR at ~1 mA is ≥ 50 % of that, so ≥ 100 %. That gives IC ≥ 0.85 mA against the 0.15 mA the 22 k pull-up needs: ≥ 5.7×, still ~3× after 50 % aging. Switching time with a 22 k load is ~100 µs order (not characterized), against a ≥ 3.3 ms tach half-period.
 - H11L1 propagation is ≤ 0.5 µs (Lite-On), < 0.3 % of the 200 µs PWM period.
 
 ## 3. 24 VAC occupancy and wired DC inputs (FR-07, IR-01, D-025, D-036; G2 review S-5)
-J-OCC and J-DC use one identical circuit: SMBJ48CA across the terminals → 2 × 2.7 kΩ 1206 in series (5.4 k) → MB10S bridge → PC817C-S LED. The output has a 47 k pull-up to 3.3 V and 1 µF to GND. A bridge, not an antiparallel diode (D-036): half-wave conduction leaves ≥ 8 ms gaps per cycle, which the RC would have to bridge.
+J-OCC and J-DC use one identical circuit: SMBJ48CA across the terminals → 2 × 2.7 kΩ 1206 in series (5.4 k) → MB10S bridge → LTV-817S-TA1-C LED. The output has a 47 k pull-up to 3.3 V and 1 µF to GND. A bridge, not an antiparallel diode (D-036): half-wave conduction leaves ≥ 8 ms gaps per cycle, which the RC would have to bridge.
 
 Path drop, worst case: LED 1.4 V + two bridge diodes ≈ 1.8 V, so ≈ 3.2 V. The pull-up needs 3.3 V / 47 k = 70 µA.
 
@@ -39,7 +39,7 @@ Path drop, worst case: LED 1.4 V + two bridge diodes ≈ 1.8 V, so ≈ 3.2 V. Th
 |------|--------|
 | 12 VDC − 10 % (10.8 V) | IF ≥ (10.8 − 3.2) / 5.4 k = 1.4 mA. With CTR ≥ 100 % (assumed, as §2), IC ≥ 1.4 mA, 20× the 70 µA needed |
 | 12 VAC − 10 % (15.3 V pk) | Conducts usefully (IF ≥ 0.3 mA) above 4.8 V, i.e. above 18° of each half-cycle. Gap ≈ 1.7 ms per half-cycle; RC τ = 47 ms, so the output rises ≈ 3.3 × 1.7 / 47 = 0.12 V, well below VIL (0.83 V). No chatter |
-| 24 VAC + 10 % (26.4 V, 37.3 V pk) | IF pk 6.5 mA (PC817 max 50 mA). P ≈ 26.4² / 5.4 k ≈ 0.13 W total, 65 mW per 1206 (rated 0.25 W) |
+| 24 VAC + 10 % (26.4 V, 37.3 V pk) | IF pk 6.5 mA (LTV-817 max 50 mA). P ≈ 26.4² / 5.4 k ≈ 0.13 W total, 65 mW per 1206 (rated 0.25 W) |
 | Lightly loaded Class 2 secondary, 29 VAC / 41 V pk | IF pk 7.1 mA, 0.155 W total. TVS standoff 48 V > 41 V |
 | 26.4 VDC either polarity | 4.4 mA, 0.105 W. The bridge makes polarity irrelevant |
 | Assert / release | Assert: the opto discharges 1 µF at ≥ 1.4 mA, ≈ 2 ms. Release: rises to VIH (2.48 V) in −τ ln 0.25 ≈ 65 ms. Both are well inside the 0.5 s debounce (C-20 / C-31) |
@@ -51,7 +51,7 @@ Path drop, worst case: LED 1.4 V + two bridge diodes ≈ 1.8 V, so ≈ 3.2 V. Th
 - J5 pinout per the SEN6x datasheet §3, Table 17: 1 VDD, 2 GND, 3 SDA, 4 SCL, 5 GND, 6 VDD (`sourcing/off-board.md`). Supply 3.15–3.6 V.
 
 ## 5. MCU, boot and recovery (G2 review S-14)
-- EN: 10 k to 3V3 and 1 µF to GND (Espressif HW design guide RC). GPIO0: 10 k pull-up. No switches (D-041). Test pads for 3V3, 5V, GND, TXD0, RXD0, EN and BOOT (UART0 rescue).
+- EN: 10 k to 3V3 and 1 µF to GND (Espressif HW design guide RC). GPIO0: 10 k pull-up. No switches (D-041). Test pads for 3V3, 5V, GND, TXD0, RXD0, EN and BOOT (UART0 rescue), and SEN_SDA and SEN_SCL for probing I²C.
 - **Recovery pads (layout):** two separate pairs, TP6 (EN) + TP2 (GND) and TP7 (BOOT) + TP8 (GND). Within a pair, set the gap to the board's minimum copper clearance (the DRC rule set at layout; check the fab's limit, about 0.13 mm at JLC from memory), so a screwdriver tip bridges it easily. Use one solder-mask opening per pair and no paste. Keep the pairs far enough apart (≥ 10 mm, center to center) to hold a screwdriver on each at once, and away from the other test pads, `+3V3`, `+5V` and fan-domain copper. Label them on silkscreen. To enter the bootloader: short BOOT, tap EN, then release BOOT.
 - Strapping: GPIO3, 45 and 46 are not connected, so the internal defaults apply. With GPIO45 low, VDD_SPI is 3.3 V, which is right for the N16R8's 3.3 V flash and PSRAM. GPIO35–37 (octal PSRAM) are not connected. check.py asserts all of these.
 - Reset states: FAN_PWM has a 10 k pull-down (LED dark, fan off). SEN_PWR_EN and DISP_BL have 100 k gate pull-ups (off). IND_R/G/B have 100 k gate pull-downs (dark). So nothing turns on before firmware does.
@@ -70,7 +70,7 @@ Six C601699 3528 common-anode RGB LEDs on `+5V`, one resistor per colour per LED
 |----|------|
 | O-1 | ~~SEN6x connector pinout~~: closed, datasheet Table 17 matches the schematic |
 | O-2 | Display module choice (Q-35): header pinout, backlight circuit and current, outline. The only verified-IPS module found (Newhaven breakout) doesn't fit the 1×8 header |
-| O-3 | Footprints against the LCSC drawings. Stock KiCad footprints are placeholders: H11L1S/PC817C-S lead span (SMDIP W9.53), MB10S (MBS vs the MBLS footprint used), 3528 RGB pin map against the LED_ARGB symbol numbering, 5.1 mm tact, KF128L and XY350V terminals (the Phoenix PT footprint used differs), GH header, HRO USB-C pin map. Use `easyeda2kicad` footprints where they exist |
+| O-3 | Footprints against the LCSC drawings. Stock KiCad footprints are placeholders: H11L1S lead span (SMDIP W9.53), LTV-817S lead span (10.16 ± 0.3 mm tip to tip, 1.0 mm feet, so ≈ 9.2 mm foot centers against the W9.53 footprint), MB10S (MBS vs the MBLS footprint used), 3528 RGB pin map against the LED_ARGB symbol numbering, 5.1 mm tact, KF128L and XY350V terminals (the Phoenix PT footprint used differs), GH header, HRO USB-C pin map. Use `easyeda2kicad` footprints where they exist |
 | O-4 | ~~VBUS hot-plug overshoot against the buck's abs max~~: closed by D-040, wide-input buck (§1) |
 | O-5 | Opto package creepage. Pad-to-pad across the 9.53 mm gull-wing span is ≈ 7 mm, which comfortably exceeds the 3 mm basic barrier (D-028). Confirm from the drawings |
 | O-6 | GPIO47/48 voltage on the N16R8 |
