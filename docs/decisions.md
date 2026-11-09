@@ -402,3 +402,11 @@ Template:
 - Alternatives considered: keeping UMW PC817C-S (cheaper unit price, Extended).
 - Consequences: $0.045 more per opto, one fewer Extended part, and a recognised maker's UL file. Andrew read typical CTR at 1 mA as 80 % from the full sheet, which replaces `pcb/design.md`'s assumption: tach and presence margin ≈ 4.7×. Lead span differs slightly from the footprint (O-3).
 
+## D-046: No TVS on J-OCC and J-DC
+- Date: 2026-11-09
+- Status: Accepted (Andrew). Amends D-036 and D-042's note that these stay
+- Context: Each input already has 5.4 k in series, a 1 kV bridge and a 5 kV opto. J-OCC's real transient source is the transformer switching with the lights, but with the relay coil still across the secondary it's unlikely to approach the roughly 800 V where the two 1206s reach their pulse limit (limit from memory, not read). J-DC is a BLE backup with nothing on it yet; any contactor kick belongs to the DC project.
+- Decision: remove both SMBJ48CA. Keep the series resistors, bridge and opto.
+- Alternatives considered: keep them as cheap insurance against a mains surge coupled through the transformer; scope the 24 VAC terminals at switch-off first (not done).
+- Consequences: two fewer parts, one fewer unique Extended part. A large surge could open a resistor and kill the occupancy input, on a board with a spare. A 120 VAC mis-wire burns the 1206s open instead of clamping across mains.
+

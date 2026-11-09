@@ -30,8 +30,8 @@ flowchart LR
         LEDS["Plain RGB LEDs, 3 FETs →<br/>short light strip (D-031)"]
         USB["USB-C: power in + flash/log,<br/>external (D-030)"]
       end
-      OCC_IF["24 VAC input: TVS, R, AC opto"]
-      DC_IF["Wired DC_RUNNING backup: TVS, R, AC opto"]
+      OCC_IF["24 VAC input: R, bridge, opto"]
+      DC_IF["Wired DC_RUNNING backup: R, bridge, opto"]
     end
     subgraph BAY["Sensor bay, open to room, below electronics"]
       SEN["Sensirion SEN65<br/>PM, VOC/NOx, RH/T (D-012)"]

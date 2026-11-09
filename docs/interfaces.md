@@ -50,7 +50,7 @@ GPIOs assume an ESP32-S3-WROOM-1-N16R8 (D-022): GPIO 0/3/45/46 (strapping), 19/2
 | `FAN_PWM` | Out | Opto LED drive (§2.1) | 3.3 V, ~5 mA | J-FAN (4-pos fixed screw terminal, 3.5 mm, fan side of the barrier) | 4 | LEDC 5 kHz, ≥ 10-bit. LED on = speed line released (high). 10 kΩ external pull-down keeps the LED off through reset/boot |
 | `FAN_TACH` | In | Opto phototransistor, 10 kΩ pull-up | 3.3 V | J-FAN | 5 | Edge timing via GPIO ISR (30–150 Hz); frequency only (pulses/rev unknown) |
 | `FAN_PRESENT` | In | Opto phototransistor, 10 kΩ pull-up | 3.3 V, low = fan side powered | J-FAN | 6 | Fan-side +10 V present. Lost when the fan cable is unplugged **or** the fan loses mains (§2.1) |
-| `OCC_IN` | In | AC-input opto, RC-filtered | 3.3 V, low = 24 VAC present | J-OCC (2-pos fixed screw terminal, 3.5 mm) | 7 | Rectifier-less bidirectional-LED opto; MOV/TVS across the input. Firmware debounce C-20 |
+| `OCC_IN` | In | AC-input opto, RC-filtered | 3.3 V, low = 24 VAC present | J-OCC (2-pos fixed screw terminal, 3.5 mm) | 7 | Bridge and opto (D-036), no input TVS (D-046). Firmware debounce C-20 |
 | `DC_IN` | In | AC-input opto, RC-filtered (§2.3) | 3.3 V, low = asserted | J-DC (2-pos fixed screw terminal, 3.5 mm) | 1 | Wired `DC_RUNNING` backup (D-025). Firmware debounce C-31 |
 | SEN65 I²C SDA / SCL | Bidir | I²C 100 kHz, 10 kΩ pull-ups | 3.3 V (sensor rail) | J-SEN (module's 6-pin cable; connector verified in phase 3) | 8 / 9 | Run < 10 cm (sensor bay directly below the board). Pull-ups go to the **switched** rail only, so nothing back-powers the module when it's off (G2 review S-13) |
 | `SEN_PWR_EN` | Out | Load-switch gate, active low (AO3401-class P-FET, high side) | 3.3 V | — | 10 | Recovery only: power-cycles a hung module (SR-04, C-12); sleep uses the module's Idle command. 100 kΩ gate pull-up to 3.3 V keeps the rail off through reset and boot until firmware drives it low. Power-cycle sequence: SDA/SCL to hi-Z with internal pull-ups off, rail off ≥ 1 s, a bleed resistor takes the rail below 0.3 V (bench-verify), rail on, wait P-06 |
@@ -99,12 +99,12 @@ Behavior:
 J-FAN sits on the fan side of the barrier, with ≥ 3 mm to any node-side copper. Its conductors carry nothing the fan's own cable doesn't already expose.
 
 ### 2.2 Occupancy input (FR-07)
-*Schematic (D-036) supersedes the parts below for §2.2 and §2.3: SMBJ48CA → 2 × 2.7 k → MB10S bridge → LTV-817S-TA1-C (D-045), 47 k pull-up, 1 µF, one circuit for both inputs. Values and worst cases are in `pcb/design.md` §3.*
+*Schematic (D-036) supersedes the parts below for §2.2 and §2.3: no input TVS (D-046), 2 × 2.7 k → MB10S bridge → LTV-817S-TA1-C (D-045), 47 k pull-up, 1 µF, one circuit for both inputs. Values and worst cases are in `pcb/design.md` §3.*
 
-24 VAC from the lighting transformer's secondary (the same terminals that drive the old fan relay coil, Q-16) → 2-pos terminal → bidirectional TVS (48 V standoff, SMBJ48CA-class: lightly loaded Class 2 secondaries read 26–29 VAC, up to ~41 V peak at high line) → 2 × 2.2 kΩ (1206, series) → AC-input opto (LTV-814/PC814-class) → phototransistor with 10 kΩ pull-up and 1 µF to GND (τ ≈ 10 ms bridges the zero crossings) → GPIO7. Input draw ≈ 5–6 mA rms. Same ≥ 3 mm barrier as §2.1. Firmware debounce C-20 (0.5 s), well inside AC-04's 2 s.
+24 VAC from the lighting transformer's secondary (the same terminals that drive the old fan relay coil, Q-16) → 2-pos terminal → 2 × 2.2 kΩ (1206, series) → AC-input opto (LTV-814/PC814-class) → phototransistor with 10 kΩ pull-up and 1 µF to GND (τ ≈ 10 ms bridges the zero crossings) → GPIO7. Input draw ≈ 5–6 mA rms. Same ≥ 3 mm barrier as §2.1. Firmware debounce C-20 (0.5 s), well inside AC-04's 2 s.
 
 ### 2.3 Wired `DC_RUNNING` input (IR-01 backup, D-025)
-The same circuit as §2.2, with the series resistance sized so 12 V DC still lights the LED (≥ 2 mA) and 24 VAC (+10 %, ≈ 37 V peak) stays within its rating: TVS (48 V standoff, as §2.2) → 2 × 2.7 kΩ (1206) → AC-input opto (bidirectional LED, so either polarity or AC) → 10 kΩ pull-up and 1 µF → GPIO1. Same ≥ 3 mm barrier. Unconnected reads not asserted. J-DC and J-OCC accept the same inputs, so swapping their wires at install is harmless (wrong function only). Phase 3 checks the resistor values against the opto's CTR and LED ratings.
+The same circuit as §2.2, with the series resistance sized so 12 V DC still lights the LED (≥ 2 mA) and 24 VAC (+10 %, ≈ 37 V peak) stays within its rating: 2 × 2.7 kΩ (1206) → AC-input opto (bidirectional LED, so either polarity or AC) → 10 kΩ pull-up and 1 µF → GPIO1. Same ≥ 3 mm barrier. Unconnected reads not asserted. J-DC and J-OCC accept the same inputs, so swapping their wires at install is harmless (wrong function only). Phase 3 checks the resistor values against the opto's CTR and LED ratings.
 
 ## 3. Power (D-018)
 

@@ -30,7 +30,6 @@ P = {
     "USBC": ("Connector:USB_C_Receptacle_USB2.0_16P",
              "Connector_USB:USB_C_Receptacle_HRO_TYPE-C-31-M-12", "C165948", "TYPE-C-31-M-12", "J"),
     "TVS5": ("Device:D_TVS", "Diode_SMD:D_SMA", "C113952", "SMAJ5.0A", "D"),
-    "TVS48": ("Device:D_TVS", "Diode_SMD:D_SMB", "C693510", "SMBJ48CA", "D"),
     "ESD": ("Power_Protection:USBLC6-2SC6", "Package_TO_SOT_SMD:SOT-23-6", "C2827654", "USBLC6-2SC6", "U"),
 
     # UI and connectors (sourcing/ui-connectors.md)

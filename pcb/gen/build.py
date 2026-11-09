@@ -130,7 +130,6 @@ def ac_input(X, Y, term, a, b, mid, out, title):
     sh.begin(term)
     sh.note(title, (X - 10, Y - 15))
     part("TERM2", (X, Y + 10), {"1": a, "2": b}, r=term)
-    part("TVS48", (X + 15, Y + 20), {"1": a, "2": b}, rot=90)
     res("2.7k", (X + 30, Y + 5), a, mid + "_R", key="R1206", rot=90)
     res("2.7k", (X + 45, Y + 5), mid + "_R", mid + "_AC", key="R1206", rot=90)
     part("BRIDGE", (X + 65, Y + 15), {"1": mid + "_AC", "2": b, "3": mid + "_P", "4": mid + "_N"})

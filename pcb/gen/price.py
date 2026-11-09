@@ -29,7 +29,6 @@ PRICE = {
     ("10u", "C_0805"): ("C15850", "Basic?", 1708660, 0.0441, "passives"),
     ("22u", "C_1206"): ("C12891", "Basic?", 138620, 0.1171, "passives"),
     ("SMAJ5.0A", ""): ("C113952", "Extended", 487120, 0.0413, "power"),
-    ("SMBJ48CA", ""): ("C693510", "Extended", 4410, 0.0518, "power"),
     ("MB10S", ""): ("C2488", "Basic?", 461500, 0.0272, "isolation"),
     ("RGB CA 3528", ""): ("C601699", "Extended", 14300, 0.1061, "ui-connectors"),
     ("TYPE-C-31-M-12", ""): ("C165948", "Extended", 281585, 0.1886, "power"),
