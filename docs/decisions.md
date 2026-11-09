@@ -264,7 +264,7 @@ Template:
 
 ## D-030: Single external USB-C for power and flash/log; 3.3 V only
 - Date: 2026-10-28
-- Status: Accepted (Andrew). Amends D-018 (adapter, on-board supply) and NFR-04; supersedes D-020
+- Status: Accepted (Andrew). Amends D-018 (adapter, on-board supply) and NFR-04; supersedes D-020. Polyfuse removed by D-040
 - Context: Nothing on the node needs 5 V except the indicator LEDs, which can run from a 5 V input directly. D-018's two reasons for 12 V were the mis-plug risk next to a USB-C fan cable (gone with D-026) and cable drop into a 5 V rail (moot once everything regulates to 3.3 V).
 - Decision: Power comes from a listed 5 V USB-C adapter (≥ 2 A) through the node's only external USB-C, which is also the native-USB flash/log port. On board: polyfuse, TVS, one 5→3.3 V regulator (buck or low-dropout LDO, picked in the schematic), and a P-FET load-switched 3.3 V sensor rail. The receptacle sits behind a compressed foam gasket in the wall, facing the cabinet; its mouth is an accepted NFR-04 exception (Andrew: reduced IP5X intent is OK if sealing adds complexity).
 - Alternatives considered: 12 V barrel with an internal USB (D-018/D-020 as was: two regulators, lid-off flashing). A gasketed panel-mount USB-C pigtail (better seal, more parts and a cable inside).
@@ -320,7 +320,7 @@ Template:
 
 ## D-037: 3.3 V from an SY8089 buck; VBUS sense on the spare GPIO
 - Date: 2026-10-28
-- Status: Accepted (Claude; reversible before layout). Fills D-030's "buck or LDO" choice. The VBUS sense part is superseded by D-039; the buck stands
+- Status: Accepted (Claude; reversible before layout). Fills D-030's "buck or LDO" choice. The VBUS sense part is superseded by D-039; the buck by D-040
 - Context: a 5 → 3.3 V LDO dissipates ≈ 0.6 W at the 0.35 A typical load, which is too much for SOT-23-5 in a sealed box. D-030 left an optional CC read for the indicator cap.
 - Decision: SY8089AAAC (2 A) with a 2.2 µH inductor and 2 × 22 µF output. GPIO2 reads `+5V` through a 100 k / 100 k divider, and firmware lowers the indicator cap when the supply sags.
 - Alternatives considered: TLV757 LDO (thermal); reading CC1/CC2 (two ADC pins, and it doesn't see cable drop).
@@ -353,4 +353,12 @@ Template:
 - Decision: remove the divider and filter cap (2 × 100 k, 100 nF) and leave GPIO2 unconnected. The indicator keeps its fixed 300 mA firmware cap.
 - Alternatives considered: keep it for cable-drop diagnostics (a multimeter at commissioning covers that); reading CC1/CC2 (already rejected in D-037). If a lower cap on a PC is ever wanted, firmware may be able to detect a USB host through USB-Serial-JTAG with no hardware (API not yet checked).
 - Consequences: three fewer parts and one spare GPIO before layout. Cost change is negligible, so `sourcing/priced-parts.md` was not regenerated. Sag only dims the LEDs slightly; the buck still regulates 3.3 V.
+
+## D-040: No VBUS fuse or bulk cap; AP63203 wide-input buck
+- Date: 2026-11-09
+- Status: Accepted (Andrew). Supersedes D-037's buck and D-030's polyfuse. Closes O-4
+- Context: Andrew questioned F1, since overcurrent protection normally sits in the source. No safety argument relied on it (`pcb/SAFETY.md` relies on the LPS adapter), `+5V` reaches no field terminal, its hold current derates to the 1.1 A peak near 85 °C, and it drops ≈ 0.11 V. O-4's proposed 47–100 µF bulk cap was also wrong: a non-PD USB sink is limited to 1–10 µF (figures from TI datasheets quoting the spec; the spec itself wasn't read), and the schematic already had 20 µF nominal. Estimated hot-plug peaks (6.6–8 V, not measured) still exceed the SY8089's 6 V abs max.
+- Decision: remove F1, tie VBUS to `+5V`, keep one 10 µF on the rail, and replace the SY8089 with the AP63203WU-7 (35 V abs max, fixed 3.3 V). Keep the 2.2 µH inductor (`pcb/design.md` §1). `check.py` asserts the capacitance limit and the buck wiring.
+- Alternatives considered: bulk cap (violates the limit); RC snubber (needs several times the input capacitance, same limit); leaving the SY8089 (a shorted high side could put 5 V on `+3V3`); 17 V-class bucks (many have a 4.5 V minimum, against the ≥ 4.4 V budget).
+- Consequences: AP63203 is $1.21 @10 against $0.15, but F1 and the 22 pF go away, so there are two fewer unique parts. Standard PCBA for 2 boards goes from ≈ $156 to ≈ $154 (that also includes D-039's removals). Stock is 1,337 on 2026-11-09. A board fault below the adapter's limit is no longer interrupted on the board. That makes Q-36's G3 check that the supply is LPS the protection the design depends on.
 

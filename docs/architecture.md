@@ -25,7 +25,7 @@ flowchart LR
       BAR1{{"≥3 mm barrier, optos"}}
       subgraph NODE["Node side (GND, 12/5/3.3 V)"]
         MCU["ESP32-S3-WROOM-1-N16R8<br/>Wi-Fi + BLE (D-022)"]
-        PWR["Polyfuse, TVS<br/>5→3.3 V regulator,<br/>load switch (sensor)"]
+        PWR["TVS<br/>5→3.3 V regulator,<br/>load switch (sensor)"]
         PANEL["2.8&quot; IPS display (no touch), EC11 encoder,<br/>4 buttons"]
         LEDS["Plain RGB LEDs, 3 FETs →<br/>short light strip (D-031)"]
         USB["USB-C: power in + flash/log,<br/>external (D-030)"]

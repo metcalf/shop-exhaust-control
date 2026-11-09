@@ -47,16 +47,13 @@ def flag(net, at):
 sh.begin("power_in")
 X, Y = 30, 40
 sh.note("POWER IN  (D-030: 5 V USB-C, power + native USB flash/log)", (X, Y - 15))
-part("USBC", (X, Y + 25), {"VBUS": "VBUS_RAW", "GND": "GND", "SHIELD": "GND", "CC1": "CC1",
+part("USBC", (X, Y + 25), {"VBUS": "+5V", "GND": "GND", "SHIELD": "GND", "CC1": "CC1",
                            "CC2": "CC2", "D+": "USB_DP", "D-": "USB_DN"},
      nc=("SBU1", "SBU2"), r="J1")
 res("5.1k", (X + 30, Y + 30), "CC1", "GND")
 res("5.1k", (X + 38, Y + 30), "CC2", "GND")
-part("PTC", (X + 35, Y + 5), {"1": "VBUS_RAW", "2": "+5V"}, r="F1")
 part("TVS5", (X + 50, Y + 12), {"1": "GND", "2": "+5V"}, rot=90)
 part("ESD", (X + 65, Y + 30), {"I/O1": "USB_DP", "I/O2": "USB_DN", "VBUS": "+5V", "GND": "GND"})
-cap("10u", (X + 60, Y + 12), "+5V", "GND", key="C0805")
-flag("VBUS_RAW", (X + 30, Y))
 flag("GND", (X + 45, Y + 50))
 
 # 5 V -> 3.3 V

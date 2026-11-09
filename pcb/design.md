@@ -5,10 +5,13 @@ Source: `pcb/gen/build.py` → `pcb/exhaust.kicad_sch` (D-035). Checks: `pcb/gen
 Datasheet figures below come from the sourcing notes. Where a value is assumed rather than read, it says so.
 
 ## 1. Power (D-030, D-037)
-- J1 USB-C (HRO TYPE-C-31-M-12) → F1 polyfuse 1.5 A hold → `+5V`. Rd 5.1 kΩ on CC1 and CC2 (sink). D1 SMAJ5.0A on `+5V`. U2 USBLC6-2SC6 on D±. Shield goes straight to GND: the enclosure is plastic and there's no chassis.
-- **3.3 V: SY8089AAAC sync buck** (2 A, SOT-23-5), 2.2 µH (3.4 A Isat), 10 µF in, 2 × 22 µF out. FB 100 k / 22 k gives 0.6 × 5.55 = 3.33 V (453 k isn't stocked), with 22 pF feed-forward. Why not an LDO: at 0.35 A typical, an LDO dissipates ≈ 0.6 W, too much for SOT-23-5 in a sealed box (sourcing/power.md). Peak load ≈ 0.8 A at 3.3 V (module TX 360 mA + display 100 mA + SEN65 350 mA for 2 ms), within the 2 A rating.
+- J1 USB-C (HRO TYPE-C-31-M-12) VBUS goes straight to `+5V`, with no series fuse: overcurrent protection is the source's job (listed LPS adapter or the PC port; D-040). Rd 5.1 kΩ on CC1 and CC2 (sink). D1 SMAJ5.0A on `+5V`. U2 USBLC6-2SC6 on D±. Shield goes straight to GND: the enclosure is plastic and there's no chassis.
+- **`+5V` capacitance is limited to 1–10 µF** (non-PD USB sink; asserted in `check.py`). The only cap on the rail is the buck's 10 µF input. Don't add bulk.
+- **3.3 V: AP63203WU-7 sync buck** (D-040; datasheet DS41326 Rev. 2-2): fixed 3.3 V, 2 A, TSOT-26, 3.8–32 V in, 35 V abs max VIN and EN, 1.1 MHz, PFM at light load, ~100 % duty in dropout, UVLO 3.7 V max rising and ≈ 3.1 V falling. EN to VIN, FB straight to `+3V3`, 100 nF BST to SW, 10 µF in, 2 × 22 µF out (Fig. 21, Table 2). Layout: 10 µF tight to VIN/GND, GND plane under the part (datasheet Fig. 25).
+- **Inductor stays 2.2 µH** (C135262; 3.4 A Isat, above the 3.1 A max peak limit; 46 mΩ), not Table 2's 3.9 µH. Eq. 7 ties that value to about 12 V in (ΔI ≈ 0.56 A). At 5 V in, 2.2 µH gives ΔI ≈ 0.46 A and 3.9 µH only ≈ 0.26 A, against the 0.6–1 A guidance. It's inside the datasheet's 2.2–10 µH range.
+- Why not an LDO: at 0.35 A typical, an LDO dissipates ≈ 0.6 W, too much for SOT-23-5 in a sealed box (sourcing/power.md). Peak load ≈ 0.8 A at 3.3 V (module TX 360 mA + display 100 mA + SEN65 350 mA for 2 ms), within the 2 A rating.
 - No `+5V` sense (D-039). The indicator keeps its fixed 300 mA firmware cap. GPIO2 is unconnected and is the one spare GPIO.
-- **Open (O-4):** SY8089's abs max is 6 V, but SMAJ5.0A clamps at ≈ 9.2 V. Ceramic-only input plus a 3 m cable can ring on hot-plug. The polyfuse (~0.1 Ω) damps some of it. Decide before layout whether to add 47–100 µF of polymer/electrolytic bulk on `+5V`.
+- **Hot-plug (O-4, closed by D-040):** a live VBUS into a ceramic-only input (A-to-C cable, or a supply that doesn't switch VBUS) rings. *Estimated, not measured:* 6.6 V peak on 3 m of 24 AWG, ≈ 8 V on a short heavy cable before SMAJ5.0A starts conducting. The buck's 35 V rating covers that. Bulk capacitance isn't an option under the USB limit above. If the display ends up on `+5V` (Q-35), check that its on-board regulator tolerates this.
 
 ## 2. Fan interface, fan domain (SR-08, SR-09, D-023; G2 review S-2)
 Circuit as in `docs/interfaces.md` §2.1, with these parts: U4 HT7550-1 (Vin ≤ 30 V, Iq ≤ 3 µA), U5 H11L1S-TA1-L, Q1 AO3400A (gate driven to 5 V; same part as the indicator switches, one fewer unique part), U6 and U7 PC817C-S, D5 1N4148W, three SMF15A on red, yellow and white to GND_F.
@@ -69,6 +72,6 @@ Six C601699 3528 common-anode RGB LEDs on `+5V`, one resistor per colour per LED
 | O-1 | ~~SEN6x connector pinout~~: closed, datasheet Table 17 matches the schematic |
 | O-2 | Display module choice (Q-35): header pinout, backlight circuit and current, outline. The only verified-IPS module found (Newhaven breakout) doesn't fit the 1×8 header |
 | O-3 | Footprints against the LCSC drawings. Stock KiCad footprints are placeholders: H11L1S/PC817C-S lead span (SMDIP W9.53), MB10S (MBS vs the MBLS footprint used), 3528 RGB pin map against the LED_ARGB symbol numbering, 5.1 mm tact, KF128L and XY350V terminals (the Phoenix PT footprint used differs), GH header, HRO USB-C pin map. Use `easyeda2kicad` footprints where they exist |
-| O-4 | VBUS hot-plug overshoot against SY8089's 6 V abs max (§1) |
+| O-4 | ~~VBUS hot-plug overshoot against the buck's abs max~~: closed by D-040, wide-input buck (§1) |
 | O-5 | Opto package creepage. Pad-to-pad across the 9.53 mm gull-wing span is ≈ 7 mm, which comfortably exceeds the 3 mm basic barrier (D-028). Confirm from the drawings |
 | O-6 | GPIO47/48 voltage on the N16R8 |

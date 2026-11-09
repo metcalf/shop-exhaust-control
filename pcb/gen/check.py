@@ -141,6 +141,30 @@ for io, n in GPIO.items():
 for io_pin in (38, 15, 26, 16, 28, 29, 30):   # IO2 spare (D-039); IO3, IO45, IO46 strapping; IO35-37 octal PSRAM
     check(net_of("U1", io_pin).startswith("unconnected-"), f"U1 pin {io_pin} must be unconnected")
 
+# --- USB input and 3.3 V buck (D-040) -------------------------------------------
+UF = {"p": 1e-6, "n": 1e-3, "u": 1.0}
+
+
+def cap_uf(ref):
+    m = re.fullmatch(r"([\d.]+)([pnu])", comps[ref]["value"] or "")
+    check(m, f"{ref}: can't read capacitor value {comps[ref]['value']!r}")
+    return float(m.group(1)) * UF[m.group(2)] if m else 0.0
+
+
+check("VBUS_RAW" not in nets and not any(r.startswith("F") for r in comps), "no series fuse on VBUS")
+check("J1" in refs_on("+5V"), "J1 VBUS directly on +5V")
+vbus_c = sum(cap_uf(r) for r in refs_on("+5V") if r.startswith("C")
+             and {net_of(r, 1), net_of(r, 2)} == {"+5V", "GND"})
+check(1.0 <= vbus_c <= 10.0, f"+5V capacitance {vbus_c} uF is outside the 1-10 uF non-PD USB sink limit")
+buck = [r for r, c in comps.items() if c["value"] == "AP63203WU-7"]
+check(len(buck) == 1, "one AP63203")
+if buck:
+    # TSOT-26: 1 FB, 2 EN, 3 VIN, 4 GND, 5 SW, 6 BST
+    for pin, want in ((1, "+3V3"), (2, "+5V"), (3, "+5V"), (4, "GND"), (5, "BUCK_LX"), (6, "BUCK_BST")):
+        check(net_of(buck[0], pin) == want, f"{buck[0]} pin {pin} should be {want}, is {net_of(buck[0], pin)}")
+check(any({net_of(c, 1), net_of(c, 2)} == {"BUCK_BST", "BUCK_LX"} for c in refs_on("BUCK_BST") if c.startswith("C")),
+      "BST cap to SW")
+
 # --- nothing single-ended except intentional no-connects ----------------------
 for n, nodes in nets.items():
     if not n.startswith("unconnected-"):

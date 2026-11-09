@@ -29,7 +29,6 @@ P = {
     # power (sourcing/power.md)
     "USBC": ("Connector:USB_C_Receptacle_USB2.0_16P",
              "Connector_USB:USB_C_Receptacle_HRO_TYPE-C-31-M-12", "C165948", "TYPE-C-31-M-12", "J"),
-    "PTC": ("Device:Polyfuse", "Fuse:Fuse_1206_3216Metric", "C20802", "SMD1206P150TF", "F"),
     "TVS5": ("Device:D_TVS", "Diode_SMD:D_SMA", "C113952", "SMAJ5.0A", "D"),
     "TVS48": ("Device:D_TVS", "Diode_SMD:D_SMB", "C693510", "SMBJ48CA", "D"),
     "TVS15": ("Device:D_TVS", "Diode_SMD:D_SOD-123F", "C123802", "SMF15A", "D"),
@@ -66,17 +65,16 @@ P = {
     "R_GB": "120",
 }
 
-# 3.3 V buck: SY8089AAAC (sourcing/power.md). TLV62569DBV symbol has the same SOT-23-5 pinout
-# (1 EN, 2 GND, 3 LX, 4 VIN, 5 FB). Vout = 0.6 V x (1 + 100k/22k) = 3.33 V (453k isn't stocked).
-P["REG33"] = ("Regulator_Switching:TLV62569DBV", "Package_TO_SOT_SMD:SOT-23-5", "C78988", "SY8089AAAC", "U")
-P["REG33_NETS"] = {"VIN": "+5V", "EN": "+5V", "SW": "BUCK_LX", "FB": "BUCK_FB", "GND": "GND"}
+# 3.3 V buck: AP63203WU-7, fixed 3.3 V, 35 V abs max VIN (D-040; datasheet DS41326 Rev. 2-2).
+# FB goes straight to the output, EN to VIN (Fig. 21). 2.2 uH rather than Table 2's 3.9 uH: see
+# pcb/design.md §1. The 10 uF is the only capacitance allowed on +5V (USB sink limit; check.py).
+P["REG33"] = ("Regulator_Switching:AP63203WU", "Package_TO_SOT_SMD:TSOT-23-6", "C780769", "AP63203WU-7", "U")
+P["REG33_NETS"] = {"IN": "+5V", "EN": "+5V", "SW": "BUCK_LX", "FB": "+3V3", "BST": "BUCK_BST", "GND": "GND"}
 P["REG33_NC"] = ()
 P["REG33_EXTRAS"] = [
     ("C0805", "10u", ("+5V", "GND")),
+    ("C0603", "100n", ("BUCK_BST", "BUCK_LX")),
     ("L", "2.2u", ("BUCK_LX", "+3V3")),
-    ("R0603", "100k", ("+3V3", "BUCK_FB")),
-    ("R0603", "22k", ("BUCK_FB", "GND")),
-    ("C0603", "22p", ("+3V3", "BUCK_FB")),
     ("C1206", "22u", ("+3V3", "GND")),
     ("C1206", "22u", ("+3V3", "GND")),
 ]
