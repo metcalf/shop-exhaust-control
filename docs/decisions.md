@@ -337,3 +337,12 @@ Template:
 | G3 Mains/safety | | | |
 | G4 BOM | | | |
 | G5 First power-up | | | |
+
+## D-038: Generated schematic draws wires within blocks
+- Date: 2026-11-09
+- Status: Accepted (Claude, at Andrew's request; tooling, reversible). Amends D-035's "label per pin"
+- Context: Andrew found the label-per-pin sheet hard to follow in review.
+- Decision: `pcb/gen/build.py` marks blocks with `sh.begin()`. At write time, GND/+3V3/+5V pins get power symbols. Pins sharing a net within a block are joined by orthogonal wires (`pcb/gen/route.py`: no touching other nets' pins or wires, no T-joins to them, no running through symbol bodies, hops ≤ ~40 mm). Each wired group keeps one net label, so net names and cross-block links are unchanged, and anything unroutable falls back to a label.
+- Alternatives considered: hand-placing wires per block (brittle when parts move); leaving it for GUI cleanup after hand-off (review happens before then).
+- Consequences: the netlist is identical before and after (94 nets, same names and members; ERC 0, check.py passes). Labels drop from 359 to 165. Wire quality depends on placement, which wasn't laid out for wiring, so some blocks (indicator, MCU) are still mostly labels, and rotated-part text overlaps remain.
+

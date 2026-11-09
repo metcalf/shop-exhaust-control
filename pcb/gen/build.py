@@ -44,6 +44,7 @@ def flag(net, at):
 
 
 # ---------------------------------------------------------------- power in
+sh.begin("power_in")
 X, Y = 30, 40
 sh.note("POWER IN  (D-030: 5 V USB-C, power + native USB flash/log)", (X, Y - 15))
 part("USBC", (X, Y + 25), {"VBUS": "VBUS_RAW", "GND": "GND", "SHIELD": "GND", "CC1": "CC1",
@@ -63,6 +64,7 @@ res("100k", (X + 80, Y + 20), "VBUS_SENSE", "GND")
 cap("100n", (X + 92, Y + 20), "VBUS_SENSE", "GND")
 
 # 5 V -> 3.3 V
+sh.begin("reg33")
 X, Y = 30, 115
 sh.note("3.3 V REGULATOR (pcb/design.md §1)", (X, Y - 10))
 part("REG33", (X + 20, Y + 5), P["REG33_NETS"], nc=P["REG33_NC"])
@@ -76,6 +78,7 @@ for i, (k, a, b) in enumerate(P["REG33_EXTRAS"]):
 flag("+3V3", (X + 45, Y))   # buck output reaches +3V3 through the (passive) inductor
 
 # ---------------------------------------------------------------- MCU
+sh.begin("mcu")
 X, Y = 175, 70
 sh.note("ESP32-S3-WROOM-1-N16R8 (D-022). GPIO plan: docs/interfaces.md §2", (X - 25, Y - 40))
 part("ESP", (X, Y), {
@@ -103,6 +106,7 @@ for i, n in enumerate(["+3V3", "GND", "TXD0", "RXD0", "+5V", "EN", "BOOT"]):
 flag("+5V", (X + 50, Y - 30))
 
 # ---------------------------------------------------------------- fan interface (fan domain)
+sh.begin("fan")
 X, Y = 40, 200
 sh.note("FAN INTERFACE - FAN DOMAIN (GND_F). Fail-off, isolated (SR-08, SR-09, D-023, "
         "interfaces §2.1). >= 3 mm to node copper (pcb/SAFETY.md)", (X - 10, Y - 15))
@@ -138,6 +142,7 @@ res("22k", (X + 240, Y - 5), "+3V3", "FAN_PRESENT")
 
 # ---------------------------------------------------------------- 24 VAC / DC inputs (field domains)
 def ac_input(X, Y, term, a, b, mid, out, title):
+    sh.begin(term)
     sh.note(title, (X - 10, Y - 15))
     part("TERM2", (X, Y + 10), {"1": a, "2": b}, r=term)
     part("TVS48", (X + 15, Y + 20), {"1": a, "2": b}, rot=90)
@@ -155,6 +160,7 @@ ac_input(200, 270, "J4", "DCI_A", "DCI_B", "DCI", "DC_IN",
          "J-DC: wired DC_RUNNING, 12-24 V AC/DC either polarity (IR-01, D-025) - DC field domain")
 
 # ---------------------------------------------------------------- SEN65
+sh.begin("sen")
 X, Y = 300, 40
 sh.note("SEN65 (D-012) on a switched rail: recovery power-cycle only (D-031, S-13)", (X - 10, Y - 15))
 part("PFET", (X + 15, Y + 5), {"S": "+3V3", "D": "+3V3_SEN", "G": "SEN_G"})
@@ -169,6 +175,7 @@ res("10k", (X + 63, Y - 5), "+3V3_SEN", "SEN_SCL")
 part("SENCONN", (X + 85, Y + 10), P["SEN_PINOUT"], r="J5", nc=P["SEN_NC"])
 
 # ---------------------------------------------------------------- display
+sh.begin("disp")
 X, Y = 300, 110
 sh.note("DISPLAY: 2.8in 240x320 IPS SPI module, no touch (D-022). Header pinout set by the "
         "chosen module", (X - 10, Y - 15))
@@ -180,6 +187,7 @@ res("100k", (X + 10, Y - 5), "+3V3", "DISP_BL")
 cap("10u", (X + 45, Y + 25), "+3V3", "GND", key="C0805")
 
 # ---------------------------------------------------------------- controls
+sh.begin("controls")
 X, Y = 300, 165
 sh.note("CONTROLS: EC11 encoder + 4 buttons (D-009). 10k pull-up, 100 nF at the pin", (X - 10, Y - 15))
 part("ENC", (X, Y + 10), {"A": "ENC_A", "B": "ENC_B", "C": "GND", "S1": "ENC_SW", "S2": "GND"},
@@ -191,6 +199,7 @@ for i, n in enumerate(["BTN1", "BTN2", "BTN3", "BTN4"]):
     part("TACT", (X + 30 + 22 * i, Y + 50), {"1": n, "2": "GND"}, value=f"B{i + 1}")
 
 # ---------------------------------------------------------------- indicator
+sh.begin("ind")
 X, Y = 40, 360
 N_LED = 6
 sh.note(f"INDICATOR: {N_LED} plain RGB LEDs, common anode on +5V, low-side FET per colour "
@@ -206,6 +215,7 @@ for i, c in enumerate("RGB"):
     res("100k", (X + 190 + 25 * i, Y + 30), f"IND_{c}_G", "GND")
 
 # ---------------------------------------------------------------- mechanical
+sh.begin("mech")
 for i in range(4):
     sh.place(ref("H"), "Mechanical:MountingHole", "M3", (300 + 15 * i, 380), {},
              footprint="MountingHole:MountingHole_3.2mm_M3")

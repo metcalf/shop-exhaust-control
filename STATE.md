@@ -1,6 +1,6 @@
 # Project State
 
-**Updated:** 2026-11-08
+**Updated:** 2026-11-09
 **Phase:** 3, detailed design (**G2 approved 2026-10-28**). D-029 order: vendor check ✓ → schematic ✓ → priced parts list ✓ → **stopped for Andrew** → layout, mech, firmware.
 **Waiting on:** Andrew: Q-33 (OK to start layout; assembly-route costs now in `sourcing/priced-parts.md`) and Q-35 (MSP2833/MSP2834 proposed) block layout. Q-34 and Q-36 answered.
 
@@ -20,7 +20,8 @@
 ## Schematic status (where it stopped)
 - `pcb/gen/run.sh` regenerates `pcb/exhaust.kicad_sch`, runs ERC (0 violations) and the netlist assertions (all pass), and exports the SVG and raw BOM to `pcb/reports/`. 137 parts, 40 unique LCSC parts.
 - G2 review hardware items folded in: S-2 (fan side ≤ 4.3 mA at datasheet max), S-4 (`pcb/SAFETY.md`, every crossing asserted), S-5 (D-036), S-14 (EN RC, BOOT/EN switches, strapping pins asserted unconnected), S-13 and S-17 (already applied). Interfaces §2.2–2.3 still name the LTV-814; D-036 supersedes it, and the doc gets updated at layout.
-- Known cosmetic issue: field text on rotated parts needs GUI touch-up.
+- Generator draws wires within blocks and power symbols for GND/+3V3/+5V (D-038, at Andrew's request during his schematic review). Netlist unchanged.
+- Known cosmetic issues: field text on rotated parts needs GUI touch-up; placement wasn't laid out for wiring, so some blocks are still label-heavy.
 
 ## Notes for an unattended run
 - If Q-33 is still unanswered, there's no layout, mech or firmware work allowed (D-029).
