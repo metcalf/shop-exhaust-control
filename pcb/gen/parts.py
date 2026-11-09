@@ -31,7 +31,6 @@ P = {
              "Connector_USB:USB_C_Receptacle_HRO_TYPE-C-31-M-12", "C165948", "TYPE-C-31-M-12", "J"),
     "TVS5": ("Device:D_TVS", "Diode_SMD:D_SMA", "C113952", "SMAJ5.0A", "D"),
     "TVS48": ("Device:D_TVS", "Diode_SMD:D_SMB", "C693510", "SMBJ48CA", "D"),
-    "TVS15": ("Device:D_TVS", "Diode_SMD:D_SOD-123F", "C123802", "SMF15A", "D"),
     "ESD": ("Power_Protection:USBLC6-2SC6", "Package_TO_SOT_SMD:SOT-23-6", "C2827654", "USBLC6-2SC6", "U"),
     "LDO5F": ("Regulator_Linear:HT75xx-1-SOT89", "Package_TO_SOT_SMD:SOT-89-3", "C41355185", "HT7550-1", "U"),
     "D_SIG": ("Device:D", "Diode_SMD:D_SOD-123", "C81598", "1N4148W", "D"),

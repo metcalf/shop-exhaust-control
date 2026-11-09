@@ -107,9 +107,6 @@ part("TERM4", (X, Y + 15), {"1": "GND_F", "2": "+10V_F", "3": "FAN_SPD", "4": "F
 sh.note("J-FAN 1 GND (BLK), 2 +10V (RED), 3 SPD (YEL), 4 TACH (WHT)", (X - 10, Y + 45), size=1.27)
 flag("GND_F", (X - 5, Y + 35))
 flag("+10V_F", (X + 5, Y))
-part("TVS15", (X + 20, Y + 35), {"1": "GND_F", "2": "+10V_F"}, rot=90)
-part("TVS15", (X + 28, Y + 35), {"1": "GND_F", "2": "FAN_SPD"}, rot=90)
-part("TVS15", (X + 36, Y + 35), {"1": "GND_F", "2": "FAN_TACH_F"}, rot=90)
 part("LDO5F", (X + 55, Y + 5), {"VIN": "+10V_F", "VOUT": "+5F", "GND": "GND_F"})
 cap("1u", (X + 45, Y + 18), "+10V_F", "GND_F")   # 0603 1 uF is 50 V
 cap("1u", (X + 68, Y + 18), "+5F", "GND_F")

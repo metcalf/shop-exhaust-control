@@ -84,7 +84,6 @@ Everything left of the barrier is powered by the fan's own +10 V and referenced 
           └── U2 LED cathode (via series diode);        ║ U2 CE ──╫── GPIO5 FAN_TACH (10k → 3V3)
               anode ──[1.5k]── +5F                      ║         ║
  +5F ──[R]── U3 LED ── GND_F                            ║ U3 CE ──╫── GPIO6 FAN_PRESENT (10k → 3V3)
- TVS on yellow/white/red to GND_F                       ║         ║
 ```
 
 Behavior:

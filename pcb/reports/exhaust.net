@@ -2,7 +2,7 @@
 	(version "E")
 	(design
 		(source "/Users/andrew/code/shop-exhaust-control/pcb/exhaust.kicad_sch")
-		(date "2026-11-09T13:54:46")
+		(date "2026-11-09T14:05:49")
 		(tool "Eeschema 10.0.7")
 		(sheet
 			(number "1")
@@ -100,7 +100,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "d6ea66f8-03e8-48ce-83c8-e5f321266112")
+			(tstamps "0e2775e4-eab9-467b-898a-e6362e450713")
 			(units
 				(unit
 					(name "A")
@@ -161,7 +161,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "e5ca6aa3-efd9-4beb-8e49-78ad5a052174")
+			(tstamps "99fbe631-ff63-4cf1-ab8f-1669455786c1")
 			(units
 				(unit
 					(name "A")
@@ -222,7 +222,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "276eb81b-36bc-4d37-be4d-e9e2c9f7ca42")
+			(tstamps "dece8b80-ec7f-4d1d-a27f-07b9ea7f66ef")
 			(units
 				(unit
 					(name "A")
@@ -283,7 +283,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "904427ee-42c4-405f-8b37-57b868b04773")
+			(tstamps "ad66dab8-3f06-43d4-b309-e515e34f6ea7")
 			(units
 				(unit
 					(name "A")
@@ -344,7 +344,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "a483d520-d103-4549-a8cd-c05839f51732")
+			(tstamps "ece8574d-74db-4653-a449-ca13eff3ed66")
 			(units
 				(unit
 					(name "A")
@@ -405,7 +405,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "4fc0d96a-ad15-4081-8fc0-f32c05827aea")
+			(tstamps "cb84d90d-dcb0-4241-a3ec-a51fb92c7892")
 			(units
 				(unit
 					(name "A")
@@ -466,7 +466,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "a0cb1c19-a925-4bf6-ad98-4890b1d9494e")
+			(tstamps "409971f8-7860-492e-9f5c-2557d8509995")
 			(units
 				(unit
 					(name "A")
@@ -527,7 +527,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "17941210-da23-4db7-bb7f-35b86435b1d1")
+			(tstamps "038845ae-22bd-4f86-8d19-4ab468b449fb")
 			(units
 				(unit
 					(name "A")
@@ -588,7 +588,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "8e16df7a-bf25-4fa7-9ac8-b6ded9db53fb")
+			(tstamps "2043cceb-e246-46de-8cbb-37048d7aa6be")
 			(units
 				(unit
 					(name "A")
@@ -649,7 +649,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "2745d8ae-b719-4e68-904e-c64a3268ba5b")
+			(tstamps "d226f168-e13a-4c0a-80c0-73b72be53541")
 			(units
 				(unit
 					(name "A")
@@ -710,7 +710,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "f9b9ecd2-d0dd-4bde-a16e-434f7cca012a")
+			(tstamps "33647bde-6434-44b0-9c7c-7eadcd4e6247")
 			(units
 				(unit
 					(name "A")
@@ -771,7 +771,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "d0bfa4c1-5931-47ca-8afa-ff2716fa3738")
+			(tstamps "60f05d7e-cd64-4be1-9017-28b3fe72c01a")
 			(units
 				(unit
 					(name "A")
@@ -832,7 +832,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "80a99af1-3b00-47ce-a7bc-5bb815334f38")
+			(tstamps "aa03f32a-eb48-41ae-aa7b-653144967779")
 			(units
 				(unit
 					(name "A")
@@ -893,7 +893,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "0c66caa7-60f1-4f07-92ac-78c7e6be90b3")
+			(tstamps "5c99ef75-6595-49bd-a2d7-bced283c10f7")
 			(units
 				(unit
 					(name "A")
@@ -954,7 +954,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "ea440dda-28fa-442a-b3c1-d5c09913b585")
+			(tstamps "ee5c15dc-e083-4ff5-a337-5931f8d894b1")
 			(units
 				(unit
 					(name "A")
@@ -1015,7 +1015,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "b29b00f4-f6d8-4ae2-aaa6-933fc18657cb")
+			(tstamps "865edc66-1d82-4dc3-9c84-c54afb0bf47d")
 			(units
 				(unit
 					(name "A")
@@ -1076,7 +1076,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "c2059fdf-9a69-4c1b-a9ce-9504fbcf827c")
+			(tstamps "a6881e9d-9c2e-4ca6-8c48-b3557df2d686")
 			(units
 				(unit
 					(name "A")
@@ -1137,7 +1137,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "f0501210-bb08-478d-8273-e2e26c34d2a3")
+			(tstamps "bc7e93cc-f03b-408a-a984-2c2562c5cec4")
 			(units
 				(unit
 					(name "A")
@@ -1198,7 +1198,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "277fe9c0-1979-4450-b26b-1867dffc06bf")
+			(tstamps "3ef48f04-e7c8-4518-973d-25ae99dda61c")
 			(units
 				(unit
 					(name "A")
@@ -1259,7 +1259,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "78262622-09c8-4010-931e-22fa819489b7")
+			(tstamps "716951ec-d9fe-448b-a40a-7d044f8ad931")
 			(units
 				(unit
 					(name "A")
@@ -1320,7 +1320,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "721c0064-1a87-4387-9d10-6ae9ea058272")
+			(tstamps "a9ea1231-3e8e-4673-99b4-2378c8438d61")
 			(units
 				(unit
 					(name "A")
@@ -1381,7 +1381,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "48daa301-7fc2-46c8-a7ac-299519470dd6")
+			(tstamps "71be7fd1-6546-48ef-a041-e69dcbf66705")
 			(units
 				(unit
 					(name "A")
@@ -1442,7 +1442,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "782a8b09-6b90-4eb1-a3a7-f6702dbe6294")
+			(tstamps "c2a7b555-21e6-4717-a47e-22068a465ee0")
 			(units
 				(unit
 					(name "A")
@@ -1502,7 +1502,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "79f8d256-1095-4487-83bc-6de39091749e")
+			(tstamps "80e76d25-144d-43a4-802d-dc89ebae878c")
 			(units
 				(unit
 					(name "A")
@@ -1519,186 +1519,6 @@
 		)
 		(comp
 			(ref "D2")
-			(value "SMF15A")
-			(footprint "Diode_SMD:D_SOD-123F")
-			(fields
-				(field
-					(name "LCSC") "C123802")
-				(field
-					(name "Footprint") "Diode_SMD:D_SOD-123F")
-				(field
-					(name "Datasheet")
-				)
-				(field
-					(name "Description")
-				)
-			)
-			(libsource
-				(lib "Device")
-				(part "D_TVS")
-				(description "Bidirectional transient-voltage-suppression diode")
-			)
-			(property
-				(name "LCSC")
-				(value "C123802")
-			)
-			(property
-				(name "Sheetname")
-				(value "exhaust")
-			)
-			(property
-				(name "Sheetfile")
-				(value "exhaust.kicad_sch")
-			)
-			(property
-				(name "ki_keywords")
-				(value "diode TVS thyrector")
-			)
-			(property
-				(name "ki_fp_filters")
-				(value "TO-???* *_Diode_* *SingleDiode* D_*")
-			)
-			(sheetpath
-				(names "/")
-				(tstamps "/")
-			)
-			(tstamps "8fb109d2-7134-4822-98e4-99cf5d123ece")
-			(units
-				(unit
-					(name "A")
-					(pins
-						(pin
-							(num "1")
-						)
-						(pin
-							(num "2")
-						)
-					)
-				)
-			)
-		)
-		(comp
-			(ref "D3")
-			(value "SMF15A")
-			(footprint "Diode_SMD:D_SOD-123F")
-			(fields
-				(field
-					(name "LCSC") "C123802")
-				(field
-					(name "Footprint") "Diode_SMD:D_SOD-123F")
-				(field
-					(name "Datasheet")
-				)
-				(field
-					(name "Description")
-				)
-			)
-			(libsource
-				(lib "Device")
-				(part "D_TVS")
-				(description "Bidirectional transient-voltage-suppression diode")
-			)
-			(property
-				(name "LCSC")
-				(value "C123802")
-			)
-			(property
-				(name "Sheetname")
-				(value "exhaust")
-			)
-			(property
-				(name "Sheetfile")
-				(value "exhaust.kicad_sch")
-			)
-			(property
-				(name "ki_keywords")
-				(value "diode TVS thyrector")
-			)
-			(property
-				(name "ki_fp_filters")
-				(value "TO-???* *_Diode_* *SingleDiode* D_*")
-			)
-			(sheetpath
-				(names "/")
-				(tstamps "/")
-			)
-			(tstamps "c574a2d0-369f-4433-8dca-fa06a3280d08")
-			(units
-				(unit
-					(name "A")
-					(pins
-						(pin
-							(num "1")
-						)
-						(pin
-							(num "2")
-						)
-					)
-				)
-			)
-		)
-		(comp
-			(ref "D4")
-			(value "SMF15A")
-			(footprint "Diode_SMD:D_SOD-123F")
-			(fields
-				(field
-					(name "LCSC") "C123802")
-				(field
-					(name "Footprint") "Diode_SMD:D_SOD-123F")
-				(field
-					(name "Datasheet")
-				)
-				(field
-					(name "Description")
-				)
-			)
-			(libsource
-				(lib "Device")
-				(part "D_TVS")
-				(description "Bidirectional transient-voltage-suppression diode")
-			)
-			(property
-				(name "LCSC")
-				(value "C123802")
-			)
-			(property
-				(name "Sheetname")
-				(value "exhaust")
-			)
-			(property
-				(name "Sheetfile")
-				(value "exhaust.kicad_sch")
-			)
-			(property
-				(name "ki_keywords")
-				(value "diode TVS thyrector")
-			)
-			(property
-				(name "ki_fp_filters")
-				(value "TO-???* *_Diode_* *SingleDiode* D_*")
-			)
-			(sheetpath
-				(names "/")
-				(tstamps "/")
-			)
-			(tstamps "ab4b5216-0b7f-4128-8ed0-cc6f17b4f8d9")
-			(units
-				(unit
-					(name "A")
-					(pins
-						(pin
-							(num "1")
-						)
-						(pin
-							(num "2")
-						)
-					)
-				)
-			)
-		)
-		(comp
-			(ref "D5")
 			(value "1N4148W")
 			(footprint "Diode_SMD:D_SOD-123")
 			(fields
@@ -1742,7 +1562,193 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "dc159173-de39-404c-8f32-52fb7b1de542")
+			(tstamps "64d089e9-fbd2-43b3-baf7-005a06e65547")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "D3")
+			(value "SMBJ48CA")
+			(footprint "Diode_SMD:D_SMB")
+			(fields
+				(field
+					(name "LCSC") "C693510")
+				(field
+					(name "Footprint") "Diode_SMD:D_SMB")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "Device")
+				(part "D_TVS")
+				(description "Bidirectional transient-voltage-suppression diode")
+			)
+			(property
+				(name "LCSC")
+				(value "C693510")
+			)
+			(property
+				(name "Sheetname")
+				(value "exhaust")
+			)
+			(property
+				(name "Sheetfile")
+				(value "exhaust.kicad_sch")
+			)
+			(property
+				(name "ki_keywords")
+				(value "diode TVS thyrector")
+			)
+			(property
+				(name "ki_fp_filters")
+				(value "TO-???* *_Diode_* *SingleDiode* D_*")
+			)
+			(sheetpath
+				(names "/")
+				(tstamps "/")
+			)
+			(tstamps "7da6af3a-09e5-42c1-bba4-e4c094385817")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "D4")
+			(value "MB10S")
+			(footprint "Diode_SMD:Diode_Bridge_Vishay_MBLS")
+			(fields
+				(field
+					(name "LCSC") "C2488")
+				(field
+					(name "Footprint") "Diode_SMD:Diode_Bridge_Vishay_MBLS")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "Diode_Bridge")
+				(part "MB6S")
+				(description "Miniature Glass Passivated Single-Phase Surface Mount Bridge Rectifiers, 700V Vrms, 1.0A If, DFS SMD package")
+			)
+			(property
+				(name "LCSC")
+				(value "C2488")
+			)
+			(property
+				(name "Sheetname")
+				(value "exhaust")
+			)
+			(property
+				(name "Sheetfile")
+				(value "exhaust.kicad_sch")
+			)
+			(property
+				(name "ki_keywords")
+				(value "rectifier acdc")
+			)
+			(property
+				(name "ki_fp_filters")
+				(value "TO?269AA*")
+			)
+			(sheetpath
+				(names "/")
+				(tstamps "/")
+			)
+			(tstamps "01f6d3d6-78c2-41ff-8616-f44ff2786ebb")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "4")
+						)
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "3")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "D5")
+			(value "SMBJ48CA")
+			(footprint "Diode_SMD:D_SMB")
+			(fields
+				(field
+					(name "LCSC") "C693510")
+				(field
+					(name "Footprint") "Diode_SMD:D_SMB")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "Device")
+				(part "D_TVS")
+				(description "Bidirectional transient-voltage-suppression diode")
+			)
+			(property
+				(name "LCSC")
+				(value "C693510")
+			)
+			(property
+				(name "Sheetname")
+				(value "exhaust")
+			)
+			(property
+				(name "Sheetfile")
+				(value "exhaust.kicad_sch")
+			)
+			(property
+				(name "ki_keywords")
+				(value "diode TVS thyrector")
+			)
+			(property
+				(name "ki_fp_filters")
+				(value "TO-???* *_Diode_* *SingleDiode* D_*")
+			)
+			(sheetpath
+				(names "/")
+				(tstamps "/")
+			)
+			(tstamps "e99e9279-cef2-42ea-845c-f7b12e6b8ba5")
 			(units
 				(unit
 					(name "A")
@@ -1759,13 +1765,13 @@
 		)
 		(comp
 			(ref "D6")
-			(value "SMBJ48CA")
-			(footprint "Diode_SMD:D_SMB")
+			(value "MB10S")
+			(footprint "Diode_SMD:Diode_Bridge_Vishay_MBLS")
 			(fields
 				(field
-					(name "LCSC") "C693510")
+					(name "LCSC") "C2488")
 				(field
-					(name "Footprint") "Diode_SMD:D_SMB")
+					(name "Footprint") "Diode_SMD:Diode_Bridge_Vishay_MBLS")
 				(field
 					(name "Datasheet")
 				)
@@ -1774,13 +1780,13 @@
 				)
 			)
 			(libsource
-				(lib "Device")
-				(part "D_TVS")
-				(description "Bidirectional transient-voltage-suppression diode")
+				(lib "Diode_Bridge")
+				(part "MB6S")
+				(description "Miniature Glass Passivated Single-Phase Surface Mount Bridge Rectifiers, 700V Vrms, 1.0A If, DFS SMD package")
 			)
 			(property
 				(name "LCSC")
-				(value "C693510")
+				(value "C2488")
 			)
 			(property
 				(name "Sheetname")
@@ -1792,26 +1798,32 @@
 			)
 			(property
 				(name "ki_keywords")
-				(value "diode TVS thyrector")
+				(value "rectifier acdc")
 			)
 			(property
 				(name "ki_fp_filters")
-				(value "TO-???* *_Diode_* *SingleDiode* D_*")
+				(value "TO?269AA*")
 			)
 			(sheetpath
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "d78ddf04-c66e-4603-a62c-7516d55155ba")
+			(tstamps "9c5cad4b-2b3a-48fb-b765-608b75c2b449")
 			(units
 				(unit
 					(name "A")
 					(pins
 						(pin
-							(num "1")
+							(num "4")
 						)
 						(pin
 							(num "2")
+						)
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "3")
 						)
 					)
 				)
@@ -1819,79 +1831,13 @@
 		)
 		(comp
 			(ref "D7")
-			(value "MB10S")
-			(footprint "Diode_SMD:Diode_Bridge_Vishay_MBLS")
+			(value "RGB CA 3528")
+			(footprint "LED_SMD:LED_Cree-PLCC4_3.2x2.8mm_CCW")
 			(fields
 				(field
-					(name "LCSC") "C2488")
+					(name "LCSC") "C601699")
 				(field
-					(name "Footprint") "Diode_SMD:Diode_Bridge_Vishay_MBLS")
-				(field
-					(name "Datasheet")
-				)
-				(field
-					(name "Description")
-				)
-			)
-			(libsource
-				(lib "Diode_Bridge")
-				(part "MB6S")
-				(description "Miniature Glass Passivated Single-Phase Surface Mount Bridge Rectifiers, 700V Vrms, 1.0A If, DFS SMD package")
-			)
-			(property
-				(name "LCSC")
-				(value "C2488")
-			)
-			(property
-				(name "Sheetname")
-				(value "exhaust")
-			)
-			(property
-				(name "Sheetfile")
-				(value "exhaust.kicad_sch")
-			)
-			(property
-				(name "ki_keywords")
-				(value "rectifier acdc")
-			)
-			(property
-				(name "ki_fp_filters")
-				(value "TO?269AA*")
-			)
-			(sheetpath
-				(names "/")
-				(tstamps "/")
-			)
-			(tstamps "49e8884e-8b1f-449c-a9fc-0d8357bbe253")
-			(units
-				(unit
-					(name "A")
-					(pins
-						(pin
-							(num "4")
-						)
-						(pin
-							(num "2")
-						)
-						(pin
-							(num "1")
-						)
-						(pin
-							(num "3")
-						)
-					)
-				)
-			)
-		)
-		(comp
-			(ref "D8")
-			(value "SMBJ48CA")
-			(footprint "Diode_SMD:D_SMB")
-			(fields
-				(field
-					(name "LCSC") "C693510")
-				(field
-					(name "Footprint") "Diode_SMD:D_SMB")
+					(name "Footprint") "LED_SMD:LED_Cree-PLCC4_3.2x2.8mm_CCW")
 				(field
 					(name "Datasheet")
 				)
@@ -1901,12 +1847,12 @@
 			)
 			(libsource
 				(lib "Device")
-				(part "D_TVS")
-				(description "Bidirectional transient-voltage-suppression diode")
+				(part "LED_ARGB")
+				(description "RGB LED, anode/red/green/blue")
 			)
 			(property
 				(name "LCSC")
-				(value "C693510")
+				(value "C601699")
 			)
 			(property
 				(name "Sheetname")
@@ -1918,40 +1864,46 @@
 			)
 			(property
 				(name "ki_keywords")
-				(value "diode TVS thyrector")
+				(value "LED RGB diode")
 			)
 			(property
 				(name "ki_fp_filters")
-				(value "TO-???* *_Diode_* *SingleDiode* D_*")
+				(value "LED* LED_SMD:* LED_THT:*")
 			)
 			(sheetpath
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "b18da5f8-8950-42b0-a098-1574ccab1426")
+			(tstamps "d3937595-3183-46f7-aecb-095de3024cf7")
 			(units
 				(unit
 					(name "A")
 					(pins
 						(pin
-							(num "1")
+							(num "2")
 						)
 						(pin
-							(num "2")
+							(num "3")
+						)
+						(pin
+							(num "4")
+						)
+						(pin
+							(num "1")
 						)
 					)
 				)
 			)
 		)
 		(comp
-			(ref "D9")
-			(value "MB10S")
-			(footprint "Diode_SMD:Diode_Bridge_Vishay_MBLS")
+			(ref "D8")
+			(value "RGB CA 3528")
+			(footprint "LED_SMD:LED_Cree-PLCC4_3.2x2.8mm_CCW")
 			(fields
 				(field
-					(name "LCSC") "C2488")
+					(name "LCSC") "C601699")
 				(field
-					(name "Footprint") "Diode_SMD:Diode_Bridge_Vishay_MBLS")
+					(name "Footprint") "LED_SMD:LED_Cree-PLCC4_3.2x2.8mm_CCW")
 				(field
 					(name "Datasheet")
 				)
@@ -1960,13 +1912,13 @@
 				)
 			)
 			(libsource
-				(lib "Diode_Bridge")
-				(part "MB6S")
-				(description "Miniature Glass Passivated Single-Phase Surface Mount Bridge Rectifiers, 700V Vrms, 1.0A If, DFS SMD package")
+				(lib "Device")
+				(part "LED_ARGB")
+				(description "RGB LED, anode/red/green/blue")
 			)
 			(property
 				(name "LCSC")
-				(value "C2488")
+				(value "C601699")
 			)
 			(property
 				(name "Sheetname")
@@ -1978,32 +1930,98 @@
 			)
 			(property
 				(name "ki_keywords")
-				(value "rectifier acdc")
+				(value "LED RGB diode")
 			)
 			(property
 				(name "ki_fp_filters")
-				(value "TO?269AA*")
+				(value "LED* LED_SMD:* LED_THT:*")
 			)
 			(sheetpath
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "d233b24f-dc8b-4ebd-9088-16ed63f552fc")
+			(tstamps "8169cc76-a233-4b04-9707-93f4938dea3b")
 			(units
 				(unit
 					(name "A")
 					(pins
 						(pin
-							(num "4")
+							(num "2")
 						)
 						(pin
-							(num "2")
+							(num "3")
+						)
+						(pin
+							(num "4")
 						)
 						(pin
 							(num "1")
 						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "D9")
+			(value "RGB CA 3528")
+			(footprint "LED_SMD:LED_Cree-PLCC4_3.2x2.8mm_CCW")
+			(fields
+				(field
+					(name "LCSC") "C601699")
+				(field
+					(name "Footprint") "LED_SMD:LED_Cree-PLCC4_3.2x2.8mm_CCW")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "Device")
+				(part "LED_ARGB")
+				(description "RGB LED, anode/red/green/blue")
+			)
+			(property
+				(name "LCSC")
+				(value "C601699")
+			)
+			(property
+				(name "Sheetname")
+				(value "exhaust")
+			)
+			(property
+				(name "Sheetfile")
+				(value "exhaust.kicad_sch")
+			)
+			(property
+				(name "ki_keywords")
+				(value "LED RGB diode")
+			)
+			(property
+				(name "ki_fp_filters")
+				(value "LED* LED_SMD:* LED_THT:*")
+			)
+			(sheetpath
+				(names "/")
+				(tstamps "/")
+			)
+			(tstamps "bf508af3-b353-46d4-89bf-3f9e8af8db93")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "2")
+						)
 						(pin
 							(num "3")
+						)
+						(pin
+							(num "4")
+						)
+						(pin
+							(num "1")
 						)
 					)
 				)
@@ -2054,7 +2072,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "3a1747a6-1bcc-42ea-be6c-3b5314de0dfa")
+			(tstamps "a91d94ee-7859-4d25-a52b-f567560c3cf3")
 			(units
 				(unit
 					(name "A")
@@ -2120,7 +2138,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "b51f3662-1f29-4860-8b68-76aa3a93a4bc")
+			(tstamps "bb4aa149-0964-4879-9a80-884341e5a8e9")
 			(units
 				(unit
 					(name "A")
@@ -2186,205 +2204,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "7c457dc7-5bbf-4200-8069-506e311b5410")
-			(units
-				(unit
-					(name "A")
-					(pins
-						(pin
-							(num "2")
-						)
-						(pin
-							(num "3")
-						)
-						(pin
-							(num "4")
-						)
-						(pin
-							(num "1")
-						)
-					)
-				)
-			)
-		)
-		(comp
-			(ref "D13")
-			(value "RGB CA 3528")
-			(footprint "LED_SMD:LED_Cree-PLCC4_3.2x2.8mm_CCW")
-			(fields
-				(field
-					(name "LCSC") "C601699")
-				(field
-					(name "Footprint") "LED_SMD:LED_Cree-PLCC4_3.2x2.8mm_CCW")
-				(field
-					(name "Datasheet")
-				)
-				(field
-					(name "Description")
-				)
-			)
-			(libsource
-				(lib "Device")
-				(part "LED_ARGB")
-				(description "RGB LED, anode/red/green/blue")
-			)
-			(property
-				(name "LCSC")
-				(value "C601699")
-			)
-			(property
-				(name "Sheetname")
-				(value "exhaust")
-			)
-			(property
-				(name "Sheetfile")
-				(value "exhaust.kicad_sch")
-			)
-			(property
-				(name "ki_keywords")
-				(value "LED RGB diode")
-			)
-			(property
-				(name "ki_fp_filters")
-				(value "LED* LED_SMD:* LED_THT:*")
-			)
-			(sheetpath
-				(names "/")
-				(tstamps "/")
-			)
-			(tstamps "1dfca927-1985-478a-8317-13933216c883")
-			(units
-				(unit
-					(name "A")
-					(pins
-						(pin
-							(num "2")
-						)
-						(pin
-							(num "3")
-						)
-						(pin
-							(num "4")
-						)
-						(pin
-							(num "1")
-						)
-					)
-				)
-			)
-		)
-		(comp
-			(ref "D14")
-			(value "RGB CA 3528")
-			(footprint "LED_SMD:LED_Cree-PLCC4_3.2x2.8mm_CCW")
-			(fields
-				(field
-					(name "LCSC") "C601699")
-				(field
-					(name "Footprint") "LED_SMD:LED_Cree-PLCC4_3.2x2.8mm_CCW")
-				(field
-					(name "Datasheet")
-				)
-				(field
-					(name "Description")
-				)
-			)
-			(libsource
-				(lib "Device")
-				(part "LED_ARGB")
-				(description "RGB LED, anode/red/green/blue")
-			)
-			(property
-				(name "LCSC")
-				(value "C601699")
-			)
-			(property
-				(name "Sheetname")
-				(value "exhaust")
-			)
-			(property
-				(name "Sheetfile")
-				(value "exhaust.kicad_sch")
-			)
-			(property
-				(name "ki_keywords")
-				(value "LED RGB diode")
-			)
-			(property
-				(name "ki_fp_filters")
-				(value "LED* LED_SMD:* LED_THT:*")
-			)
-			(sheetpath
-				(names "/")
-				(tstamps "/")
-			)
-			(tstamps "060a0796-b401-4707-915b-e968e7bbd684")
-			(units
-				(unit
-					(name "A")
-					(pins
-						(pin
-							(num "2")
-						)
-						(pin
-							(num "3")
-						)
-						(pin
-							(num "4")
-						)
-						(pin
-							(num "1")
-						)
-					)
-				)
-			)
-		)
-		(comp
-			(ref "D15")
-			(value "RGB CA 3528")
-			(footprint "LED_SMD:LED_Cree-PLCC4_3.2x2.8mm_CCW")
-			(fields
-				(field
-					(name "LCSC") "C601699")
-				(field
-					(name "Footprint") "LED_SMD:LED_Cree-PLCC4_3.2x2.8mm_CCW")
-				(field
-					(name "Datasheet")
-				)
-				(field
-					(name "Description")
-				)
-			)
-			(libsource
-				(lib "Device")
-				(part "LED_ARGB")
-				(description "RGB LED, anode/red/green/blue")
-			)
-			(property
-				(name "LCSC")
-				(value "C601699")
-			)
-			(property
-				(name "Sheetname")
-				(value "exhaust")
-			)
-			(property
-				(name "Sheetfile")
-				(value "exhaust.kicad_sch")
-			)
-			(property
-				(name "ki_keywords")
-				(value "LED RGB diode")
-			)
-			(property
-				(name "ki_fp_filters")
-				(value "LED* LED_SMD:* LED_THT:*")
-			)
-			(sheetpath
-				(names "/")
-				(tstamps "/")
-			)
-			(tstamps "df40b1ee-f2e0-4e0b-bdd6-c5a7ba45eb77")
+			(tstamps "0262056f-1b6f-4cbf-b215-d251977cff98")
 			(units
 				(unit
 					(name "A")
@@ -2451,7 +2271,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "9c554400-0af9-4620-9461-b6eada744683")
+			(tstamps "66e6047d-083f-4f1a-81af-d0ea66d58486")
 			(units
 				(unit
 					(name "A")
@@ -2505,7 +2325,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "cddfc5b3-8825-461a-b7b9-192dcf1797c7")
+			(tstamps "2148e006-0e55-4e0e-9604-42c3a0de36c4")
 			(units
 				(unit
 					(name "A")
@@ -2559,7 +2379,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "61ec964e-6743-448f-8105-615c2b3dea05")
+			(tstamps "1716082d-be03-40c0-800c-ba11f2a350e6")
 			(units
 				(unit
 					(name "A")
@@ -2613,7 +2433,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "cda3c856-d5ff-4b87-ab5e-0168125964d6")
+			(tstamps "7e3c4067-5718-4fa8-9416-ef225fc01b60")
 			(units
 				(unit
 					(name "A")
@@ -2666,7 +2486,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "cffddbe1-177c-443c-a656-21736742e39f")
+			(tstamps "43e54fa9-101c-4fec-b675-a6297280345e")
 			(units
 				(unit
 					(name "A")
@@ -2771,7 +2591,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "6b81afe3-b0d9-428c-9f89-37904ef456b9")
+			(tstamps "3ca39135-fb65-4f7a-a46e-046667367bc5")
 			(units
 				(unit
 					(name "A")
@@ -2837,7 +2657,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "b34e7bcc-d159-47af-980a-c039387c5cfa")
+			(tstamps "705216d2-74ae-4c1f-a2de-750f3e0984cc")
 			(units
 				(unit
 					(name "A")
@@ -2897,7 +2717,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "d2f0f4af-6c65-4df4-bac4-c0f6990673e8")
+			(tstamps "f314ca86-ad2e-4046-8cfa-90735925ff28")
 			(units
 				(unit
 					(name "A")
@@ -2957,7 +2777,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "2b052c6d-6485-4a39-b279-8bb8d98b181b")
+			(tstamps "7f33b1d6-af68-40b8-9a44-5a929cd3faaa")
 			(units
 				(unit
 					(name "A")
@@ -3029,7 +2849,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "2dc06228-af79-4efb-9385-d1d62aaf1452")
+			(tstamps "8b5fc821-8404-4e97-a898-b1a2000e9fe4")
 			(units
 				(unit
 					(name "A")
@@ -3107,7 +2927,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "02ce3551-185a-4144-b748-8a521610524f")
+			(tstamps "5bda7aed-c82b-4aaa-9e7e-15f5ea6b52bc")
 			(units
 				(unit
 					(name "A")
@@ -3167,7 +2987,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "92ad0759-3c6c-4b5a-90ac-aa8a45c61ffa")
+			(tstamps "1f891df9-cddb-4d41-a82e-1118cbfc2b32")
 			(units
 				(unit
 					(name "A")
@@ -3230,7 +3050,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "d1892e4d-40a3-493a-aebd-737eb27947e0")
+			(tstamps "2a266748-ab12-4943-b346-17f9c50cc35a")
 			(units
 				(unit
 					(name "A")
@@ -3293,7 +3113,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "325df122-91fe-4535-916e-3521c09ebcdd")
+			(tstamps "89e48c63-71fd-451b-95f4-a76fd7927f4c")
 			(units
 				(unit
 					(name "A")
@@ -3356,7 +3176,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "11556b53-8b1a-4fb2-ae55-333beffe797b")
+			(tstamps "c34ca6cc-80e5-4997-be95-f55e750f1e4b")
 			(units
 				(unit
 					(name "A")
@@ -3419,7 +3239,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "a4569e8c-38c1-49d0-8816-5005fddb3843")
+			(tstamps "5812f7a9-5fb2-4e5b-b2c6-843b70775f22")
 			(units
 				(unit
 					(name "A")
@@ -3482,7 +3302,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "d70a7be6-1395-419e-99a9-771a02a70607")
+			(tstamps "ac0560fa-cd40-442b-adf1-b336ea126f2d")
 			(units
 				(unit
 					(name "A")
@@ -3546,7 +3366,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "b2341d50-c6c3-41eb-bfca-39574b2488cd")
+			(tstamps "83932a24-bdbc-4847-acb1-5ade628dd9db")
 			(units
 				(unit
 					(name "A")
@@ -3607,7 +3427,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "775a613a-1e1d-4b73-9f1a-61cbb3596f97")
+			(tstamps "9a81bee7-eb1f-46cf-bc14-e321471a25ab")
 			(units
 				(unit
 					(name "A")
@@ -3668,7 +3488,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "1f8221f9-334f-469c-8462-2c918fc20412")
+			(tstamps "44665731-ca7f-4d10-ab2d-503b1fe6d896")
 			(units
 				(unit
 					(name "A")
@@ -3729,7 +3549,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "b206aed5-d4a2-4be8-98fe-b7e0699aa4af")
+			(tstamps "040472ff-b962-420e-bee0-02b3a888027b")
 			(units
 				(unit
 					(name "A")
@@ -3790,7 +3610,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "b55abdf2-f3fe-420f-916b-e35916867bf6")
+			(tstamps "cb1d8896-66aa-48fc-af06-f37878202977")
 			(units
 				(unit
 					(name "A")
@@ -3851,7 +3671,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "96f089cd-1931-4b26-8934-99309ca3913f")
+			(tstamps "121e873b-f168-454d-ab6f-e5fa2e91a333")
 			(units
 				(unit
 					(name "A")
@@ -3912,7 +3732,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "eaf8835e-fd1d-4541-a671-d19099d5ab52")
+			(tstamps "2cdfb4f6-ef4e-45a0-96e4-f879ccdf317d")
 			(units
 				(unit
 					(name "A")
@@ -3973,7 +3793,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "d3ce52ff-d0a5-42ca-823e-5bd8a20a3a95")
+			(tstamps "f9870599-2324-46a9-a496-bef837504f59")
 			(units
 				(unit
 					(name "A")
@@ -4034,7 +3854,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "c5825faa-fa35-466d-bc3c-e1a9620a5620")
+			(tstamps "9a90b6a4-cf79-4151-9647-4d6cf0fc766e")
 			(units
 				(unit
 					(name "A")
@@ -4095,7 +3915,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "919a5322-e941-4785-af6f-8888aa25d115")
+			(tstamps "5fc9ca25-bc70-412a-9d25-850f149c2d53")
 			(units
 				(unit
 					(name "A")
@@ -4156,7 +3976,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "9ea50b5b-5ccd-4382-9f82-ce740a560510")
+			(tstamps "f95facf5-b299-4e95-8a4f-5ab1e4175413")
 			(units
 				(unit
 					(name "A")
@@ -4217,7 +4037,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "947a4504-5df1-4e1f-b2b1-81a7194e6bc2")
+			(tstamps "aee4e217-de8a-45fa-8193-aceaca740740")
 			(units
 				(unit
 					(name "A")
@@ -4278,7 +4098,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "b4763425-96c1-4a8b-bf75-7fb72680f580")
+			(tstamps "cbfcdf1d-d1c9-4154-af6b-636c6f776ef6")
 			(units
 				(unit
 					(name "A")
@@ -4339,7 +4159,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "aa21511d-e0f4-4b98-a61a-dde003250921")
+			(tstamps "5e121afb-027e-45d3-8d9a-e411c9e64bcb")
 			(units
 				(unit
 					(name "A")
@@ -4400,7 +4220,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "467cd1d8-390f-4346-a635-3d7c5eab80d4")
+			(tstamps "2d1137c6-695e-43c3-be8d-84545bc86d92")
 			(units
 				(unit
 					(name "A")
@@ -4461,7 +4281,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "2eaa4cab-3890-4464-bb63-217efa743d75")
+			(tstamps "04133d36-9a7f-42ab-8bf7-e16938abd741")
 			(units
 				(unit
 					(name "A")
@@ -4522,7 +4342,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "36fbca91-8190-4f6c-b3dc-bcdc31863c3e")
+			(tstamps "e251b78d-3158-4a7c-b022-ec70f69bceba")
 			(units
 				(unit
 					(name "A")
@@ -4583,7 +4403,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "47d3c4dd-5cf4-493e-a764-d8853956de83")
+			(tstamps "9ae1cc7a-00e2-437c-9587-bdf2939c2021")
 			(units
 				(unit
 					(name "A")
@@ -4644,7 +4464,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "e888669e-2650-4010-9c03-dab7a6c18714")
+			(tstamps "a7ea15f6-79d4-4f2f-b69f-ecb2b4dbd39e")
 			(units
 				(unit
 					(name "A")
@@ -4705,7 +4525,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "bf3522b4-e46c-4262-be34-1d54f4c921d1")
+			(tstamps "4dca9cc2-1ff5-4dda-939f-e6c4c9ba9509")
 			(units
 				(unit
 					(name "A")
@@ -4766,7 +4586,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "695520d4-240f-46d9-9fce-57a6e91cb360")
+			(tstamps "d41bbdf4-1079-4cd5-8410-64317d8d7e95")
 			(units
 				(unit
 					(name "A")
@@ -4827,7 +4647,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "f3a42f2a-00ac-4039-bd98-43e792c66843")
+			(tstamps "e0f9857c-910b-4dcc-adb9-25889ae2e235")
 			(units
 				(unit
 					(name "A")
@@ -4888,7 +4708,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "4a0cc922-c8a7-44c8-9093-563af7ae17e5")
+			(tstamps "f9ad4b15-2120-4459-85b6-974b3e59866b")
 			(units
 				(unit
 					(name "A")
@@ -4949,7 +4769,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "9935af4e-eb26-4d19-872d-4f0f63db1b5c")
+			(tstamps "46fd6c73-4656-4606-b55e-0118645c4125")
 			(units
 				(unit
 					(name "A")
@@ -5010,7 +4830,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "8cf470bb-277f-49f2-97d2-c4199a2fb408")
+			(tstamps "dd9eacbf-a09a-41d1-a5e2-3f7124200a0d")
 			(units
 				(unit
 					(name "A")
@@ -5071,7 +4891,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "cb408860-fea6-4bc2-b924-73affb69b9d7")
+			(tstamps "ecb9480a-a431-4356-943e-1d46397d09a6")
 			(units
 				(unit
 					(name "A")
@@ -5132,7 +4952,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "40350d8e-2a25-449b-8459-4d712f249325")
+			(tstamps "b336dc5c-bb4c-44ca-b978-e5dae279bf0a")
 			(units
 				(unit
 					(name "A")
@@ -5193,7 +5013,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "b32bec31-891b-4591-b87c-efaf833c18ad")
+			(tstamps "023bd1d5-6ecb-461f-85cf-7cf18f62edb8")
 			(units
 				(unit
 					(name "A")
@@ -5254,7 +5074,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "da088b61-c3ac-4927-9166-27f06c37d9a9")
+			(tstamps "aa5116b9-aae7-4633-bb4d-6a6144eea854")
 			(units
 				(unit
 					(name "A")
@@ -5315,7 +5135,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "27a9b37e-3a40-4f56-80bd-f289798216bd")
+			(tstamps "b0dd65e8-67b0-474f-9836-4bd8a40a5120")
 			(units
 				(unit
 					(name "A")
@@ -5376,7 +5196,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "eaaf8790-7a35-474c-a8ed-4b9a689018ed")
+			(tstamps "5fb588ba-2144-4db6-a5f2-ac27043b67a2")
 			(units
 				(unit
 					(name "A")
@@ -5437,7 +5257,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "3a85e70b-a50c-475a-abf7-bc22a75d4dee")
+			(tstamps "ec6b2be6-5d83-494e-b766-64c36fa5f389")
 			(units
 				(unit
 					(name "A")
@@ -5498,7 +5318,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "16225d4d-520b-455b-901f-9f2a253e1a99")
+			(tstamps "d777b8cb-b09c-4290-9889-8c24eca6bbc9")
 			(units
 				(unit
 					(name "A")
@@ -5559,7 +5379,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "a2fbe9dc-55e6-468e-a421-f6072893c5ad")
+			(tstamps "4833b8ce-f9d6-4de3-8e4c-bd290764408d")
 			(units
 				(unit
 					(name "A")
@@ -5620,7 +5440,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "561a2a2f-abaf-4e51-825f-34dc1078965d")
+			(tstamps "31bfc85a-51f0-4181-b507-c6de73e0a7f9")
 			(units
 				(unit
 					(name "A")
@@ -5681,7 +5501,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "74d2eac7-e90a-4d59-bbc8-4a6576fdf363")
+			(tstamps "f39288ac-ff1c-40fd-a53b-668fddefd52d")
 			(units
 				(unit
 					(name "A")
@@ -5742,7 +5562,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "187bdf3f-1989-4934-ab3e-179c2b67772f")
+			(tstamps "b726b7d0-7526-47c0-839e-1b6a23f74670")
 			(units
 				(unit
 					(name "A")
@@ -5803,7 +5623,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "36189404-b3ab-4d7e-8cd5-1eaf659fbea0")
+			(tstamps "f2befc57-0801-4048-a53c-be8825f178c1")
 			(units
 				(unit
 					(name "A")
@@ -5864,7 +5684,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "66caac11-b331-45e0-9038-bfe02148ba52")
+			(tstamps "37537426-ac4c-484b-94b5-f5e1d058ddba")
 			(units
 				(unit
 					(name "A")
@@ -5925,7 +5745,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "594e3db1-e7c5-4a01-a4c3-132dd47c4a5a")
+			(tstamps "671fe081-dcb4-4242-a99e-faaa2f585a7c")
 			(units
 				(unit
 					(name "A")
@@ -5986,7 +5806,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "5cbaab06-f675-4770-a874-0ef53b28437e")
+			(tstamps "0fafc64c-d028-4a19-b1a5-b1a273266774")
 			(units
 				(unit
 					(name "A")
@@ -6047,7 +5867,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "0610390f-340c-4cc4-b4bc-be3c0ff7df3c")
+			(tstamps "47463e12-a25f-4751-b439-2eb4d7f08e1a")
 			(units
 				(unit
 					(name "A")
@@ -6108,7 +5928,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "659900ec-9f44-4ba6-ac61-6db9eefe6a43")
+			(tstamps "aa5e5366-d7cc-4354-be37-d834678fa1a5")
 			(units
 				(unit
 					(name "A")
@@ -6169,7 +5989,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "c5f3f839-dd1e-4cac-8653-7e6f32f45ae0")
+			(tstamps "d0e16696-3514-40a6-a95f-f3e581ee6d06")
 			(units
 				(unit
 					(name "A")
@@ -6230,7 +6050,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "5b1b557e-24f5-41cf-beda-e4aa0422e79d")
+			(tstamps "a968b25a-bd78-4edd-9ba9-246902d4f6e3")
 			(units
 				(unit
 					(name "A")
@@ -6291,7 +6111,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "3f91f682-0a4c-44d8-a1b5-a39600f5eb01")
+			(tstamps "95146017-c042-4b3c-af3b-0fa23a978e94")
 			(units
 				(unit
 					(name "A")
@@ -6352,7 +6172,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "3e2d06a4-1252-4752-a5dc-fdd576b75efe")
+			(tstamps "ba85b547-1e5a-408a-ae3b-7bf717d475aa")
 			(units
 				(unit
 					(name "A")
@@ -6413,7 +6233,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "6602bc83-9dd2-4d2b-aa81-6b0bdae3d4dc")
+			(tstamps "2702d13a-1290-4443-906d-446610696e7c")
 			(units
 				(unit
 					(name "A")
@@ -6474,7 +6294,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "2a235fc0-32ec-4cb8-9840-3c94077c460b")
+			(tstamps "71def605-748f-40b9-aeaa-2254373580cd")
 			(units
 				(unit
 					(name "A")
@@ -6535,7 +6355,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "2c0fef0c-f3b2-46fe-b410-512484daec0d")
+			(tstamps "b2d5e10f-ef8e-4e2d-a92c-da004f7369cf")
 			(units
 				(unit
 					(name "A")
@@ -6596,7 +6416,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "cbbdb5df-a4ce-4e6d-b7e8-1b206fd0e772")
+			(tstamps "06c14bf7-0210-4e4f-904b-bea49324dc5f")
 			(units
 				(unit
 					(name "A")
@@ -6657,7 +6477,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "e3788cac-96f8-4980-b0ec-bb2bb52564bc")
+			(tstamps "c18ff945-400e-49ad-b4d7-6687a33d2565")
 			(units
 				(unit
 					(name "A")
@@ -6717,7 +6537,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "cd01ab43-81f7-4833-942c-b6c288f8104d")
+			(tstamps "1edeb108-e733-4182-910c-2feb17c5df67")
 			(units
 				(unit
 					(name "A")
@@ -6782,7 +6602,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "652bb27e-3044-4c49-aacb-5a6fa6029b71")
+			(tstamps "9c113d1a-dc86-4e0a-b9e5-79d5981b3888")
 			(units
 				(unit
 					(name "A")
@@ -6838,7 +6658,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "d078ccd5-05c0-41c4-bdfa-36990185f782")
+			(tstamps "661dff2d-427c-4909-af19-90cd88f185e6")
 			(units
 				(unit
 					(name "A")
@@ -6894,7 +6714,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "d7a07930-022b-4184-8353-dec4eb4b8660")
+			(tstamps "0e7296fb-5ef7-4fd7-a064-4da7b374b163")
 			(units
 				(unit
 					(name "A")
@@ -6950,7 +6770,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "b0e0649e-2d61-44e6-b8ac-8f0f2656ee8d")
+			(tstamps "3b392c45-9f40-44ea-8751-ab9f392e0b50")
 			(units
 				(unit
 					(name "A")
@@ -7011,7 +6831,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "124d2a58-ca99-4b31-9cda-cbf7ece5b9e1")
+			(tstamps "b7390082-70e8-4902-b95a-1e579b68861e")
 			(units
 				(unit
 					(name "A")
@@ -7069,7 +6889,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "129a82cd-8370-4788-8253-f2b4bc8f03bd")
+			(tstamps "53d70409-2d47-45c3-a114-b85018bedf2c")
 			(units
 				(unit
 					(name "A")
@@ -7127,7 +6947,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "d48d1229-79a0-4a1b-ab15-74c01c7a0c38")
+			(tstamps "4f22ff4f-4616-4e9d-872f-b18df08158c0")
 			(units
 				(unit
 					(name "A")
@@ -7185,7 +7005,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "4d2faed5-4df8-4713-b6c5-45470b5c6d4d")
+			(tstamps "03562d0e-6ecd-4a7a-aa72-b3e8fbd4be1f")
 			(units
 				(unit
 					(name "A")
@@ -7243,7 +7063,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "e34ddf89-68f4-4f98-95f0-cf3c0b9b29de")
+			(tstamps "067aae2e-0106-4299-8e0a-de158f62e219")
 			(units
 				(unit
 					(name "A")
@@ -7301,7 +7121,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "906a1a8d-f53b-4cfb-b833-9c2aef096b77")
+			(tstamps "82dff993-7e28-45ce-8523-29ac09882544")
 			(units
 				(unit
 					(name "A")
@@ -7359,7 +7179,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "11e61ff6-071f-4f16-868d-91dc733edbb0")
+			(tstamps "0fc307e2-bbef-42fd-a639-c62da83bca9f")
 			(units
 				(unit
 					(name "A")
@@ -7417,7 +7237,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "fd46d525-827e-44e0-9fec-be76ef176f1c")
+			(tstamps "5e71a16c-26f4-4d57-8c99-8990d94d5222")
 			(units
 				(unit
 					(name "A")
@@ -7474,7 +7294,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "d970a134-2c5d-4df4-b360-abc37786d53e")
+			(tstamps "4a4c83ae-ea31-47da-b1d5-320cc5960d17")
 			(units
 				(unit
 					(name "A")
@@ -7651,7 +7471,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "4a60c301-54bf-4183-8da5-eec8766a8f07")
+			(tstamps "cb9d8096-4538-427a-81d5-944934334b50")
 			(units
 				(unit
 					(name "A")
@@ -7723,7 +7543,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "ba14c33d-9a96-4035-ad51-34bc995086e6")
+			(tstamps "5498e1bc-605f-4c9d-aafe-53f803f25dbc")
 			(units
 				(unit
 					(name "A")
@@ -7795,7 +7615,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "587ec9bd-3513-46d6-9c24-b6f432e5c86f")
+			(tstamps "f0e2a1ac-ead8-4d74-9a80-4a74d72dd3ef")
 			(units
 				(unit
 					(name "A")
@@ -7858,7 +7678,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "a6ca6b8f-d8fd-4f9a-83e7-637b8c84eef7")
+			(tstamps "a63d577e-554a-4d26-91f9-b9e224c60231")
 			(units
 				(unit
 					(name "A")
@@ -7930,7 +7750,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "04b86026-e0f5-49b7-baf7-3d3101f03588")
+			(tstamps "7afcfcc6-c1cf-4e86-8bbf-558ee9e35c53")
 			(units
 				(unit
 					(name "A")
@@ -7996,7 +7816,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "e2f4e2fa-98c8-4889-a4a9-1f2c785d23a1")
+			(tstamps "180a5a61-a4e2-4ffc-81d8-58b2944e1bb3")
 			(units
 				(unit
 					(name "A")
@@ -8062,7 +7882,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "ac3412bd-02ea-4a43-834e-2e5f32a6844a")
+			(tstamps "75db0e02-9c70-42ae-8389-19950c4ec383")
 			(units
 				(unit
 					(name "A")
@@ -8128,7 +7948,7 @@
 				(names "/")
 				(tstamps "/")
 			)
-			(tstamps "ffb06d0f-e94e-4fe7-a411-a20c493b26f8")
+			(tstamps "afd48f0e-a1ee-45f2-bf51-ca011010ebf9")
 			(units
 				(unit
 					(name "A")
@@ -9647,19 +9467,19 @@
 				(pintype "passive")
 			)
 			(node
-				(ref "D13")
+				(ref "D7")
 				(pin "1")
 				(pinfunction "A_1")
 				(pintype "passive")
 			)
 			(node
-				(ref "D14")
+				(ref "D8")
 				(pin "1")
 				(pinfunction "A_1")
 				(pintype "passive")
 			)
 			(node
-				(ref "D15")
+				(ref "D9")
 				(pin "1")
 				(pinfunction "A_1")
 				(pintype "passive")
@@ -9814,12 +9634,6 @@
 			(node
 				(ref "C8")
 				(pin "1")
-				(pintype "passive")
-			)
-			(node
-				(ref "D2")
-				(pin "2")
-				(pinfunction "A2_2")
 				(pintype "passive")
 			)
 			(node
@@ -10040,7 +9854,7 @@
 			(name "/DCI_A")
 			(class "Default")
 			(node
-				(ref "D8")
+				(ref "D5")
 				(pin "1")
 				(pinfunction "A1_1")
 				(pintype "passive")
@@ -10062,7 +9876,7 @@
 			(name "/DCI_AC")
 			(class "Default")
 			(node
-				(ref "D9")
+				(ref "D6")
 				(pin "1")
 				(pintype "passive")
 			)
@@ -10077,13 +9891,13 @@
 			(name "/DCI_B")
 			(class "Default")
 			(node
-				(ref "D8")
+				(ref "D5")
 				(pin "2")
 				(pinfunction "A2_2")
 				(pintype "passive")
 			)
 			(node
-				(ref "D9")
+				(ref "D6")
 				(pin "2")
 				(pintype "passive")
 			)
@@ -10099,7 +9913,7 @@
 			(name "/DCI_N")
 			(class "Default")
 			(node
-				(ref "D9")
+				(ref "D6")
 				(pin "4")
 				(pinfunction "-_4")
 				(pintype "passive")
@@ -10115,7 +9929,7 @@
 			(name "/DCI_P")
 			(class "Default")
 			(node
-				(ref "D9")
+				(ref "D6")
 				(pin "3")
 				(pinfunction "+_3")
 				(pintype "passive")
@@ -10461,12 +10275,6 @@
 			(name "/FAN_SPD")
 			(class "Default")
 			(node
-				(ref "D3")
-				(pin "2")
-				(pinfunction "A2_2")
-				(pintype "passive")
-			)
-			(node
 				(ref "J2")
 				(pin "3")
 				(pinfunction "Pin_3_3")
@@ -10505,13 +10313,7 @@
 			(name "/FAN_TACH_F")
 			(class "Default")
 			(node
-				(ref "D4")
-				(pin "2")
-				(pinfunction "A2_2")
-				(pintype "passive")
-			)
-			(node
-				(ref "D5")
+				(ref "D2")
 				(pin "1")
 				(pinfunction "K_1")
 				(pintype "passive")
@@ -10545,24 +10347,6 @@
 			(node
 				(ref "C9")
 				(pin "2")
-				(pintype "passive")
-			)
-			(node
-				(ref "D2")
-				(pin "1")
-				(pinfunction "A1_1")
-				(pintype "passive")
-			)
-			(node
-				(ref "D3")
-				(pin "1")
-				(pinfunction "A1_1")
-				(pintype "passive")
-			)
-			(node
-				(ref "D4")
-				(pin "1")
-				(pinfunction "A1_1")
 				(pintype "passive")
 			)
 			(node
@@ -10788,7 +10572,7 @@
 			(name "/L1_B")
 			(class "Default")
 			(node
-				(ref "D10")
+				(ref "D7")
 				(pin "4")
 				(pinfunction "BK_4")
 				(pintype "passive")
@@ -10804,7 +10588,7 @@
 			(name "/L1_G")
 			(class "Default")
 			(node
-				(ref "D10")
+				(ref "D7")
 				(pin "3")
 				(pinfunction "GK_3")
 				(pintype "passive")
@@ -10820,7 +10604,7 @@
 			(name "/L1_R")
 			(class "Default")
 			(node
-				(ref "D10")
+				(ref "D7")
 				(pin "2")
 				(pinfunction "RK_2")
 				(pintype "passive")
@@ -10836,7 +10620,7 @@
 			(name "/L2_B")
 			(class "Default")
 			(node
-				(ref "D11")
+				(ref "D8")
 				(pin "4")
 				(pinfunction "BK_4")
 				(pintype "passive")
@@ -10852,7 +10636,7 @@
 			(name "/L2_G")
 			(class "Default")
 			(node
-				(ref "D11")
+				(ref "D8")
 				(pin "3")
 				(pinfunction "GK_3")
 				(pintype "passive")
@@ -10868,7 +10652,7 @@
 			(name "/L2_R")
 			(class "Default")
 			(node
-				(ref "D11")
+				(ref "D8")
 				(pin "2")
 				(pinfunction "RK_2")
 				(pintype "passive")
@@ -10884,7 +10668,7 @@
 			(name "/L3_B")
 			(class "Default")
 			(node
-				(ref "D12")
+				(ref "D9")
 				(pin "4")
 				(pinfunction "BK_4")
 				(pintype "passive")
@@ -10900,7 +10684,7 @@
 			(name "/L3_G")
 			(class "Default")
 			(node
-				(ref "D12")
+				(ref "D9")
 				(pin "3")
 				(pinfunction "GK_3")
 				(pintype "passive")
@@ -10916,7 +10700,7 @@
 			(name "/L3_R")
 			(class "Default")
 			(node
-				(ref "D12")
+				(ref "D9")
 				(pin "2")
 				(pinfunction "RK_2")
 				(pintype "passive")
@@ -10932,7 +10716,7 @@
 			(name "/L4_B")
 			(class "Default")
 			(node
-				(ref "D13")
+				(ref "D10")
 				(pin "4")
 				(pinfunction "BK_4")
 				(pintype "passive")
@@ -10948,7 +10732,7 @@
 			(name "/L4_G")
 			(class "Default")
 			(node
-				(ref "D13")
+				(ref "D10")
 				(pin "3")
 				(pinfunction "GK_3")
 				(pintype "passive")
@@ -10964,7 +10748,7 @@
 			(name "/L4_R")
 			(class "Default")
 			(node
-				(ref "D13")
+				(ref "D10")
 				(pin "2")
 				(pinfunction "RK_2")
 				(pintype "passive")
@@ -10980,7 +10764,7 @@
 			(name "/L5_B")
 			(class "Default")
 			(node
-				(ref "D14")
+				(ref "D11")
 				(pin "4")
 				(pinfunction "BK_4")
 				(pintype "passive")
@@ -10996,7 +10780,7 @@
 			(name "/L5_G")
 			(class "Default")
 			(node
-				(ref "D14")
+				(ref "D11")
 				(pin "3")
 				(pinfunction "GK_3")
 				(pintype "passive")
@@ -11012,7 +10796,7 @@
 			(name "/L5_R")
 			(class "Default")
 			(node
-				(ref "D14")
+				(ref "D11")
 				(pin "2")
 				(pinfunction "RK_2")
 				(pintype "passive")
@@ -11028,7 +10812,7 @@
 			(name "/L6_B")
 			(class "Default")
 			(node
-				(ref "D15")
+				(ref "D12")
 				(pin "4")
 				(pinfunction "BK_4")
 				(pintype "passive")
@@ -11044,7 +10828,7 @@
 			(name "/L6_G")
 			(class "Default")
 			(node
-				(ref "D15")
+				(ref "D12")
 				(pin "3")
 				(pinfunction "GK_3")
 				(pintype "passive")
@@ -11060,7 +10844,7 @@
 			(name "/L6_R")
 			(class "Default")
 			(node
-				(ref "D15")
+				(ref "D12")
 				(pin "2")
 				(pinfunction "RK_2")
 				(pintype "passive")
@@ -11076,7 +10860,7 @@
 			(name "/OCC_A")
 			(class "Default")
 			(node
-				(ref "D6")
+				(ref "D3")
 				(pin "1")
 				(pinfunction "A1_1")
 				(pintype "passive")
@@ -11098,7 +10882,7 @@
 			(name "/OCC_AC")
 			(class "Default")
 			(node
-				(ref "D7")
+				(ref "D4")
 				(pin "1")
 				(pintype "passive")
 			)
@@ -11113,13 +10897,13 @@
 			(name "/OCC_B")
 			(class "Default")
 			(node
-				(ref "D6")
+				(ref "D3")
 				(pin "2")
 				(pinfunction "A2_2")
 				(pintype "passive")
 			)
 			(node
-				(ref "D7")
+				(ref "D4")
 				(pin "2")
 				(pintype "passive")
 			)
@@ -11161,7 +10945,7 @@
 			(name "/OCC_N")
 			(class "Default")
 			(node
-				(ref "D7")
+				(ref "D4")
 				(pin "4")
 				(pinfunction "-_4")
 				(pintype "passive")
@@ -11177,7 +10961,7 @@
 			(name "/OCC_P")
 			(class "Default")
 			(node
-				(ref "D7")
+				(ref "D4")
 				(pin "3")
 				(pinfunction "+_3")
 				(pintype "passive")
@@ -11362,7 +11146,7 @@
 			(name "/TACH_LED_K")
 			(class "Default")
 			(node
-				(ref "D5")
+				(ref "D2")
 				(pin "2")
 				(pinfunction "A_2")
 				(pintype "passive")

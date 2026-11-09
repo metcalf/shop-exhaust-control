@@ -130,8 +130,8 @@ firmware/
 | Spoofed BLE frame | False boost only | Accepted risk; allow-list option | `interfaces.md` §1 |
 | 24 VAC input lost | Reads vacant | Trusted signal, no handling (Q-17); display shows Vacant | FR-07 |
 | Fan-port mains fault (port not SELV) | Hazard on fan-side circuits | ≥ 3 mm barrier, rated optos; nothing fan-side is touchable; flashing USB is on the node side | SR-09, AC-26 |
-| Fan wires mis-terminated at J-FAN | Fan won't run, or runs full; fan-side parts stressed | Color-coded terminal labels; TVS on each fan-side line; AC-18 bench check before install. No USB-C fan cable reaches the node, so it can't meet the USB port (D-026, D-030) | SR-09, AC-18 |
-| Adapter fault | Node dead → fan off | Listed adapter, input fuse, TVS | SR-01, SR-08 |
+| Fan wires mis-terminated at J-FAN | Fan won't run, or runs full; fan-side parts stressed | Color-coded terminal labels; AC-18 bench check before install. No USB-C fan cable reaches the node, so it can't meet the USB port (D-026, D-030) | SR-09, AC-18 |
+| Adapter fault | Node dead → fan off | Listed LPS adapter, TVS | SR-01, SR-08 |
 
 ## 7. Traceability (M and S requirements)
 

@@ -14,7 +14,7 @@ Datasheet figures below come from the sourcing notes. Where a value is assumed r
 - **Hot-plug (O-4, closed by D-040):** a live VBUS into a ceramic-only input (A-to-C cable, or a supply that doesn't switch VBUS) rings. *Estimated, not measured:* 6.6 V peak on 3 m of 24 AWG, ≈ 8 V on a short heavy cable before SMAJ5.0A starts conducting. The buck's 35 V rating covers that. Bulk capacitance isn't an option under the USB limit above. If the display ends up on `+5V` (Q-35), check that its on-board regulator tolerates this.
 
 ## 2. Fan interface, fan domain (SR-08, SR-09, D-023; G2 review S-2)
-Circuit as in `docs/interfaces.md` §2.1, with these parts: U4 HT7550-1 (Vin ≤ 30 V, Iq ≤ 3 µA), U5 H11L1S-TA1-L, Q1 AO3400A (gate driven to 5 V; same part as the indicator switches, one fewer unique part), U6 and U7 PC817C-S, D5 1N4148W, three SMF15A on red, yellow and white to GND_F.
+Circuit as in `docs/interfaces.md` §2.1, with these parts: U4 HT7550-1 (Vin ≤ 30 V, Iq ≤ 3 µA), U5 H11L1S-TA1-L, Q1 AO3400A (gate driven to 5 V; same part as the indicator switches, one fewer unique part), U6 and U7 PC817C-S, D5 1N4148W. No TVS on the fan lines (D-042).
 
 **Fan-side current from red +10 V, datasheet maxima (S-2):**
 
@@ -25,7 +25,7 @@ Circuit as in `docs/interfaces.md` §2.1, with these parts: U4 HT7550-1 (Vin ≤
 | Tach LED, white low: (5.1 − 1.0 − 0.6) / 3.3 k (Vf min) | 1.1 mA |
 | White pull-up 10 k, white low | 0.5 mA |
 | Presence LED: (5.1 − 1.0) / 4.7 k | 0.9 mA |
-| HT7550 Iq, TVS leakage | < 0.01 mA |
+| HT7550 Iq | < 0.01 mA |
 | **Total** | **≈ 4.3 mA**, against the ≤ 9 mA budget (Q-26: the port supplies ≈ 9.3 mA) |
 
 - PWM LED drive: (3.3 − 1.5) / 390 Ω ≥ 4.6 mA against H11L1 IF(on) max 1.6 mA: 2.9× margin. GPIO4 has a 10 k pull-down, so the LED stays dark through reset and boot, and the fan stays off (SR-08).

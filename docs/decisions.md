@@ -232,7 +232,7 @@ Template:
 
 ## D-026: Fan cable hard-wired into a 4-position terminal, no USB-C on the node
 - Date: 2026-10-26
-- Status: Accepted (Andrew, Q-25)
+- Status: Accepted (Andrew, Q-25). Fan-side TVS removed by D-042
 - Context: J-FAN was a USB-C receptacle, which needed the fan cable's USB-C contact map (Q-25) and created the mis-plug hazard D-020 addressed.
 - Decision: J-FAN is a 4-pos 3.5 mm terminal (fixed screw, D-032) on the fan side of the barrier, labelled GND (BLK) / +10V (RED) / SPD (YEL) / TACH (WHT). Andrew hard-wires the four conductors (from the S6's Q-15 color map).
 - Alternatives considered: USB-C receptacle wired to the measured contact map (needs Q-25 and a symmetry check).
@@ -369,4 +369,12 @@ Template:
 - Decision: remove both switches. EN and BOOT each get their own adjacent GND pad (TP6 + TP2, TP7 + TP8), with the board's minimum copper clearance within a pair (Andrew: easier to bridge) and ≥ 10 mm between pairs, so two screwdrivers can hold both at once: short BOOT, tap EN, release BOOT.
 - Alternatives considered: one shared GND pad between EN and BOOT (no room for two tips; would mean holding BOOT while plugging in USB); keeping the switches (parts and space for a rare operation).
 - Consequences: one fewer unique part. Recovery needs the lid off and two tools, which is rare. The other tact switches and the encoder renumber to SW1–SW5. The pad spacing is a layout rule in `pcb/design.md` §5, since the schematic can't enforce it.
+
+## D-042: No TVS diodes on the fan lines
+- Date: 2026-11-09
+- Status: Accepted (Andrew). Amends D-026
+- Context: D-026 added an SMF15A on red, yellow and white as mis-termination protection. Andrew noted the stock AC Infinity controller has none on the same port. The only source on this cable is the fan's own 10 V, below the TVS's 18.5 V breakdown, so a wrong-terminal wiring error never reaches it. On reversed polarity it conducts forward and shorts the fan's low-current +10 V. Line-to-`GND_F` clamps don't address common-mode noise, which the barrier handles. The exposed parts (HT7550 and Q1 drain, 30 V) have margin on a 10 V port.
+- Decision: remove all three. Keep the 1 µF on `+10V_F`, the color-coded terminal labels and the AC-18 bench check. The SMBJ48CA diodes on the 24 VAC and `DC_RUNNING` inputs stay, because those lines connect to a transformer secondary and external wiring.
+- Alternatives considered: keep only red (no named fault it handles either); keep all three as cheap insurance (no fault to insure against, and it costs a unique part).
+- Consequences: three fewer parts and one fewer unique part. ESD while wiring the terminals is unclamped, which is a brief exposure. An unforeseen transient could kill the fan side of a board, which fails off.
 
