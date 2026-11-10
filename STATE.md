@@ -2,14 +2,14 @@
 
 **Updated:** 2026-11-10
 **Phase:** 3, detailed design (**G2 approved 2026-10-28**). **Architecture changed by D-054/D-056 (accepted 2026-11-10):** Waveshare ESP32-S3-Touch-LCD-3.5 + minimal carrier PCB. The custom board in `pcb/` (schematic and placement) is now reference only.
-**Waiting on:** Q-46 (SEN65 inside the enclosure; default: yes, with a small hatch). Not blocking the carrier review.
+**Waiting on:** nothing blocking.
 Blocked-on: none
 
 ## Next actions (D-056: Waveshare 3.5 + carrier)
 1. **Andrew:** review the carrier schematic (`pcb/carrier/carrier.kicad_sch`, notes in `pcb/carrier/DESIGN.md`). ERC 0, netlist assertions pass and are mutation-checked.
 2. **Andrew, when the boards arrive:** `docs/bench-plan-routeB.md` (stock demo and I²C scan, AXP2101 power-on with no cell, breadboarded LTV-817/AO3400A fan stage). Write the results into that file. Step 2 decides whether the PWRON one-shot gets fitted.
 3. Carrier layout: outline from the Waveshare STEP (J8 orientation; the zip is in Waveshare's wiki, not committed), barrier rules and keepouts copied from the main board, LED edge at the enclosure wall.
-4. Mech stack-up: landscape panel, all cables out the left side, SEN65 behind the panel on the right with a sealed flow path (D-057, Q-46 open; default: small gasketed hatch for the module), stepped wall at the USB-C (D-056). Confirm the USB-C side from the STEP (the drawing suggests the board mounts rotated 180°), then firmware (ST7796 SPI, FT6336, AXP2101 init: input limit ≥ 1.5 A, REG22[1] off; RMT LED; FanPort with presence).
+4. Mech stack-up: landscape panel, all cables out the left side, SEN65 behind the panel on the right with its flow path sealed to the wall, no hatch (D-057), stepped wall at the USB-C (D-056). Confirm the USB-C side from the STEP (the drawing suggests the board mounts rotated 180°), then firmware (ST7796 SPI, FT6336, AXP2101 init: input limit ≥ 1.5 A, REG22[1] off; RMT LED; FanPort with presence).
 
 ## Previous route-B actions (2.8B, superseded by D-056)
 - Carrier schematic for the 2.8B is in `pcb/carrier/` (ERC 0, assertions pass); it becomes the starting point for step 3.
@@ -108,3 +108,4 @@ Blocked-on: none
 - 2026-11-10: Switched to the Waveshare 3.5 (D-056, Andrew): SPI panel frees ten header GPIOs, IMU at 0x6A so no rework, FAN_PRESENT and DC_IN return. AXP2101 power-on at VBUS insertion is eFuse-dependent, so the carrier gets a PWRON one-shot. USB-C exposed through a stepped enclosure wall (Andrew).
 - 2026-11-10: Updated for the 3.5 (D-056): pin plan GPIO38–42/21, J8 Rev 2.0 numbering (V1 rows swapped, same positions), FR-18 fan-port fault and the D-025 wired DC input restored across requirements, interfaces, architecture and control logic; AXP2101 power-on documented with a DNP PWRON one-shot. Carrier regenerated: five barrier optos, one-shot, J8 header; ERC 0, assertions pass. Bench plan rewritten (AXP2101 power-on check replaces the rework steps). Board price $25.99–32.99 (Waveshare store).
 - 2026-11-10: Mech direction from Andrew: landscape panel, wiring out the left, SEN65 behind the panel on the right facing the room, possibly no separate bay. Logged as D-057 (proposed); Q-46 asks to amend NFR-03/NFR-04.
+- 2026-11-10: D-057 accepted (Andrew, Q-46): NFR-04 amended (SEN65 flow path sealed to the wall, inside the one enclosure); NFR-03 relaxed, no hatch (open the enclosure for everything); AC-14/AC-15 amended; D-019 superseded.

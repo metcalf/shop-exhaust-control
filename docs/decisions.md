@@ -173,7 +173,7 @@ Template:
 
 ## D-019: One enclosure: sealed electronics above an open sensor bay
 - Date: 2026-10-25
-- Status: Accepted with G2 (Andrew, 2026-10-28). Mounting amended by D-033: wall cleat on the fridge side panel, not a cabinet bracket
+- Status: Superseded by D-057 (2026-11-10). Was accepted with G2 (Andrew, 2026-10-28). Mounting amended by D-033: wall cleat on the fridge side panel, not a cabinet bracket
 - Context: NFR-03/04/09, D-015 (under the north cabinets), Sensirion's guidance to keep the module below heat sources.
 - Decision: One PA12 enclosure hung from a cabinet bracket. The sealed electronics compartment is on top, with the panel on the front face and the light bar along its bottom edge. The open sensor bay is below, with a front grille and a tool-less cover; the module cable crosses through a sealed grommet. Cables enter at the back or top with strain reliefs.
 - Alternatives considered: A separate sensor pod on a short cable (better thermal separation, but I²C over a longer run and two enclosures). Sensor bay beside the electronics (shorter enclosure, but at the same height as the heat).
@@ -496,7 +496,7 @@ Template:
 
 ## D-057: Landscape panel, wiring out the left side, SEN65 inside the enclosure behind the panel
 - Date: 2026-11-10
-- Status: Proposed, needs Andrew (Q-46). Layout direction given by Andrew 2026-11-10; the NFR-03/NFR-04 consequences need his OK
+- Status: Accepted (Andrew, 2026-11-10, Q-46): NFR-04 amended as below; NFR-03 relaxed with no hatch (open the main enclosure for the module, like everything else). Supersedes D-019's two-compartment form
 - Context: Andrew's mech direction for the 3.5 (D-056): screen horizontal, all wires out the left side, SEN65 behind the screen on the right, facing into the room. The SEN65 has its own fan and a defined inlet/outlet, so a separate open bay (D-019) may be unnecessary.
 - Decision:
   - Landscape panel. Fan, OCC, DC and USB-C cables all exit the left side. The Waveshare drawing's rear view puts the USB-C on the board's left edge seen from the back, which is the right edge seen from the front. If the STEP confirms that, mount the board rotated 180° (USB-C on the left) and rotate the ST7796 and FT6336 in firmware. The carrier's terminals go on its left edge.
@@ -505,5 +505,5 @@ Template:
 - Consequences:
   - Supersedes D-019's two-compartment form if accepted.
   - **NFR-04:** "sensor bay open to the room, thermally separated" becomes "the module's own flow path sealed to the wall; no shop air reaches the electronics volume".
-  - **NFR-03:** removing the module now means opening the electronics lid. Either relax it, or put the module behind its own small gasketed hatch.
+  - **NFR-03:** relaxed: the module is reached by opening the enclosure (Andrew: a hatch is unnecessary complexity). AC-14 and AC-15 amended to match.
   - **FR-20 / NFR-09:** the ≈ 2 W of electronics heat in the same box raises the module's T/RH readings. PM is unaffected; the VOC index is only mildly affected. The commissioning offset (FR-20) covers T/RH; keep the module at the far right, away from the Waveshare PMIC and LEDs, and check AC-17.

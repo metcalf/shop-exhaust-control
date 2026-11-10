@@ -18,7 +18,7 @@ flowchart LR
   end
 
   subgraph ENC["Controller enclosure, under north cabinets (D-015, D-019)"]
-    subgraph EC["Sealed electronics compartment"]
+    subgraph EC["Sealed enclosure (D-057)"]
       subgraph FS["Fan side: powered by fan +10 V, GND_F"]
         FAN_IF["Fail-off pull-down + tach + presence<br/>(interfaces §2.1)"]
       end
@@ -36,7 +36,7 @@ flowchart LR
       OCC_IF["24 VAC input: R, bridge, opto"]
       DC_IF["Wired DC_RUNNING backup: R, bridge, opto"]
     end
-    subgraph BAY["Sensor bay, open to room, below electronics"]
+    subgraph BAY["SEN65 behind the panel, flow path sealed to the wall (D-057)"]
       SEN["Sensirion SEN65<br/>PM, VOC/NOx, RH/T (D-012)"]
     end
   end
@@ -48,7 +48,7 @@ flowchart LR
   FAN_IF -.- BAR1 -.- MCU
   XFMR -- "2-wire 24 VAC" --> OCC_IF -.-> MCU
   PSU -- "USB-C cable ≤3 m" --> USB --> PWR --> MCU
-  SEN -- "I²C <10 cm, sealed grommet" --- MCU
+  SEN -- "I²C <10 cm (J5 on the carrier)" --- MCU
   MCU --- PANEL
   MCU --> LEDS
   DC -. "BLE adv: DC_RUNNING (interfaces §1)" .-> MCU
@@ -63,7 +63,7 @@ flowchart LR
 | Mains | Nowhere in our design. The fan and a listed adapter plug into the existing always-on receptacle | 0 % PWM is a true off (Q-15), so there's nothing to switch (D-013). SR-01a isn't triggered; G3 covers only the receptacle and adapter (SR-07) |
 | Fan speed and off | Fan's UIS port, through an isolated, fan-powered fail-off interface | SR-08 (off when the node is dead), SR-09 (isolation), FR-10 |
 | Control logic | `exhaust_logic`, pure C++ on the node | NFR-01, NFR-06; host-tested |
-| Sensing | One SEN65 in a bay open to the room | D-012, NFR-04, NFR-09 |
+| Sensing | One SEN65 inside the enclosure, its inlet and outlet sealed to the wall | D-012, D-057, NFR-04, NFR-09 |
 | User interface | Panel on the enclosure front | D-003, D-009, FR-01, FR-11 |
 | DC link | BLE advertising, scanned by the on-board radio; an opto-isolated wired input as backup | D-016, D-025, IR-01/02 |
 | History and alerts | HA over MQTT, read-only | FR-12, FR-13, FR-16 dropped |
@@ -106,13 +106,11 @@ firmware/
 - BLE/Wi-Fi coexistence: the ESP-IDF software coexistence is on; the 30 % scan duty is tested alongside OTA (AC-22).
 - `P-nn`/`C-nn` and the on-screen action map live in one `Config.h`. Changes go by OTA (NFR-10 dropped, NFR-11).
 
-## 5. Mechanical concept (D-019, details in phase 3)
+## 5. Mechanical concept (D-057, details in phase 3)
 
-- One printed enclosure (MJF PA12, D-011) with two compartments: a **sealed electronics compartment** on top (gasketed lid, no vents, gasket around the touch glass; IP5X intent, NFR-04), and an **open sensor bay** below it, its inlet on the corner-side (north) end, sheltered, not facing down, outlet separated (NFR-09).
-- Bay below the electronics, with an insulating air gap in the dividing wall: it keeps the SEN65 below and away from the ~1.3 W of electronics heat, as Sensirion recommends, and the RH/T offset is tuned at commissioning (FR-20).
-- Tool-less bay cover. The module unplugs at its own end, and its cable crosses into the electronics compartment through a sealed grommet (NFR-03, NFR-04).
-- Touch display on the front, which faces across the kids' bench. The carrier's edge LEDs light a diffuser beside the display on the room-side edge, reading down the shop; a corner wrap needs LEDs on a second carrier edge (D-033, D-055).
-- Stack-up: lens at the bezel, Waveshare board, J8, carrier behind it; carrier edge reaches the enclosure wall for the LEDs. The wall steps in around the inset USB-C (D-056). Positions from the Waveshare STEP and the carrier `.kicad_pcb`.
+- One printed enclosure (MJF PA12, D-011), sealed: gasketed lid and seams, gasket around the lens, no vents (NFR-04). Landscape 3.5" panel on the front; all cables (fan, OCC, DC, USB-C) exit the left side, with the wall stepped in around the inset USB-C (D-056).
+- SEN65 inside, behind the panel on the right, inlet facing the room. Inlet and outlet each sealed to their own wall opening, separated (NFR-09); shop air never reaches the electronics volume. Reached by opening the enclosure (NFR-03, no hatch).
+- Stack-up: lens at the bezel, Waveshare board, J8, carrier behind it; the carrier's LED edge reaches the wall beside the display; terminals on the carrier's left edge, J5 on its right. Positions from the Waveshare STEP and the carrier `.kicad_pcb`.
 - Wall-mounted on a cleat on the refrigerator side panel, one locking screw (`docs/interfaces.md` §5, D-033).
 - No part of the controller is in the exhaust airstream (SR-02): it's outside the cabinet, ≥ 3 ft from the hood.
 
@@ -157,7 +155,7 @@ firmware/
 | FR-19 | Vacant cap/limit §4; SprayRunOn vacant exit §2 | AC-27 |
 | NFR-01 | No network dependence in `control` (§4) | AC-12 |
 | NFR-02 | Sampler duty; weekly clean; sensor-hours entity | AC-13 |
-| NFR-03, NFR-04 | Sensor bay, tool-less cover, sealed compartment (§5) | AC-14, AC-15 |
+| NFR-03, NFR-04 | SEN65 flow path sealed to the wall, sealed enclosure (§5, D-057) | AC-14, AC-15 |
 | NFR-05 | Carrier: one-sided SMT, JLC Economic (§3) | AC-24 |
 | NFR-06 | `exhaust_logic` + host tests | AC-16 |
 | NFR-07, SR-08 | Fan-powered fail-off; boot to Auto | AC-18 |
