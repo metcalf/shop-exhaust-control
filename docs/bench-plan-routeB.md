@@ -1,28 +1,45 @@
-# Bench plan: Waveshare rework and fan-stage check (route B, D-054)
+# Bench plan: Waveshare ESP32-S3-Touch-LCD-3.5 and fan-stage check (route B, D-054, D-056)
 
-For Andrew, before carrier layout is frozen (steps 1–3) and before G4 (step 4). Record results in this file. Nothing below counts as tested until its result is written here.
+For Andrew. Do steps 1–3 before the carrier layout is frozen, and step 4 before G4. Record each result in this file: nothing below counts as tested until its result is written here.
 
-## 1. Stock board first (before any rework)
-- Flash the Waveshare ESP-IDF demo (`ESP32-S3-Touch-LCD-2.8B-Demo.zip`, ESP-IDF folder). Confirm display, touch and USB-Serial-JTAG logging.
-- Run an I²C scan on GPIO7/15. Expect 0x20 (TCA9554), 0x51 (PCF85063), 0x5D (GT911), 0x6B (QMI8658).
+## 1. Stock board, no battery fitted
+- **Revision:** note the revision on the back label (V1 or Rev 2.0).
+- **Demo:** flash the Waveshare ESP-IDF demo (GitHub `waveshareteam/ESP32-S3-Touch-LCD-3.5`). Confirm the display, touch, and USB-Serial-JTAG logging work.
+- **I²C scan on GPIO7/8.** Expect:
+  - 0x18 (ES8311)
+  - 0x20 or 0x21 (TCA9554)
+  - 0x34 (AXP2101)
+  - 0x38 (FT6336)
+  - 0x51 (PCF85063)
+  - 0x6A (QMI8658)
+  - Nothing at 0x6B.
 - **Result:**
 
-## 2. Rework
-- **R24** (0 Ω, BAT_ADC → GPIO4): lift or remove it. Check: GPIO4 reads high with the internal pull-up and low when you ground it at J7 pin 13.
-- **U6** (QMI8658, LGA-14): hot-air it off. Keep the RGB FPC shielded (Kapton plus foil). Check: the demo still runs, and the I²C scan shows no 0x6B.
-- Plug in the SEN65 at J7 (3V3 pin 21, GND pin 23, SCL pin 17, SDA pin 19). Check: 0x6B appears, and a measurement frame reads back.
+## 2. AXP2101 power-on (decides whether the carrier's PWRON one-shot gets fitted, D-056)
+- **Cold start:** with no battery, plug in USB-C from a wall adapter. Without touching PWR, does the board boot? Repeat 5 times, unplugged for ≥ 10 s each time.
+- **Power-on source:** in firmware, read REG20 (PWRON status) and log it. Expect bit 2 = 1 ("VBUS insert and good").
+- **Off state with USB present:** hold PWR 6 s until the board turns off. Then unplug USB, wait 10 s and replug. Does it boot without a click?
+- **Short power cut:** cut USB for ~0.5 s (switch the adapter at the wall) and record whether the board comes back.
+- **Decision:**
+  - If every case boots unaided, the one-shot stays DNP.
+  - If any case doesn't, hand-fit Q2/C1/R1/R2/D1 on the carrier. Then measure the PWRON low time on a scope and trim R1/R2 into 2.5–5 s.
 - **Result:**
 
-## 3. Fan-side stage on a breadboard (5 parts, mirrors the carrier U1/Q1)
-Wiring: LTV-817 LED from a GPIO44 test pin through 390 Ω, with 10 kΩ to GND. On the fan side, the LTV-817 collector goes to the AO3400A gate, the emitter to fan GND, 2.2 kΩ from gate to fan red (+10 V), and the drain on fan yellow.
-- With the node unpowered, plug in the fan. Expect the fan to stay **off**, with yellow held low.
-- Command 10 / 50 / 90 % at 5 kHz from LEDC. Scope yellow (fan side) and record the high-time duty against the command. Expect the high time to be stretched by the LTV-817 turn-off time.
-- If the 90 % → 100 % or 10 % ends misbehave, try 270 Ω. If the duty error is more than about 5 points, try a lower LEDC frequency and record whether the fan follows it.
-- Record the tach frequency at each command. That gives the duty → tach map firmware will use.
+## 3. Fan-side stage on a breadboard (5 parts, mirrors the carrier's U1/Q1)
+- **Wiring:**
+  - Node side: LTV-817 LED from GPIO38 through 390 Ω, with 10 kΩ to GND.
+  - Fan side: LTV-817 collector to the AO3400A gate, emitter to fan GND, and 2.2 kΩ from the gate to fan red (+10 V).
+  - AO3400A drain on fan yellow.
+- **Node unpowered:** plug in the fan. Expect it to stay **off**, with yellow held low.
+- **Duty sweep:** command 10 / 50 / 90 % at 5 kHz from LEDC. Scope yellow on the fan side and record high-time duty against the command. Expect the high time to be stretched by the LTV-817's turn-off time.
+- **If the ends misbehave or the duty error is > ~5 points:** try 270 Ω, then a lower LEDC frequency.
+- **Tach map:** record the tach frequency at each command. Firmware uses this as its duty → tach map.
 - **Result:**
 
 ## 4. With a carrier fitted (after PCBA)
-- GPIO0 at reset is ≥ 2.5 V, the board boots normally, and the LEDs are dark until firmware drives them.
-- The LED chain lights through the 2N7002 with RMT `invert_out`. Check the colors are in GRB order, and that the edge emission reaches the diffuser.
-- Repeat step 3 on the carrier. Also check the AC-18 boot-hold-off on the carrier.
+- **Header:** J8 orientation is correct, and 3V3 and 5V read correctly at TP2 and TP3.
+- **Indicator:** LEDs stay dark until firmware runs. The chain lights with RMT `invert_out`, in GRB order, and the edge emission reaches the diffuser.
+- **Presence:** with the fan cable plugged in, `FAN_PRESENT` reads low. Unplugged, it reads high.
+- **Inputs:** `OCC_IN` and `DC_IN` follow 24 VAC applied at J3 and J4.
+- **Repeat:** run step 3 on the carrier, then the AC-18 boot hold-off check.
 - **Result:**

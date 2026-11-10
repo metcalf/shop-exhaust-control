@@ -104,6 +104,24 @@
         "pcb_color": "rgba(0, 0, 0, 0.000)",
         "schematic_color": "rgba(0, 0, 0, 0.000)",
         "priority": 0
+      },
+      {
+        "name": "DCI",
+        "clearance": 0.25,
+        "track_width": 0.4,
+        "via_diameter": 0.6,
+        "via_drill": 0.3,
+        "microvia_diameter": 0.3,
+        "microvia_drill": 0.1,
+        "diff_pair_width": 0.2,
+        "diff_pair_gap": 0.25,
+        "diff_pair_via_gap": 0.25,
+        "wire_width": 6,
+        "bus_width": 12,
+        "line_style": 0,
+        "pcb_color": "rgba(0, 0, 0, 0.000)",
+        "schematic_color": "rgba(0, 0, 0, 0.000)",
+        "priority": 0
       }
     ],
     "netclass_patterns": [
@@ -162,6 +180,30 @@
       {
         "netclass": "POWER",
         "pattern": "+3V3"
+      },
+      {
+        "netclass": "FAN",
+        "pattern": "/PRES_LED_A"
+      },
+      {
+        "netclass": "DCI",
+        "pattern": "/DCI_A"
+      },
+      {
+        "netclass": "DCI",
+        "pattern": "/DCI_B"
+      },
+      {
+        "netclass": "DCI",
+        "pattern": "/DCI_AC"
+      },
+      {
+        "netclass": "DCI",
+        "pattern": "/DCI_P"
+      },
+      {
+        "netclass": "DCI",
+        "pattern": "/DCI_N"
       }
     ]
   },

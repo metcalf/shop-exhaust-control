@@ -1,6 +1,6 @@
 # Evaluation: Waveshare ESP32-S3-Touch-LCD-2.8B instead of the custom PCB
 
-**Date:** 2026-11-10 · **Status:** proposed, needs Andrew (D-053, Q-40…Q-43)
+**Date:** 2026-11-10 · **Status:** historical. Route B chosen (D-054); the board is now the ESP32-S3-Touch-LCD-3.5 (D-056), so the 2.8B pin plans below are superseded.
 **Sources:** Waveshare wiki page, vendor schematic (`docs/vendor/waveshare-2.8b/schematic.pdf`, which has a GPIO allocation table), ESP-IDF demo source (`ESP32-S3-Touch-LCD-2.8B-Demo.zip`), and the dimension drawing (`docs/vendor/waveshare-2.8b/dimensions.pdf`). STEP from the same zip, not committed (21 MB): `https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-20241031.zip`.
 
 ## Verdict

@@ -1,6 +1,6 @@
 """Generates pcb/carrier/carrier.kicad_sch. Run: .venv/bin/python pcb/carrier/gen/build.py
 
-Carrier PCB for the Waveshare ESP32-S3-Touch-LCD-2.8B (D-054, D-055). Source of truth for the
+Carrier PCB for the Waveshare ESP32-S3-Touch-LCD-3.5 (D-054, D-055, D-056). Source of truth for the
 schematic until layout starts. Signals, pins and values: docs/interfaces.md §2, pcb/carrier/DESIGN.md.
 Reuses the schematic-as-code layer in pcb/gen (sch.py, route.py).
 """
@@ -28,16 +28,17 @@ P = {
     "TERM2": ("Connector:Screw_Terminal_01x02", "exhaust:TerminalBlock_KF128L-3.5-2P", "C474930",
               "KF128L-3.5-2P", "J"),
     "SENCONN": OLD["SENCONN"],
-    "HDR": ("Connector_Generic:Conn_02x12_Odd_Even",
-            "Connector_PinSocket_2.54mm:PinSocket_2x12_P2.54mm_Vertical", "", "Waveshare J7 2x12 socket", "J"),
+    "HDR": ("Connector_Generic:Conn_02x16_Odd_Even",
+            "Connector_PinHeader_2.54mm:PinHeader_2x16_P2.54mm_Vertical", "", "Waveshare J8 2x16 pins", "J"),
+    "DIODE": ("Device:D", "Diode_SMD:D_SOD-323", "C2128", "1N4148WS", "D"),
     "TP": OLD["TP"],
 }
 N_LED = 6   # set by mech (diffuser length); 4-8 expected (D-055)
 
 OUT = os.path.join(HERE, "..", "carrier.kicad_sch")
-sh = Sheet("Shop exhaust carrier v1 (Waveshare 2.8B)")
+sh = Sheet("Shop exhaust carrier v1 (Waveshare 3.5)")
 _n = {}
-RESERVED = {"J1", "J2", "J3", "J5", "J7", "U1", "U2", "U3", "Q1"}   # designators named in docs
+RESERVED = {"J1", "J2", "J3", "J4", "J5", "J7", "U1", "U2", "U3", "U4", "U5", "Q1"}   # designators named in docs
 
 
 def ref(prefix):
@@ -67,22 +68,37 @@ def flag(net, at):
 
 
 # ---------------------------------------------------------------- Waveshare header
-# Waveshare J7 numbering (vendor schematic, docs/interfaces.md §2). Odd/even = the two rows.
-J1 = {1: "+5V", 2: "+5V", 5: "GND", 6: "GND", 11: "IND_DATA", 13: "OCC_IN", 17: "SEN_SCL",
-      18: "FAN_TACH", 19: "SEN_SDA", 20: "FAN_PWM", 21: "+3V3", 22: "+3V3", 23: "GND", 24: "GND"}
-J1_NC = (3, 4, 7, 8, 9, 10, 12, 14, 15, 16)   # VCC, BAT, USB D-/D+, PSRAM GPIO33-37, GPIO16 (touch INT)
+# Waveshare J8, Rev 2.0 numbering (V1 numbers the rows the other way; same physical positions).
+# docs/interfaces.md §2. Odd/even = the two rows.
+J1 = {1: "+5V", 3: "GND", 4: "GND", 6: "IND_DATA", 8: "FAN_PWM", 10: "FAN_TACH", 12: "FAN_PRESENT",
+      14: "OCC_IN", 16: "DC_IN", 23: "PWRON", 25: "SEN_SCL", 27: "SEN_SDA", 29: "GND", 30: "GND",
+      31: "+3V3", 32: "+3V3"}
+# VBAT, USB D-/D+, SD SPI, spare GPIO17/18/47/48/43/44, strapping GPIO45/0/46, ESP_EN
+J1_NC = (2, 5, 7, 9, 11, 13, 15, 17, 18, 19, 20, 21, 22, 24, 26, 28)
 sh.begin("hdr")
 X, Y = 40, 50
-sh.note("J1: WAVESHARE ESP32-S3-Touch-LCD-2.8B J7 (2x12, 2.54 mm). 11 GPIO0, 13 GPIO4 (R24 lifted), "
-        "17/19 I2C SCL/SDA (GPIO7/15), 18 GPIO43, 20 GPIO44", (X - 20, Y - 25))
-sh.note("Hand-soldered. Stack-up mirrors the pin rows: check against the Waveshare STEP at layout.",
-        (X - 20, Y - 20), size=1.27)
+sh.note("J1: WAVESHARE ESP32-S3-Touch-LCD-3.5 J8 (2x16, 2.54 mm), Rev 2.0 numbering. 6 GPIO21, 8 GPIO38, "
+        "10 GPIO39, 12 GPIO40, 14 GPIO41, 16 GPIO42, 23 PWRON, 25/27 I2C SCL/SDA (GPIO7/8)", (X - 20, Y - 25))
+sh.note("Hand-soldered pin header into the board's female J8. V1 boards number the rows oppositely (same "
+        "positions): check orientation against the STEP at layout.", (X - 20, Y - 20), size=1.27)
 part("HDR", (X, Y), {str(k): v for k, v in J1.items()}, nc=[str(k) for k in J1_NC], r="J1", dnp=True)
 flag("+5V", (X + 30, Y - 15))
 flag("+3V3", (X + 40, Y - 15))
 flag("GND", (X + 50, Y - 15))
-for i, n in enumerate(["GND", "+3V3", "+5V", "FAN_PWM", "FAN_TACH", "OCC_IN", "IND_DRV"]):
-    part("TP", (X + 30 + 8 * i, Y + 25), {"1": n}, value=n)
+for i, n in enumerate(["GND", "+3V3", "+5V", "FAN_PWM", "FAN_TACH", "FAN_PRESENT", "OCC_IN", "DC_IN", "IND_DRV",
+                       "PWRON"]):
+    part("TP", (X + 30 + 8 * i, Y + 30), {"1": n}, value=n)
+
+# ---------------------------------------------------------------- PWRON one-shot (DNP, D-056)
+sh.begin("pok")
+X, Y = 200, 30
+sh.note("PWRON ONE-SHOT (DNP, D-056): holds AXP2101 PWRON low ~2-6 s after VBUS rises, in case the PMU's "
+        "eFuse doesn't power on at VBUS insertion. Fit only if the bench needs it (interfaces §3)", (X - 10, Y - 15))
+part("C0603", (X, Y + 5), {"1": "+5V", "2": "POK_G"}, value="2.2u", dnp=True)
+res("1M", (X + 12, Y + 15), "POK_G", "POK_M", dnp=True)
+res("1M", (X + 12, Y + 30), "POK_M", "GND", dnp=True)
+part("DIODE", (X + 25, Y + 20), {"1": "POK_G", "2": "GND"}, dnp=True)     # Device:D: 1 K, 2 A
+part("NFET", (X + 40, Y + 15), {"G": "POK_G", "D": "PWRON", "S": "GND"}, dnp=True)
 
 # ---------------------------------------------------------------- fan interface (fan domain)
 sh.begin("fan")
@@ -106,21 +122,31 @@ part("NFET_LL", (X + 135, Y + 15), {"G": "Q_FAN_G", "D": "FAN_SPD", "S": "GND_F"
 res("10k", (X + 165, Y - 5), "+10V_F", "TACH_LED_A")
 part("PC817", (X + 180, Y + 10), {"1": "TACH_LED_A", "2": "FAN_TACH_F", "3": "GND", "4": "FAN_TACH"}, r="U2")
 res("22k", (X + 195, Y - 5), "+3V3", "FAN_TACH")
+# Presence: fan side powered -> LED lit -> FAN_PRESENT low
+res("10k", (X + 215, Y - 5), "+10V_F", "PRES_LED_A")
+part("PC817", (X + 230, Y + 10), {"1": "PRES_LED_A", "2": "GND_F", "3": "GND", "4": "FAN_PRESENT"}, r="U3")
+res("22k", (X + 245, Y - 5), "+3V3", "FAN_PRESENT")
 
-# ---------------------------------------------------------------- 24 VAC occupancy (OCC field domain)
-sh.begin("J3")
-X, Y = 40, 210
-sh.note("J-OCC: 24 VAC lighting signal (FR-07, interfaces §2.2) - OCC field domain", (X - 10, Y - 15))
-part("TERM2", (X, Y + 10), {"1": "OCC_A", "2": "OCC_B"}, r="J3", dnp=True)
-res("10k", (X + 35, Y + 5), "OCC_A", "OCC_AC", key="R1206", rot=90)
-part("BRIDGE", (X + 65, Y + 15), {"1": "OCC_AC", "2": "OCC_B", "3": "OCC_P", "4": "OCC_N"})
-part("PC817", (X + 90, Y + 15), {"1": "OCC_P", "2": "OCC_N", "3": "GND", "4": "OCC_IN"}, r="U3")
-res("47k", (X + 110, Y), "+3V3", "OCC_IN")
-cap("1u", (X + 118, Y + 25), "OCC_IN", "GND")
+# ---------------------------------------------------------------- 24 VAC / DC inputs (field domains)
+def ac_input(X, Y, term, opto, a, b, mid, out, title):
+    sh.begin(term)
+    sh.note(title, (X - 10, Y - 15))
+    part("TERM2", (X, Y + 10), {"1": a, "2": b}, r=term, dnp=True)
+    res("10k", (X + 35, Y + 5), a, mid + "_AC", key="R1206", rot=90)
+    part("BRIDGE", (X + 65, Y + 15), {"1": mid + "_AC", "2": b, "3": mid + "_P", "4": mid + "_N"})
+    part("PC817", (X + 90, Y + 15), {"1": mid + "_P", "2": mid + "_N", "3": "GND", "4": out}, r=opto)
+    res("47k", (X + 110, Y), "+3V3", out)
+    cap("1u", (X + 118, Y + 25), out, "GND")
+
+
+ac_input(40, 210, "J3", "U4", "OCC_A", "OCC_B", "OCC", "OCC_IN",
+         "J-OCC: 24 VAC lighting signal (FR-07, interfaces §2.2) - OCC field domain")
+ac_input(200, 210, "J4", "U5", "DCI_A", "DCI_B", "DCI", "DC_IN",
+         "J-DC: wired DC_RUNNING, 12-24 V AC/DC either polarity (IR-01, D-025) - DC field domain")
 
 # ---------------------------------------------------------------- SEN65
 sh.begin("sen")
-X, Y = 200, 210
+X, Y = 200, 290
 sh.note("SEN65 (D-012) on +3V3. Shares the Waveshare I2C bus; its pull-ups are on that board, "
         "so ours are DNP pads (D-054)", (X - 10, Y - 15))
 cap("10u", (X + 30, Y + 20), "+3V3", "GND", key="C0805")
@@ -131,10 +157,10 @@ part("SENCONN", (X + 85, Y + 10), OLD["SEN_PINOUT"], r="J5", nc=OLD["SEN_NC"], d
 
 # ---------------------------------------------------------------- indicator
 sh.begin("ind")
-X, Y = 40, 290
-sh.note(f"INDICATOR: {N_LED} x SK6812SIDE-A on the carrier's room-side edge (D-055, FR-15). GPIO0 -> "
-        "2N7002 inverter (RMT invert_out). 10k gate pull-up keeps GPIO0 high at reset (normal boot) "
-        "and DIN low. Firmware caps LED current at 300 mA", (X - 10, Y - 15))
+X, Y = 40, 370
+sh.note(f"INDICATOR: {N_LED} x SK6812SIDE-A on the carrier's room-side edge (D-055, FR-15). GPIO21 -> "
+        "2N7002 inverter (RMT invert_out). 10k gate pull-up keeps DIN low (idle) through reset. "
+        "Firmware caps LED current at 300 mA", (X - 10, Y - 15))
 res("10k", (X, Y), "+3V3", "IND_DATA")
 part("NFET", (X + 15, Y + 15), {"G": "IND_DATA", "D": "IND_DRV", "S": "GND"})
 res("1k", (X + 30, Y), "+5V", "IND_DRV")
@@ -151,7 +177,7 @@ for i in range(N_LED):
 # ---------------------------------------------------------------- mechanical
 sh.begin("mech")
 for i in range(4):
-    sh.place(ref("H"), "Mechanical:MountingHole", "M2", (230 + 15 * i, 60), {},
+    sh.place(ref("H"), "Mechanical:MountingHole", "M2", (300 + 15 * i, 300), {},
              footprint="MountingHole:MountingHole_2.2mm_M2")
 
 sh.write(OUT)

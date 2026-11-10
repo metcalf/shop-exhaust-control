@@ -5,12 +5,11 @@
 **Waiting on:** nothing blocking.
 Blocked-on: none
 
-## Next actions (D-056: switching to the Waveshare 3.5)
-1. Fetch the 3.5's dimensions/STEP (`ESP32-S3-Touch-LCD-3.5-2Dand3D.zip`) and price. Confirm which J8 numbering (V1 or Rev 2.0) ships.
-2. New pin plan for the 3.5 (FAN_PWM, FAN_TACH, FAN_PRESENT, OCC_IN, DC_IN, indicator on free GPIOs; SEN65 on IO7/8). Restore FR-18 fan-port fault, IR-01/AC-06 wired backup (D-025), and redo the 2.8B-specific edits in requirements, interfaces §2/§3/§5 and architecture.
-3. Rework `pcb/carrier/` for the 2×16 header: add the presence and DC opto channels (old-board circuits), move the indicator off GPIO0, add the VBUS-triggered PWRON one-shot. ERC + assertions.
-4. Bench plan: replace R24/U6 steps with an AXP2101 power-on check (does VBUS alone start it? read REG20), keep the LTV-817 fan-stage test.
-5. Then carrier layout and mech (stepped wall at the USB-C), firmware (ST7796 SPI, FT6336, AXP2101 init, RMT LED).
+## Next actions (D-056: Waveshare 3.5 + carrier)
+1. **Andrew:** review the carrier schematic (`pcb/carrier/carrier.kicad_sch`, notes in `pcb/carrier/DESIGN.md`). ERC 0, netlist assertions pass and are mutation-checked.
+2. **Andrew, when the boards arrive:** `docs/bench-plan-routeB.md` (stock demo and I²C scan, AXP2101 power-on with no cell, breadboarded LTV-817/AO3400A fan stage). Write the results into that file. Step 2 decides whether the PWRON one-shot gets fitted.
+3. Carrier layout: outline from the Waveshare STEP (J8 orientation; the zip is in Waveshare's wiki, not committed), barrier rules and keepouts copied from the main board, LED edge at the enclosure wall.
+4. Mech stack-up (stepped wall at the inset USB-C, D-056), then firmware (ST7796 SPI, FT6336, AXP2101 init: input limit ≥ 1.5 A, REG22[1] off; RMT LED; FanPort with presence).
 
 ## Previous route-B actions (2.8B, superseded by D-056)
 - Carrier schematic for the 2.8B is in `pcb/carrier/` (ERC 0, assertions pass); it becomes the starting point for step 3.
@@ -107,3 +106,4 @@ Blocked-on: none
 - 2026-11-10: Docs amended for route B (D-054/D-055): requirements §1, §3, FR-18 (fan-port fault dropped), NFR-04/05, IR-01, AC-06/07; interfaces §1, §2 (J7 pin map read from the Waveshare schematic), §3 power, §5 mech; architecture block diagram, §3, §4, §5, §6, §7, §8 (≈ $215), §9; control-logic drops `dc_wired`, `fan_port`, C-16, C-31.
 - 2026-11-10: Carrier schematic generated (`pcb/carrier/`, reusing `pcb/gen/sch.py`): header J1 per the Waveshare J7 map, LTV-817 fail-off stage, tach, OCC, SEN65 (DNP pull-up pads), 2N7002 → 470 Ω → 6 × SK6812SIDE-A. ERC 0; carrier `check.py` passes and is mutation-checked. SK6812SIDE-A footprint from easyeda2kicad, pads remapped to `LED:SK6812`. `pcb/SAFETY.md` notes the carrier's three crossings.
 - 2026-11-10: Switched to the Waveshare 3.5 (D-056, Andrew): SPI panel frees ten header GPIOs, IMU at 0x6A so no rework, FAN_PRESENT and DC_IN return. AXP2101 power-on at VBUS insertion is eFuse-dependent, so the carrier gets a PWRON one-shot. USB-C exposed through a stepped enclosure wall (Andrew).
+- 2026-11-10: Updated for the 3.5 (D-056): pin plan GPIO38–42/21, J8 Rev 2.0 numbering (V1 rows swapped, same positions), FR-18 fan-port fault and the D-025 wired DC input restored across requirements, interfaces, architecture and control logic; AXP2101 power-on documented with a DNP PWRON one-shot. Carrier regenerated: five barrier optos, one-shot, J8 header; ERC 0, assertions pass. Bench plan rewritten (AXP2101 power-on check replaces the rework steps). Board price $25.99–32.99 (Waveshare store).
