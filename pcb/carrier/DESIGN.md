@@ -59,6 +59,7 @@ Carrier for the Waveshare ESP32-S3-Touch-LCD-3.5. It plugs into the board's 2×1
 - **Footprint.** `carrier:LED_SK6812SIDE-A_4.0x1.6mm` comes from easyeda2kicad (C5378721), with pads renumbered to `LED:SK6812`. Per the datasheet: 1 DIN, 2 VDD, 3 DOUT, 4 GND.
 
 ## Open for layout
+- **Sides (D-055, D-057):** all SMT on the display-facing side, with the LEDs at the right edge. The back face stays flat, with a solid GND plane, because the SEN65 sits ≤ 1/4" behind it on the right. THT stubs are trimmed flush, and the screw terminals go at the left edge. Check that the tallest SMT part (LTV-817S, ≈ 4 mm) clears the Waveshare board's back-side parts within the header stack gap.
 - **Outline:** J8 runs along the Waveshare board's bottom edge between the lower M2 holes, so the carrier covers that region. The LED edge has to reach the enclosure wall; a corner wrap needs LEDs on a second edge (mech).
 - **Barrier:**
   - Copy the netclasses and `.kicad_dru` rules from the main board (≥ 3.0 mm node↔field).
