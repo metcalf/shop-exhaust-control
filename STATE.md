@@ -7,7 +7,7 @@ Blocked-on: none
 
 ## Next actions (D-054; these replace the old layout actions below)
 1. **Andrew:** review the carrier schematic (`pcb/carrier/carrier.kicad_sch`, notes in `pcb/carrier/DESIGN.md`). ERC 0, netlist assertions pass. Then carrier layout (below).
-2. Bench plan for Andrew: R24 lift, U6 removal, and the LTV-817 PWM duty at 5 kHz (needs a prototype carrier or a breadboard of the fan-side stage, which is worth doing now since it's 5 parts).
+2. **Andrew, when the boards arrive:** `docs/bench-plan-routeB.md`: stock demo and I²C scan, R24 lift and U6 removal, breadboarded LTV-817/AO3400A fan stage at 10/50/90 %. Write the results into that file.
 3. Carrier layout (≈ 50 × 70 mm, Waveshare M2 pattern 40.9 × 59.7 mm), mech stack-up from the Waveshare STEP, then firmware (ST7701S RGB with bounce buffers, GT911, non-inverted PWM (as before), RMT LED).
 
 ## Superseded custom-board actions (kept for reference)
