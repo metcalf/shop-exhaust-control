@@ -8,7 +8,7 @@ Blocked-on: none
 ## Next actions (D-054; these replace the old layout actions below)
 1. Amend requirements per D-054: FR-18 (drop the fan-port fault), IR-01/AC-06 (BLE only, D-025 reverted), FR-01 and §3 panel hardware (Waveshare 480×640, GT911), NFR-04 (USB-C on the Waveshare edge). Rewrite `docs/interfaces.md` §2 from the eval doc's "Chosen" table, and `docs/architecture.md` (block diagram, power, mech concept).
 2. Carrier schematic in `pcb/carrier/`, reusing the `pcb/gen` flow. Basic and Economic parts only; Waveshare 2×12 socket, KF128 terminals and GH-6 hand-soldered (DNP at JLC). Indicator: SK6812SIDE-A row on the carrier's room-side edge (D-055, the one Extended part). Run ERC and netlist assertions; barrier per D-050 / `pcb/SAFETY.md`.
-3. Bench plan for Andrew: R24 lift, U6 removal, and the LTV-817 PWM duty at 5 kHz (needs a prototype carrier or a breadboard of the fan-side stage, which is worth doing now since it's 5 parts).; and a display stress test: Waveshare demo at 480×640 with Wi-Fi up and a loop of flash writes, watching for drift (fallback: non-B 2.8 SPI board).
+3. Bench plan for Andrew: R24 lift, U6 removal, and the LTV-817 PWM duty at 5 kHz (needs a prototype carrier or a breadboard of the fan-side stage, which is worth doing now since it's 5 parts); and a display stress test: Waveshare demo at 480×640 with Wi-Fi up and a loop of flash writes, watching for drift (fallback: non-B 2.8 SPI board).
 4. Carrier layout (≈ 50 × 70 mm, Waveshare M2 pattern 40.9 × 59.7 mm), mech stack-up from the Waveshare STEP, then firmware (ST7701S RGB with bounce buffers, GT911, non-inverted PWM (as before), RMT LED).
 
 ## Superseded custom-board actions (kept for reference)
