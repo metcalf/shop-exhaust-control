@@ -81,11 +81,10 @@ part("ESP", (X, Y), {
     "IO8": "SEN_SDA", "IO9": "SEN_SCL",
     "IO11": "DISP_MOSI", "IO12": "DISP_SCLK", "IO13": "DISP_CS", "IO14": "DISP_DC",
     "IO21": "DISP_RST", "IO47": "DISP_BL",
-    "IO15": "ENC_A", "IO16": "ENC_B", "IO17": "ENC_SW",
-    "IO18": "BTN1", "IO38": "BTN2", "IO39": "BTN3", "IO40": "BTN4",
+    "IO15": "TP_SCL", "IO16": "TP_SDA", "IO17": "TP_RST", "IO18": "TP_INT",
     "IO48": "IND_R_G", "IO41": "IND_G_G", "IO42": "IND_B_G",
     "USB_D+": "USB_DP", "USB_D-": "USB_DN", "TXD0": "TXD0", "RXD0": "RXD0",
-}, nc=("IO2", "IO10", "IO3", "IO45", "IO46", "IO35", "IO36", "IO37"), r="U1")
+}, nc=("IO2", "IO10", "IO38", "IO39", "IO40", "IO3", "IO45", "IO46", "IO35", "IO36", "IO37"), r="U1")
 cap("10u", (X + 30, Y - 30), "+3V3", "GND", key="C0805")
 cap("100n", (X + 38, Y - 30), "+3V3", "GND")
 # EN RC per the Espressif hardware design guide (G2 review S-14). No switches: EN and BOOT are
@@ -156,26 +155,18 @@ part("SENCONN", (X + 85, Y + 10), P["SEN_PINOUT"], r="J5", nc=P["SEN_NC"])
 # ---------------------------------------------------------------- display
 sh.begin("disp")
 X, Y = 300, 110
-sh.note("DISPLAY: 2.8in 240x320 IPS SPI module, no touch (D-022). Header pinout set by the "
-        "chosen module", (X - 10, Y - 15))
-part("DISP_HDR", (X + 70, Y + 10), {"Pin_1": "+3V3", "Pin_2": "GND", "Pin_3": "DISP_CS",
+sh.note("DISPLAY + TOUCH: Elecrow DLS29028B / LCDwiki MSP2834, ILI9341V + FT6336G (D-048). "
+        "VCC 5 V; module pulls CTP SCL/SDA to VCC, so shift to 3.3 V", (X - 10, Y - 15))
+part("DISP_HDR", (X + 70, Y + 10), {"Pin_1": "+5V", "Pin_2": "GND", "Pin_3": "DISP_CS",
                                     "Pin_4": "DISP_RST", "Pin_5": "DISP_DC", "Pin_6": "DISP_MOSI",
-                                    "Pin_7": "DISP_SCLK", "Pin_8": "DISP_LED"}, r="J6")
-part("PFET", (X + 25, Y + 5), {"S": "+3V3", "D": "DISP_LED", "G": "DISP_BL"})
-res("100k", (X + 10, Y - 5), "+3V3", "DISP_BL")
-cap("10u", (X + 45, Y + 25), "+3V3", "GND", key="C0805")
-
-# ---------------------------------------------------------------- controls
-sh.begin("controls")
-X, Y = 300, 165
-sh.note("CONTROLS: EC11 encoder + 4 buttons (D-009). 10k pull-up, 100 nF at the pin", (X - 10, Y - 15))
-part("ENC", (X, Y + 10), {"A": "ENC_A", "B": "ENC_B", "C": "GND", "S1": "ENC_SW", "S2": "GND"},
-     )
-for i, n in enumerate(["ENC_A", "ENC_B", "ENC_SW", "BTN1", "BTN2", "BTN3", "BTN4"]):
-    res("10k", (X + 25 + 9 * i, Y - 5), "+3V3", n)
-    cap("100n", (X + 25 + 9 * i, Y + 25), n, "GND")
-for i, n in enumerate(["BTN1", "BTN2", "BTN3", "BTN4"]):
-    part("TACT", (X + 30 + 22 * i, Y + 50), {"1": n, "2": "GND"}, value=f"B{i + 1}")
+                                    "Pin_7": "DISP_SCLK", "Pin_8": "DISP_BL", "Pin_10": "TP_SCL_5V",
+                                    "Pin_11": "TP_RST", "Pin_12": "TP_SDA_5V", "Pin_13": "TP_INT"},
+     nc=("Pin_9", "Pin_14"), r="J6")
+# Bidirectional open-drain shifters. 2N7002 for its low Ciss, not the AO3400A (D-048).
+for i, n in enumerate(["TP_SCL", "TP_SDA"]):
+    part("NFET", (X + 15 + 25 * i, Y + 45), {"G": "+3V3", "S": n, "D": n + "_5V"})
+for i, n in enumerate(["TP_SCL", "TP_SDA", "TP_RST", "TP_INT"]):
+    res("10k", (X + 9 * i, Y + 25), "+3V3", n)
 
 # ---------------------------------------------------------------- indicator
 sh.begin("ind")

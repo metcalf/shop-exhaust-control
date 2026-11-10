@@ -10,7 +10,7 @@ Datasheet figures below come from the sourcing notes. Where a value is assumed r
 - **3.3 V: AP63203WU-7 sync buck** (D-040; datasheet DS41326 Rev. 2-2): fixed 3.3 V, 2 A, TSOT-26, 3.8–32 V in, 35 V abs max VIN and EN, 1.1 MHz, PFM at light load, ~100 % duty in dropout, UVLO 3.7 V max rising and ≈ 3.1 V falling. EN to VIN, FB straight to `+3V3`, 100 nF BST to SW, 10 µF in, 2 × 22 µF out (Fig. 21, Table 2). Layout: 10 µF tight to VIN/GND, GND plane under the part (datasheet Fig. 25).
 - **Inductor stays 2.2 µH** (C135262; 3.4 A Isat, above the 3.1 A max peak limit; 46 mΩ), not Table 2's 3.9 µH. Eq. 7 ties that value to about 12 V in (ΔI ≈ 0.56 A). At 5 V in, 2.2 µH gives ΔI ≈ 0.46 A and 3.9 µH only ≈ 0.26 A, against the 0.6–1 A guidance. It's inside the datasheet's 2.2–10 µH range.
 - Why not an LDO: at 0.35 A typical, an LDO dissipates ≈ 0.6 W, too much for SOT-23-5 in a sealed box (sourcing/power.md). Peak load ≈ 0.8 A at 3.3 V (module TX 360 mA + display 100 mA + SEN65 350 mA for 2 ms), within the 2 A rating.
-- No `+5V` sense (D-039). The indicator keeps its fixed 300 mA firmware cap. GPIO2 and GPIO10 are unconnected spares (D-039, D-047).
+- No `+5V` sense (D-039). The indicator keeps its fixed 300 mA firmware cap. GPIO2, 10 and 38–40 are unconnected spares (D-039, D-047, D-048).
 - **Hot-plug (O-4, closed by D-040):** a live VBUS into a ceramic-only input (A-to-C cable, or a supply that doesn't switch VBUS) rings. *Estimated, not measured:* 6.6 V peak on 3 m of 24 AWG, ≈ 8 V on a short heavy cable before SMAJ5.0A starts conducting. The buck's 35 V rating covers that. Bulk capacitance isn't an option under the USB limit above. If the display ends up on `+5V` (Q-35), check that its on-board regulator tolerates this.
 
 ## 2. Fan interface, fan domain (SR-08, SR-09, D-023; G2 review S-2)
@@ -53,23 +53,26 @@ Path drop, worst case: LED 1.4 V + two bridge diodes ≈ 1.8 V, so ≈ 3.2 V. Th
 - EN: 10 k to 3V3 and 1 µF to GND (Espressif HW design guide RC). GPIO0: 10 k pull-up. No switches (D-041). Test pads for 3V3, 5V, GND, TXD0, RXD0, EN and BOOT (UART0 rescue), and SEN_SDA and SEN_SCL for probing I²C.
 - **Recovery pads (layout):** two separate pairs, TP6 (EN) + TP2 (GND) and TP7 (BOOT) + TP8 (GND). Within a pair, set the gap to the board's minimum copper clearance (the DRC rule set at layout; check the fab's limit, about 0.13 mm at JLC from memory), so a screwdriver tip bridges it easily. Use one solder-mask opening per pair and no paste. Keep the pairs far enough apart (≥ 10 mm, center to center) to hold a screwdriver on each at once, and away from the other test pads, `+3V3`, `+5V` and fan-domain copper. Label them on silkscreen. To enter the bootloader: short BOOT, tap EN, then release BOOT.
 - Strapping: GPIO3, 45 and 46 are not connected, so the internal defaults apply. With GPIO45 low, VDD_SPI is 3.3 V, which is right for the N16R8's 3.3 V flash and PSRAM. GPIO35–37 (octal PSRAM) are not connected. check.py asserts all of these.
-- Reset states: FAN_PWM has a 10 k pull-down (LED dark, fan off). DISP_BL has a 100 k gate pull-up (off). IND_R/G/B have 100 k gate pull-downs (dark). So nothing turns on before firmware does.
+- Reset states: FAN_PWM has a 10 k pull-down (LED dark, fan off). IND_R/G/B have 100 k gate pull-downs (dark). So only the display backlight comes on before firmware runs (the module's pull-up holds it on; harmless).
 - Firmware backlog (not hardware): TWDT panic, RTC WDT, LEDC duty 0 before routing the pin.
 - **Open (O-6):** confirm that GPIO47/48 run at 3.3 V on the N16R8 (VDD_SPI domain question).
 
 ## 6. Indicator (D-031, FR-15)
 Six C601699 3528 common-anode RGB LEDs on `+5V`, one resistor per colour per LED, and three AO3400A low-side switches (a 2N7002 isn't specified at a 3.3 V gate; AO3400A is). Red 200 Ω: (5 − 2.0) / 200 = 15 mA. Green and blue 120 Ω: (5 − 3.0) / 120 = 16.7 mA, or 13 mA at Vf 3.4 V. All six full white ≈ 290 mA, so the 300 mA firmware cap is barely binding. Green is ~3× brighter, so colour balance happens in PWM. The count of 6 is provisional: mech sets it (D-031).
 
-## 7. Display and controls
-- J6: 1×8 socket. The pinout (VCC, GND, CS, RST, DC, MOSI, SCK, LED) is **tentative** until the module is chosen (O-2, `sourcing/off-board.md`). The backlight is high-side switched from 3.3 V by an AO3401A on GPIO47 (low = on). That works whether the module's LED pin feeds the LEDs directly or a transistor.
-- Encoder (Alps EC11E18244A5) and 4 × 6×6 mm, 9.5 mm-tall tact switches: 10 k pull-up and 100 nF at each pin (τ = 1 ms; the 10 nF Basic part is out of stock, and this reuses an existing value). Quadrature edges at a fast spin (~100 detents/s) are ≥ 2 ms apart, so 1 ms is fine; if counts drop on bench, fit 10 nF on ENC_A/B. Debounce in firmware and the PCNT filter.
+## 7. Display and touch (D-048)
+- J6: 1×14, 8.5 mm socket (C2897377) for the Elecrow DLS29028B / LCDwiki MSP2834. 1 VCC (`+5V`), 2 GND, 3 CS, 4 RST, 5 D/C, 6 MOSI, 7 SCK, 8 LED, 9 MISO (NC), 10 CTP_SCL, 11 CTP_RST, 12 CTP_SDA, 13 CTP_INT, 14 SD_CS (NC; pulled up on the module). No local bulk cap: `+5V` is at its 10 µF limit (§1).
+- Backlight: GPIO47 drives the LED pin directly, which is the gate of the module's BSS138 with a 10 k pull-up to its 3.3 V rail. Floating or high is on, low is off, and PWM works. The former AO3401A is gone.
+- Touch: on the module, CTP_SCL and CTP_SDA have 10 k to VCC on the header side and a BSS138 to the 3.3 V FT6336G (module schematic, 2022-12-02), so with VCC at 5 V those header pins idle at 5 V. The S3 isn't 5 V tolerant, so each line has a 2N7002 (gate `+3V3`, source to the GPIO with 10 k to `+3V3`, drain to J6). CTP_RST goes through the module's 74LVC245 and CTP_INT is 3.3 V; both have 10 k to `+3V3`.
+- **Why 2N7002, not the AO3400A already on the board:** the AO3400A's 630 pF Ciss gives ≈ 5 µs rise at 10 k. The 2N7002 (50 pF, Basic) plus trace is ≈ 0.6 µs, inside I²C's 1 µs at 100 kHz but not 400 kHz, so **run the touch bus at 100 kHz**. When the touch side pulls low, the body diode takes the GPIO to ≈ 0.6–0.7 V, under the S3's V_IL (0.25 × VDD, from memory; verify), then the channel conducts.
+- The physical-controls design this replaced is in `docs/physical-controls-record.md`.
 
 ## 8. Open items before layout
 | ID | Item |
 |----|------|
 | O-1 | ~~SEN6x connector pinout~~: closed, datasheet Table 17 matches the schematic |
-| O-2 | Display module choice (Q-35): header pinout, backlight circuit and current, outline. The only verified-IPS module found (Newhaven breakout) doesn't fit the 1×8 header |
-| O-3 | Footprints against the LCSC drawings. Stock KiCad footprints are placeholders: H11L1S lead span (SMDIP W9.53), LTV-817S lead span (10.16 ± 0.3 mm tip to tip, 1.0 mm feet, so ≈ 9.2 mm foot centers against the W9.53 footprint), MB10S (MBS vs the MBLS footprint used), 3528 RGB pin map against the LED_ARGB symbol numbering, 5.1 mm tact, KF128L and XY350V terminals (the Phoenix PT footprint used differs), GH header, HRO USB-C pin map. Use `easyeda2kicad` footprints where they exist |
+| O-2 | ~~Display module choice~~: closed, DLS29028B / MSP2834 (D-048, Q-35) |
+| O-3 | Footprints against the LCSC drawings. Stock KiCad footprints are placeholders: H11L1S lead span (SMDIP W9.53), LTV-817S lead span (10.16 ± 0.3 mm tip to tip, 1.0 mm feet, so ≈ 9.2 mm foot centers against the W9.53 footprint), MB10S (MBS vs the MBLS footprint used), 3528 RGB pin map against the LED_ARGB symbol numbering, KF128L and XY350V terminals (the Phoenix PT footprint used differs), GH header, HRO USB-C pin map. Use `easyeda2kicad` footprints where they exist |
 | O-4 | ~~VBUS hot-plug overshoot against the buck's abs max~~: closed by D-040, wide-input buck (§1) |
 | O-5 | Opto package creepage. Pad-to-pad across the 9.53 mm gull-wing span is ≈ 7 mm, which comfortably exceeds the 3 mm basic barrier (D-028). Confirm from the drawings |
-| O-6 | GPIO47/48 voltage on the N16R8 |
+| O-6 | GPIO47/48 voltage on the N16R8. GPIO47 now drives the module's backlight FET gate directly, so 1.8 V would leave it near threshold |

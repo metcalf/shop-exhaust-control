@@ -12,7 +12,7 @@ A summary of design discussions with Andrew in October 2026, before this repo ex
 Automatically set exhaust fan speed based on shop air quality. Keep day-to-day control local and physical, and tie it to the DC so exhaust boosts when the DC has been running. Ideally provide some ambient visualization of air quality (e.g. a reasonably visible color change when air quality goes beyond a certain point)
 
 ## Control-system philosophy
-- **Physical controls in the shop.** Buttons, knobs and a small display are fine; physical controls preferred over touch; no phone needed. Home Assistant handles history, alerts and texts.
+- **Physical controls in the shop.** Buttons, knobs and a small display are fine; physical controls preferred over touch; no phone needed. (v1 later chose a touch panel: D-048.) Home Assistant handles history, alerts and texts.
 - **Local autonomy.** All control logic runs on the ESP32 node and works with Wi-Fi or Home Assistant down.
 - **Separate from the DC controller.** The two systems are coupled by one signal ("DC running"). Shared UI, if any, lives in Home Assistant. Boosting exhaust is non-critical, so routing that signal through Home Assistant is acceptable; a dry contact or a direct node-to-node link is sturdier.
 

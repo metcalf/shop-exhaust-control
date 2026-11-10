@@ -63,6 +63,7 @@ Template:
 ## D-009: Occupancy-based Auto; encoder plus configurable buttons
 - Date: 2026-10-24
 - Status: Accepted (Andrew, direction); floor level and thresholds set at commissioning
+- Amended 2026-11-09 by D-048: the encoder and buttons are replaced by a touch panel. The Auto, hold and scene model stands.
 - Context: Requirements review. Spraying is infrequent and doesn't justify a dedicated button. Andrew expects the sensors to do most of the work, with manual overrides rare.
 - Decision: In Auto, an occupied shop always gets a low ventilation floor; the fan turns off only when the shop is vacant and the air is clear. Panel: encoder with push (multi-step hold entry, defaulting to the last values) plus about 4 unlit buttons whose assignments are configuration (initially Auto, Quiet, Boost, spare). Scenes stay as an extensible concept; Spray is a scene, not a button. No backlit buttons; state is shown on the display and the ambient indicator.
 - Alternatives considered:
@@ -197,6 +198,7 @@ Template:
 ## D-022: ESP32-S3-WROOM-1-N16R8, 2.8" IPS display module, LVGL
 - Date: 2026-10-25
 - Status: Proposed (G2)
+- Amended 2026-11-09 by D-048: the display is the capacitive-touch DLS29028B; "no touch" and the ST7789 option no longer apply.
 - Context: D-008 named the ESP32-S3. D-016 flagged NimBLE RAM, with a PSRAM module as the fallback. Andrew's hvac_control already uses LVGL.
 - Decision: The N16R8 module (octal PSRAM, so GPIO 35–37 are unavailable). A 2.8" 240×320 **IPS** SPI display module (ST7789 or ILI9341-IPS class) on a header, **no touch** (Andrew, 2026-10-28; was 2.0"). LVGL via `esp_lcd`.
 - Alternatives considered: N8 without PSRAM (cheaper by ~$1; RAM is tight with NimBLE, TLS OTA and LVGL). A bare FPC panel (cheaper, but a fine-pitch connector and backlight circuit on our board). 2.0" IPS (smaller enclosure; same 240×320, so text is ~30 % smaller at the user's distance under the cabinet). 2.8" TN (common and cheap, but washes out viewed from below). Resistive touch (dulls the image; the encoder and buttons cover input, D-009).
@@ -418,3 +420,10 @@ Template:
 - Alternatives considered: keep it (five cheap parts, but a firmware sequence and a bench check for a failure with no evidence).
 - Consequences: a truly locked-up module needs a USB replug, since a node reboot doesn't reset it. Firmware should reset and retry the module at startup (the Tasmota SEN55 report needed this).
 
+## D-048: Touch-only panel on the Elecrow DLS29028B
+- Date: 2026-11-09
+- Status: Accepted (Andrew, 2026-11-09). Amends D-009 and D-022, and §3, FR-01, NFR-04, NFR-10 and AC-08 of the approved requirements. Answers Q-35
+- Context: The physical panel had reached a workable design (sleeves, floating rods, vinyl overlay) but needed real mechanical work. Andrew chose to avoid that complexity. Removing the controls saves only about $13, so cost wasn't the driver. The module with touch was already the default for Q-35 at the same price.
+- Decision: The 2.8" capacitive touch module (Elecrow DLS29028B, equivalent to LCDwiki MSP2834; ILI9341V, FT6336G) is the only local input. Encoder, four buttons and the backlight FET are removed. J6 is a 1×14 socket with VCC on `+5V` and GPIO47 driving the backlight pin. Touch uses its own I²C bus on GPIO15/16 with RST and INT on 17/18. Two 2N7002 shifters are required, because the module pulls CTP_SCL and CTP_SDA to VCC on the header side. Bus at 100 kHz.
+- Alternatives considered: Physical controls (recorded in `docs/physical-controls-record.md`). A larger 3.5" display (more enclosure, cost and sourcing for no need at arm's length). Display boards with the ESP32 on them, with an I²C expander and WS2812B on a carrier: the CYD and Elecrow DIS04028H-1 have too few pins and no PSRAM, and the Waveshare ESP32-S3-Touch-LCD-2.8 saves only ≈ $15–25 net while keeping a custom carrier. Other touch-line options: removing R4/R6 on each module (rework that a replacement silently undoes), VCC at 3.3 V (dims the backlight). AO3400A shifters (630 pF Ciss, ≈ 5 µs rise).
+- Consequences: No gloved or by-feel operation, and no local control if the panel or touch controller fails; control logic keeps running and Home Assistant can still trigger actions. The bezel exposes the glass, with a gasket around it for NFR-04. `+5V` carries the module, within the 10 µF limit because J6 has no local bulk cap. Five GPIOs remain spare (2, 10, 38–40). 2-board PCBA ≈ $135 on Standard, 29 unique parts.

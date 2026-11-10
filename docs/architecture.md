@@ -26,7 +26,7 @@ flowchart LR
       subgraph NODE["Node side (GND, 12/5/3.3 V)"]
         MCU["ESP32-S3-WROOM-1-N16R8<br/>Wi-Fi + BLE (D-022)"]
         PWR["TVS<br/>5→3.3 V regulator"]
-        PANEL["2.8&quot; IPS display (no touch), EC11 encoder,<br/>4 buttons"]
+        PANEL["2.8&quot; IPS capacitive touch module<br/>(DLS29028B, D-048)"]
         LEDS["Plain RGB LEDs, 3 FETs →<br/>short light strip (D-031)"]
         USB["USB-C: power in + flash/log,<br/>external (D-030)"]
       end
@@ -72,8 +72,8 @@ flowchart LR
 - **Occupancy:** AC-input opto from 24 VAC (`docs/interfaces.md` §2.2).
 - **Wired DC backup:** the same AC-input opto circuit, accepting 12–24 V AC/DC (`docs/interfaces.md` §2.3, D-025).
 - **Power:** 5 V USB-C in (also the flash/log port), one 5→3.3 V regulator (`docs/interfaces.md` §3, D-030). Peak ≈ 5.5 W for milliseconds, typical ≈ 1.7 W.
-- **Panel:** display module on a header; encoder and tact switches mounted on the PCB front, behind the bezel. Plain RGB LEDs feed a short light strip along one display edge (D-031).
-- **PCBA (NFR-05):** SMT on one side from JLC basic/preferred parts where possible. Through-hole (terminal blocks, display header, encoder) is hand-soldered or done as a THT add-on. The tier rules are checked in the phase 3 vendor research.
+- **Panel:** touch display module on a header, behind the bezel (D-048). Plain RGB LEDs feed a short light strip along one display edge (D-031).
+- **PCBA (NFR-05):** SMT on one side from JLC basic/preferred parts where possible. Through-hole (terminal blocks, display header) is hand-soldered or done as a THT add-on. The tier rules are checked in the phase 3 vendor research.
 - **Off-board wiring:** fan cable hard-wired into a 4-pos terminal (D-026), 2-conductor thermostat wire to the 24 VAC terminals, optional 2-conductor DC backup, USB-C cable for power. WireViz drawing in `electrical/` in phase 3 (D-010).
 
 ## 4. Firmware (ESP-IDF, C++)
@@ -84,11 +84,11 @@ firmware/
   components/
     esp-iot-core/             submodule (D-007): Wi-Fi, OTA, remote log, BaseMqttClient, NetworkTaskManager
     exhaust_logic/            pure C++20: Controller, Sampler, AutoDemand, ModeManager, OutputShaper,
-                              Faults, Maintenance, UiInput, DcLinkParser, Config.h (P-nn, C-nn, button map)
+                              Faults, Maintenance, UiInput, DcLinkParser, Config.h (P-nn, C-nn, on-screen action map)
     gas_index/                Sensirion gas index algorithm (BSD-3, vendored C), D-017
     hass/                     HassMessages (pure) + MqttExhaustHomeClient (BaseMqttClient)
     drivers/                  Sen6x (I²C), FanPort (LEDC 5 kHz + tach ISR + present), Occupancy,
-                              Panel (PCNT encoder, buttons), Display (esp_lcd ST7789/ILI9341 + LVGL), Indicator (LEDC RGB)
+                              Display (esp_lcd ILI9341 + LVGL), Touch (FT6336G), Indicator (LEDC RGB)
     dc_link/                  NimBLE passive scanner → DcLinkParser
   test/                       host GoogleTest (control-logic.md §10), results committed
 ```
@@ -104,14 +104,14 @@ firmware/
 - The task watchdog covers `control` and `sensor` and panics on a stall (`CONFIG_ESP_TASK_WDT_PANIC`); a stuck task means a reboot, with no in-place recovery. On any reset the opto LED goes dark, so the fan is off in hardware until `control` decides (SR-08). The active hold or scene survives every reset except power loss, through RTC no-init memory (NFR-07, D-027), so an OTA reboot or a crash during Spray costs a few seconds of fan-off, not the run-on. OTA isn't deferred.
 - Nothing in `control` waits on the network (NFR-01). MQTT publishing reads a copy of the snapshot.
 - BLE/Wi-Fi coexistence: the ESP-IDF software coexistence is on; the 30 % scan duty is tested alongside OTA (AC-22).
-- `P-nn`/`C-nn` and the button map live in one `Config.h`. Changes go by OTA (NFR-10 dropped, NFR-11).
+- `P-nn`/`C-nn` and the on-screen action map live in one `Config.h`. Changes go by OTA (NFR-10 dropped, NFR-11).
 
 ## 5. Mechanical concept (D-019, details in phase 3)
 
-- One printed enclosure (MJF PA12, D-011) with two compartments: a **sealed electronics compartment** on top (gasketed lid, no vents, sealed encoder shaft and membrane-covered buttons; IP5X intent, NFR-04), and an **open sensor bay** below it, its inlet on the corner-side (north) end, sheltered, not facing down, outlet separated (NFR-09).
+- One printed enclosure (MJF PA12, D-011) with two compartments: a **sealed electronics compartment** on top (gasketed lid, no vents, gasket around the touch glass; IP5X intent, NFR-04), and an **open sensor bay** below it, its inlet on the corner-side (north) end, sheltered, not facing down, outlet separated (NFR-09).
 - Bay below the electronics, with an insulating air gap in the dividing wall: it keeps the SEN65 below and away from the ~1.3 W of electronics heat, as Sensirion recommends, and the RH/T offset is tuned at commissioning (FR-20).
 - Tool-less bay cover. The module unplugs at its own end, and its cable crosses into the electronics compartment through a sealed grommet (NFR-03, NFR-04).
-- Display, encoder, buttons and light strip on the front, which faces across the kids' bench; the strip wraps the room-side corner so it reads down the shop (D-031, D-033).
+- Touch display and light strip on the front, which faces across the kids' bench; the strip wraps the room-side corner so it reads down the shop (D-031, D-033).
 - Wall-mounted on a cleat on the refrigerator side panel, one locking screw (`docs/interfaces.md` §5, D-033).
 - No part of the controller is in the exhaust airstream (SR-02): it's outside the cabinet, ≥ 3 ft from the hood.
 
@@ -130,6 +130,7 @@ firmware/
 | Spoofed BLE frame | False boost only | Accepted risk; allow-list option | `interfaces.md` §1 |
 | 24 VAC input lost | Reads vacant | Trusted signal, no handling (Q-17); display shows Vacant | FR-07 |
 | Fan-port mains fault (port not SELV) | Hazard on fan-side circuits | ≥ 3 mm barrier, rated optos; nothing fan-side is touchable; flashing USB is on the node side | SR-09, AC-26 |
+| Touch panel or controller fails | No local input | Control logic keeps running; holds time out to Auto; Home Assistant can still trigger the same actions (D-009). There is no physical fallback (D-048) | FR-01 |
 | Fan wires mis-terminated at J-FAN | Fan won't run, or runs full; fan-side parts stressed | Color-coded terminal labels; AC-18 bench check before install. No USB-C fan cable reaches the node, so it can't meet the USB port (D-026, D-030) | SR-09, AC-18 |
 | Adapter fault | Node dead → fan off | Listed LPS adapter, TVS | SR-01, SR-08 |
 
@@ -137,7 +138,7 @@ firmware/
 
 | Req | Design element | Verified by |
 |-----|----------------|-------------|
-| FR-01 | `UiInput`, button map in `Config.h`, encoder flow (control-logic §8) | AC-08 |
+| FR-01 | `UiInput`, on-screen action map in `Config.h`, touch flow (control-logic §8) | AC-08 |
 | FR-02 | `AutoDemand` §4, `OutputShaper` §7 | AC-01 |
 | FR-04, FR-06 | `Sampler` §5 | AC-02 |
 | FR-05 | `Sampler` rest rule and decay fit §5; `decay_rate`/`airflow_est` entities | AC-03 |
@@ -150,7 +151,7 @@ firmware/
 | FR-14 | Host-side gas index, paused across Idle (D-017); VocValid gating | AC-10, AC-28 |
 | FR-15 | Indicator §8; light strip (§5) | AC-11 |
 | FR-18 | Tach and presence optos; `fan_tach`/`fan_port` faults | AC-07 |
-| FR-08 (override) | Auto press and new holds/scenes end Spray/SprayRunOn (control-logic §2, D-024) | AC-05 |
+| FR-08 (override) | Auto tap and new holds/scenes end Spray/SprayRunOn (control-logic §2, D-024) | AC-05 |
 | FR-19 | Vacant cap/limit §4; SprayRunOn vacant exit §2 | AC-27 |
 | NFR-01 | No network dependence in `control` (§4) | AC-12 |
 | NFR-02 | Sampler duty; weekly clean; sensor-hours entity | AC-13 |
@@ -178,15 +179,15 @@ These are **estimates from memory, not checked against distributors** (except th
 | Item | Est. USD |
 |------|---------:|
 | SEN65 (SEN66 is $62; SEN65 assumed lower) | 45 |
-| On-board parts per board: ESP32-S3 module 5, display module 11, encoder + knob 4, switches 2, RGB LEDs + FETs 1, optos 4, power 5, connectors 2, passives/ESD 3 | 37 |
-| Second assembled board (JLC PCBA minimum quantity is 2; a spare; display module optional) | 37 |
+| On-board parts per board: ESP32-S3 module 5, display module 11, RGB LEDs + FETs 1, optos 4, power 5, connectors 2, passives/ESD 3 | 31 |
+| Second assembled board (JLC PCBA minimum quantity is 2; a spare; display module optional) | 31 |
 | PCB fab + PCBA fees (setup, stencil, extended-part fees) | 35 |
 | Enclosure, MJF PA12, two parts + bracket | 40 |
 | Gasket, heat-set inserts, screws, diffuser | 10 |
 | 5 V USB-C listed adapter (≥ 2 A) + 3 m USB-C data cable | 15 |
 | 4-conductor extension for the fan cable if needed, and 18/2 thermostat wire for occupancy (and the DC backup) | 15 |
 | Shipping and duties (PCBA and print in one JLC order) | 35 |
-| **Total** | **≈ 270** (range ≈ 230–300) |
+| **Total** | **≈ 258** (range ≈ 220–290); current figures are in `sourcing/priced-parts.md` |
 
 Under the $300 ceiling, but not "well below" it. Most of it is fixed overhead (PCBA fees, the second board, shipping and duties) and the sensor. The levers, in order: one JLC order for PCBA and print (shipping); minimize extended parts (fees); a smaller enclosure, or FDM instead of MJF; a cheaper display module. Tariffs and shipping are the main uncertainty.
 
@@ -199,6 +200,6 @@ Under the $300 ceiling, but not "well below" it. Most of it is fixed overhead (P
 - ESP32-S3 GPIO reset states and boot glitches on the GPIOs chosen for `FAN_PWM`; LEDC configured at duty 0 before the pin is routed.
 - Boot config: task watchdog panic on, RTC watchdog on; reset-reason handling for the RTC mode snapshot (D-027). On the board: BOOT (GPIO0) and EN recovery pads (D-041), EN RC per the Espressif hardware design guide (G2 review S-14).
 - Indicator: plain RGB LED part (JLC basic if possible) (D-031).
-- Display module choice: 2.8" 240×320 **IPS confirmed from the panel datasheet, not the listing**, no touch layer; header pinout, backlight drive and current, mechanical outline (D-022).
+- Display module choice: 2.8" 240×320 **IPS confirmed from the panel datasheet, not the listing**, capacitive touch (D-048); header pinout, backlight drive and current, mechanical outline (D-022).
 - JLC Economic PCBA rules (STATE action), opto/creepage footprints, and the antenna keep-out on the module footprint.
 - Wired DC input resistor values against the opto's CTR at 12 V DC and LED rating at 24 VAC + 10 % (`docs/interfaces.md` §2.3).

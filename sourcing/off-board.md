@@ -9,7 +9,7 @@ Checked 2026-10-28. Prices are USD qty 1 unless noted. `bom.csv` does not exist 
 |---|---|---|---|---|---|---|---|
 | 1a | PM/RH/T/VOC/NOx sensor | Sensirion **SEN65-SIN-T** | DigiKey 1649-SEN65-SIN-T-ND | $29.55 | **0** (60 expected 2027-01-20) | 17 wk | Out of stock at DigiKey. See notes. |
 | 1b | Sensor cable | Sensirion SEN5X JUMPER 6-PIN JST GHR-06V-S cable set | DigiKey 1649-SEN5XJUMPER6-PINJSTGHR-06V-SCABLESET-ND | $6.09 | 572 | 4 wk | Length and 1:1 mapping not on the page |
-| 2 | 2.8" 240x320 IPS SPI TFT, no touch | Newhaven **NHD-2.8-CSXP-BREAKOUT** (ST7789VI) | DigiKey (page: digikey.com/.../NHD-2-8-CSXP-BREAKOUT/28257914) | $28.95 | 57 | 16 wk | Needs 6 resistor changes to select 4-wire SPI. Has SD socket. See notes. |
+| 2 | 2.8" 240x320 IPS SPI TFT, capacitive touch | Elecrow **DLS29028B** (LCDwiki MSP2834; ILI9341V, FT6336G) | [Elecrow](https://elecrow.com/2-8-ips-spi-lcd-capacitive-touch-module-ili9341-driver-240-320-resolution.html) | $10.90 | In stock (fetched 2026-11-09) | n/a | D-048. See §2a. The Elecrow page doesn't name MSP2834. |
 | 3 | 5 V USB-C wall adapter | Raspberry Pi 15 W USB-C PSU, US, white **SC0445** (model KSA-15E-051300HU) | Newark SC0445 (Newark part 03AH7033) | $11.12 | 1,411 | n/a | **UL file number not found.** Not stocked at DigiKey. |
 | 4 | USB-C to USB-C cable, 2 m | StarTech **USB2C5C2M** | DigiKey (digikey.com/.../USB2C5C2M/22160437) | $27.08 | 67 (4,670 factory) | 2 wk | 24 AWG power pair, 26 AWG listed for the other conductors. Data-pair gauge not published. |
 | 5a | Cable gland x3 | Essentra **CG-PG7-2-BK**, PG7, 3.0-6.5 mm, IP68, nylon | DigiKey RPC1898-ND | $1.32 (qty 10: $1.12) | 5,344 | 31 wk listed, but stock is on hand | Locknut probably separate (CGLN-PG7-BK). See notes. |
@@ -45,7 +45,7 @@ Other facts from the datasheet:
 - If the mapping turns out not to be 1:1, or the length is too short: Adafruit 5754 "JST GH 1.25 mm 6-pin cable, 100 mm" is a different fix. I haven't verified its mapping or stock and am not proposing it as a second part.
 - The ESP32 end of the cable is a bare-wire or mating-connector question for the PCB, so the PCB connector is a G3 design item.
 
-## 2. Display: Newhaven NHD-2.8-CSXP-BREAKOUT
+## 2. Display: Newhaven NHD-2.8-CSXP-BREAKOUT (not chosen; the fallback)
 
 Datasheet: [NHD-2.8-CSXP-BREAKOUT spec, rev 2, 2026-08-26](https://newhavendisplay.com/content/specs/NHD-2.8-CSXP-BREAKOUT.pdf). DigiKey: $28.95, 57 in stock, 16-week standard lead time ("2.8 IPS TFT ARDUINO BREAKOUT MOD.", non-touch).
 
@@ -91,16 +91,19 @@ Datasheet: [NHD-2.8-CSXP-BREAKOUT spec, rev 2, 2026-08-26](https://newhavendispl
 
 The mechanical drawing is an image that I read, but the glass-to-hole offsets above are the ones I am least sure of. I recommend Andrew pull the datasheet drawing into the enclosure model rather than using my transcription.
 
-## 2a. Display, proposed generic: LCDwiki MSP2833 (2.8" IPS SPI, no touch)
+## 2a. Display, chosen: Elecrow DLS29028B / LCDwiki MSP2834 (2.8" IPS SPI, capacitive touch; D-048)
+
+The notes below were written for the no-touch MSP2833 and apply to its touch twin, with the differences in the last two bullets.
 
 Checked 2026-10-29 against the LCDwiki EN user manual, the CN spec and the MSP2833 outline drawing ([wiki](https://lcdwiki.com/2.8inch_IPS_SPI_Module_ILI9341), [files](https://www.lcdwiki.com/res/MSP2833_MSP2834)).
 
 - **IPS is stated in the spec and on the drawing** ("Panel Type IPS", "DISPLAY TYPE: 2.8\" IPS TFT"). That's the bar the generic listings failed. The controller is the **ILI9341V, not ST7789**. I found no 2.8" ST7789 generic with an IPS datasheet. ESP-IDF's `esp_lcd_ili9341` and LVGL both cover the ILI9341V, so the firmware cost is nil.
 - **Header: 1×14, 2.54 mm.** 1 VCC, 2 GND, 3 LCD_CS, 4 LCD_RST, 5 LCD_RS (D/C), 6 SDI/MOSI, 7 SCK, 8 LED, 9 SDO/MISO, 10–13 CTP_SCL/RST/SDA/INT (NC on the MSP2833), 14 SD_CS. Pins 1–8 match the current J6 order, so J6 becomes a 1×14 socket with 9–14 NC, and the extra pins add mechanical support.
 - **Power.** "Working Voltage 5.0 V", 0.4 W, backlight 80 mA (4 white LEDs). The on-board LDO makes 3.3 V. The manual says to feed it 5 V: at 3.3 V the backlight dims. It has an on-board level converter, so 3.3 V logic is fine. **So J6 VCC moves to +5V**, which also takes ≈ 80–100 mA off the buck.
-- **Backlight.** The LED pin goes through a BSS138 with a pull-up. Floating or high turns it on and low turns it off, and the manual describes PWM dimming on this pin. **Q3, the AO3401A high-side backlight switch, can go**, with GPIO47 driving LED directly. That's one fewer part, but no unique-part saving, since Q2 still uses the AO3401A. O-6 still matters here: if GPIO47 turned out to be 1.8 V, a high would give the BSS138 only ≈ 1.5 V of V_GS, which is near threshold, so the backlight might come up dim. Floating at boot gives full on.
+- **Backlight.** The LED pin goes through a BSS138 with a pull-up. Floating or high turns it on and low turns it off, and the manual describes PWM dimming on this pin. The AO3401A high-side backlight switch is gone (D-048), with GPIO47 driving LED directly. O-6 still matters: if GPIO47 turned out to be 1.8 V, a high would give the BSS138 only ≈ 1.5 V of V_GS, which is near threshold, so the backlight might come up dim. Floating at boot gives full on.
 - **Outline (MSP2833 drawing, ±0.2).** PCB 50.00 × 86.00 × 1.60. Four holes on a 44.00 × 76.08 pattern, 3.00 from the edges (the hole diameter isn't legible in the text layer; take it from the PDF, likely 3.0 mm). LCD outline 50.00 × 69.20, active area 43.20 × 57.60, header 13 × 2.54 = 33.02 span. Total height with pin header 12.78 mm, or 4.40 mm without. Take the panel-to-hole offsets from the PDF drawing for the bezel, not from this transcription.
-- **Buying it.** I found no retail listing for the MSP2833 itself. Elecrow sells the **touch twin MSP2834** as DLS29028B, $10.90, in stock ([Elecrow](https://elecrow.com/2-8-ips-spi-lcd-capacitive-touch-module-ili9341-driver-240-320-resolution.html)). It has the same header, with the CTP pins left NC. The touch glass adds thickness and may change the glass outline, so pin the bezel model to whichever one you buy. Before ordering, check that the listing's SKU reads MSP2833/MSP2834 and not a lookalike.
+- **Touch (MSP2834 schematic and drawing, read 2026-11-09).** FT6336G over I²C, CTP pins 10–13. CTP_SCL and CTP_SDA have 10 k to VCC on the header side through a BSS138 stage, so they idle at 5 V with VCC at 5 V; our board shifts them to 3.3 V (`pcb/design.md` §7). 14.28 mm overall with the pin header (12.78 without touch); 5.90 ± 0.2 from PCB back to glass front.
+- **Buying it.** Elecrow DLS29028B, $10.90, in stock (fetched 2026-11-09; [Elecrow](https://elecrow.com/2-8-ips-spi-lcd-capacitive-touch-module-ili9341-driver-240-320-resolution.html)). Module spec, header and outline match the LCDwiki MSP2834, but the Elecrow page doesn't name it, so check the received board against the drawing before committing the bezel. Elecrow shipping isn't in the priced total.
 
 ## 3. USB-C wall adapter: Raspberry Pi 15 W USB-C Power Supply, US
 
@@ -138,7 +141,7 @@ Checked 2026-10-29 against the LCDwiki EN user manual, the CN spec and the MSP28
 ```
 OB1,"PM/RH/T/VOC/NOx sensor",Sensirion,SEN65-SIN-T,DigiKey,1649-SEN65-SIN-T-ND,1,29.55,0 (60 exp 2027-01-20),17 wk,2026-10-28,"3.3V supply; 0 stock - check Mouser 403-SEN65-SIN-T",
 OB2,"Sensor cable JST GHR-06V-S 6-pin",Sensirion,SEN5X JUMPER 6-PIN JST GHR-06V-S CABLE SET,DigiKey,1649-SEN5XJUMPER6-PINJSTGHR-06V-SCABLESET-ND,1,6.09,572,4 wk,2026-10-28,"length and 1:1 mapping unverified",
-OB3,"2.8in 240x320 IPS TFT breakout non-touch ST7789VI",Newhaven,NHD-2.8-CSXP-BREAKOUT,DigiKey,NHD-2.8-CSXP-BREAKOUT (DigiKey SKU not captured),1,28.95,57,16 wk,2026-10-28,"needs R1-R6 rework for 4-wire SPI; 5V ~200mA",
+OB3,"2.8in 240x320 IPS SPI TFT capacitive touch ILI9341V FT6336G",Elecrow,DLS29028B,Elecrow,DLS29028B,1,10.90,In stock,n/a,2026-11-09,"LCDwiki MSP2834; VCC 5 V",
 OB4,"5V USB-C wall adapter 15W UL (file no. TBD)",Raspberry Pi,SC0445,Newark,03AH7033,1,11.12,1411,n/a,2026-10-28,"UL file number not found; DigiKey not stocked",
 OB5,"USB-C to USB-C cable 2m USB2.0",StarTech,USB2C5C2M,DigiKey,USB2C5C2M (DigiKey SKU not captured),1,27.08,67,2 wk,2026-10-28,"24/26 AWG",
 OB6,"Cable gland PG7 3-6.5mm IP68 nylon",Essentra,CG-PG7-2-BK,DigiKey,RPC1898-ND,3,1.32,5344,31 wk listed,2026-10-28,"locknut CGLN-PG7-BK may be needed",

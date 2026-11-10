@@ -18,7 +18,7 @@ PRICE = {
     ("3.3k", "R_0603"): ("C22978", "Basic", 2987300, 0.0022, "passives"),
     ("4.7k", "R_0603"): ("C23162", "Basic", 3636100, 0.0028, "passives"),
     ("5.1k", "R_0603"): ("C23186", "Basic?", 16428100, 0.0016, "passives"),
-    ("10k", "R_0603"): ("C25804", "Basic", 0, 0.0022, "passives (0 LCSC stock; fallback C98220 Ext.)"),
+    ("10k", "R_0603"): ("C25804", "Basic", 6238700, 0.0022, "LCSC API 2026-11-09"),
     ("22k", "R_0603"): ("C31850", "Basic", 1837200, 0.0042, "passives"),
     ("47k", "R_0603"): ("C25819", "Basic", 584000, 0.0020, "passives"),
     ("100k", "R_0603"): ("C25803", "Basic", 9309700, 0.0030, "passives"),
@@ -35,15 +35,10 @@ PRICE = {
     ("J-FAN", ""): ("C557656", "Extended", 3495, 0.3015, "ui-connectors"),
     ("KF128L-3.5-2P", ""): ("C474930", "Extended", 3000, 0.1571, "ui-connectors"),
     ("SM06B-GHS-TB", ""): ("C133065", "Extended", 25620, 0.3599, "ui-connectors"),
-    ("display 1x8", ""): ("C2897371", "Extended", 10272, 0.1547, "ui-connectors"),
+    ("display 1x14", ""): ("C2897377", "Extended", 15786, 0.2469, "LCSC API 2026-11-09 (D-048)"),
     ("2.2u", ""): ("C135262", "Extended", 130370, 0.0537, "power"),
-    ("AO3401A", ""): ("C15127", "Basic", 475090, 0.0968, "isolation"),
+    ("2N7002", ""): ("C8545", "Basic", 5325150, 0.0169, "LCSC API 2026-11-09 (D-048)"),
     ("AO3400A", ""): ("C20917", "Basic", 615350, 0.0897, "passives"),
-    ("EC11E18244A5", ""): ("C255515", "Extended", 262, 2.1026, "ui-connectors"),
-    ("B1", ""): ("C2845262", "Extended", 1120, 0.0240, "ui-connectors"),
-    ("B2", ""): ("C2845262", "Extended", 1120, 0.0240, "ui-connectors"),
-    ("B3", ""): ("C2845262", "Extended", 1120, 0.0240, "ui-connectors"),
-    ("B4", ""): ("C2845262", "Extended", 1120, 0.0240, "ui-connectors"),
     ("ESP32-S3-WROOM-1-N16R8", ""): ("C2913202", "Extended", 31339, 4.7466, "passives (confirm)"),
     ("USBLC6-2SC6", ""): ("C2827654", "Extended", 103720, 0.0452, "power"),
     ("AP63203WU-7", ""): ("C780769", "Extended", 1337, 1.2115, "LCSC API 2026-11-09 (D-040)"),
@@ -51,7 +46,7 @@ PRICE = {
     ("LTV-817S-TA1-C", ""): ("C109227", "Basic", 282150, 0.0818, "LCSC API 2026-11-09 (D-045)"),
 }
 NO_PART = ("TestPoint", "MountingHole")
-THT = ("C557656", "C474930", "C2897371", "C255515", "C2845262")
+THT = ("C557656", "C474930", "C2897377")
 
 # JLCPCB Standard PCBA fees (sourcing/pcba-vendor.md, 2026-10-28)
 SETUP, STENCIL, HAND_SOLDER, PER_UNIQUE = 25.56, 8.21, 3.58, 1.53
@@ -82,7 +77,7 @@ def main(ns):
     for lcsc, (key, q, refs) in sorted(lines.items(), key=lambda x: -PRICE[x[1][0]][3] * x[1][1]):
         _l, cls, stock, unit, _src = PRICE[key]
         per_board += unit * q
-        pins = 40 if "ESP" in key[0] else (16 if "TYPE-C" in key[0] else 4)
+        pins = 40 if "ESP" in key[0] else (16 if "TYPE-C" in key[0] else (14 if "1x14" in key[0] else 4))
         if lcsc in THT:
             tht_joints += q * pins
         else:

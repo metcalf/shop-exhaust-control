@@ -2,13 +2,13 @@
 
 **Updated:** 2026-11-09
 **Phase:** 3, detailed design (**G2 approved 2026-10-28**). D-029 order: vendor check ✓ → schematic ✓ → priced parts list ✓ → **stopped for Andrew** → layout, mech, firmware.
-**Waiting on:** Andrew: Q-33 (OK to start layout; assembly-route costs now in `sourcing/priced-parts.md`) and Q-35 (MSP2833/MSP2834 proposed) block layout. Q-34 and Q-36 answered.
+**Waiting on:** Andrew: Q-33 (OK to start layout; assembly-route costs in `sourcing/priced-parts.md`) blocks layout. Q-34, Q-35 and Q-36 answered.
 
 ## Next actions (in order; each is Claude's unless marked)
-1. **Andrew:** answer Q-33 (layout OK; route A/B/C) and Q-35 (display). Optional: Q-37 (skip blocked nightlies).
+1. **Andrew:** answer Q-33 (layout OK; route A/B/C). Optional: Q-37 (skip blocked nightlies).
 2. Once Q-33 is OK'd: **layout**.
    - Fix the footprints against the LCSC drawings, using `easyeda2kicad` (in `.venv`) where stock ones differ (design.md O-3).
-   - Settle O-6 (GPIO47/48 voltage; it now also affects the MSP283x backlight high level). Adapt J6 to the Q-35 display: if MSP283x, a 1×14 socket with VCC from +5V, LED straight from GPIO47, and the backlight FET (now Q2) removed (`sourcing/off-board.md` §2a). Update check.py, design.md §7 and O-2.
+   - Settle O-6 (GPIO47/48 voltage; GPIO47 now drives the module's backlight FET gate directly).
    - Write the creepage DRC rules from `pcb/SAFETY.md` and lay out the 2-layer board.
    - Run DRC, export Gerbers/BOM/CPL. After layout starts the `.kicad_sch` becomes the source (D-035); keep running `pcb/gen/check.py` on it.
 3. After layout: mech (build123d, positions from the `.kicad_pcb`), then the firmware host-tested logic.
@@ -16,9 +16,10 @@
    - G2 review items: S-3 overspeed / tach at 0 %; S-6 frozen-sequence DC frames (record in D-021 when the DC project starts); S-7 SprayRunOn upper bound while occupied (an FR-08 change, ask Andrew then); S-8, S-9, S-10, S-11, S-12, S-15; S-16 MQTT keepalive ≤ 30 s (check `BaseMqttClient`).
    - S-14 boot config: TWDT panic, RTC WDT, LEDC at duty 0 before routing.
    - SEN65 reset-and-retry at startup; I²C bus recovery and module reset on `sensor_no_data` (D-047).
+   - Touch UI (`docs/control-logic.md` §8): FT6336G on its own 100 kHz I²C bus (D-048).
 
 ## Schematic status (where it stopped)
-- `pcb/gen/run.sh` regenerates `pcb/exhaust.kicad_sch`, runs ERC (0 violations) and the netlist assertions (all pass), and exports the SVG and raw BOM to `pcb/reports/`. 117 parts, 31 unique LCSC parts.
+- `pcb/gen/run.sh` regenerates `pcb/exhaust.kicad_sch`, runs ERC (0 violations) and the netlist assertions (all pass), and exports the SVG and raw BOM to `pcb/reports/`. 101 parts, 29 unique LCSC parts.
 - G2 review hardware items folded in: S-2 (fan side ≤ 4.1 mA at datasheet max), S-4 (`pcb/SAFETY.md`, every crossing asserted), S-5 (D-036), S-14 (EN RC, BOOT/EN recovery pads per D-041, strapping pins asserted unconnected), S-13 and S-17 (already applied). Interfaces §2.2–2.3 still name the LTV-814; D-036 supersedes it, and the doc gets updated at layout.
 - Generator draws wires within blocks and power symbols for GND/+3V3/+5V (D-038, at Andrew's request during his schematic review). Netlist unchanged.
 - Known cosmetic issues: field text on rotated parts needs GUI touch-up; placement wasn't laid out for wiring, so some blocks are still label-heavy.
@@ -29,7 +30,7 @@
 - No mains anywhere (D-018), so G3 is light: receptacle, the listing of Andrew's own supply (Q-36) and the 24 VAC hookup.
 
 ## Blockers
-- Layout is blocked on Q-33 (D-029 checkpoint) and Q-35 (display).
+- Layout is blocked on Q-33 (D-029 checkpoint).
 
 ## Log
 - 2026-10-22: Repo created from the kickoff conversation. See `docs/context.md`.
@@ -76,3 +77,4 @@
 - 2026-11-09: Optos changed to LTV-817S-TA1-C (Basic; Andrew; D-045). Added SEN_SDA and SEN_SCL test pads. ERC 0, netlist assertions pass. Standard PCBA for 2 boards still ≈ $145.
 - 2026-11-09: Removed the SMBJ48CA TVS diodes from J-OCC and J-DC (Andrew; D-046). ERC 0, netlist assertions pass. Standard PCBA for 2 boards ≈ $143, total ≈ $253–283.
 - 2026-11-09: Removed the SEN65 power switch; sensor on `+3V3`, GPIO10 spare (Andrew; D-047). ERC 0, netlist assertions pass. Cost unchanged at ≈ $143 for 2 boards.
+- 2026-11-09: Touch-only panel on the Elecrow DLS29028B; encoder, buttons and backlight FET removed; J6 1×14 on `+5V`; 2N7002 touch I²C shifters (Andrew; D-048, Q-35). ERC 0, netlist assertions pass. 2-board PCBA ≈ $135, project ≈ $242–267. The physical-controls design is recorded in `docs/physical-controls-record.md`.

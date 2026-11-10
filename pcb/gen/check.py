@@ -114,7 +114,6 @@ def has_res(a, b):
     return any({net_of(r, 1), net_of(r, 2)} == {a, b} for r in refs_on(a) if r.startswith("R"))
 
 
-check(has_res("DISP_BL", "+3V3"), "backlight P-FET gate pull-up")
 for c in "RGB":
     check(has_res(f"IND_{c}_G", "GND"), f"IND_{c} gate pull-down")
 check(has_res("SEN_SDA", "+3V3") and has_res("SEN_SCL", "+3V3"), "I2C pull-ups to +3V3 (D-047)")
@@ -125,8 +124,8 @@ check(has_res("EN", "+3V3"), "EN pull-up")
 GPIO = {"IO1": "DC_IN", "IO4": "FAN_PWM", "IO5": "FAN_TACH", "IO6": "FAN_PRESENT",
         "IO7": "OCC_IN", "IO8": "SEN_SDA", "IO9": "SEN_SCL",
         "IO11": "DISP_MOSI", "IO12": "DISP_SCLK", "IO13": "DISP_CS", "IO14": "DISP_DC", "IO21": "DISP_RST",
-        "IO47": "DISP_BL", "IO15": "ENC_A", "IO16": "ENC_B", "IO17": "ENC_SW", "IO18": "BTN1",
-        "IO38": "BTN2", "IO39": "BTN3", "IO40": "BTN4", "IO48": "IND_R_G", "IO41": "IND_G_G",
+        "IO47": "DISP_BL", "IO15": "TP_SCL", "IO16": "TP_SDA", "IO17": "TP_RST", "IO18": "TP_INT",
+        "IO48": "IND_R_G", "IO41": "IND_G_G",
         "IO42": "IND_B_G", "IO0": "BOOT"}
 ESP_PIN = {"IO0": 27, "IO1": 39, "IO2": 38, "IO4": 4, "IO5": 5, "IO6": 6, "IO7": 7, "IO8": 12, "IO9": 17,
            "IO10": 18, "IO11": 19, "IO12": 20, "IO13": 21, "IO14": 22, "IO15": 8, "IO16": 9, "IO17": 10,
@@ -134,8 +133,29 @@ ESP_PIN = {"IO0": 27, "IO1": 39, "IO2": 38, "IO4": 4, "IO5": 5, "IO6": 6, "IO7":
            "IO48": 25}
 for io, n in GPIO.items():
     check(net_of("U1", ESP_PIN[io]) == n, f"U1 {io} should be {n}, is {net_of('U1', ESP_PIN[io])}")
-for io_pin in (38, 18, 15, 26, 16, 28, 29, 30):   # IO2, IO10 spare (D-039, D-047); IO3, IO45, IO46 strapping; IO35-37 octal PSRAM
+for io_pin in (38, 18, 31, 32, 33, 15, 26, 16, 28, 29, 30):   # IO2, IO10, IO38-40 spare (D-039, D-047, D-048); IO3, IO45, IO46 strapping; IO35-37 octal PSRAM
     check(net_of("U1", io_pin).startswith("unconnected-"), f"U1 pin {io_pin} must be unconnected")
+
+# --- display + touch header (DLS29028B / MSP2834, D-048) ------------------------
+J6 = {1: "+5V", 2: "GND", 3: "DISP_CS", 4: "DISP_RST", 5: "DISP_DC", 6: "DISP_MOSI", 7: "DISP_SCLK", 8: "DISP_BL",
+      10: "TP_SCL_5V", 11: "TP_RST", 12: "TP_SDA_5V", 13: "TP_INT"}
+for pin, n in J6.items():
+    check(net_of("J6", pin) == n, f"J6 pin {pin} should be {n}, is {net_of('J6', pin)}")
+for pin in (9, 14):
+    check(net_of("J6", pin).startswith("unconnected-"), f"J6 pin {pin} must be unconnected")
+# The module pulls CTP SCL/SDA up to its VCC (5 V): no GPIO may sit on those nets.
+for n in ("TP_SCL", "TP_SDA"):
+    fets = [r for r in refs_on(n) if r.startswith("Q")]
+    check(len(fets) == 1 and comps[fets[0]]["value"] == "2N7002", f"{n}: one 2N7002 shifter")
+    if fets:
+        q = fets[0]     # 2N7002 symbol: 1 G, 2 S, 3 D
+        check(net_of(q, 1) == "+3V3" and net_of(q, 2) == n and net_of(q, 3) == n + "_5V", f"{q}: shifter wiring")
+    check(has_res(n, "+3V3"), f"{n}: 3.3 V pull-up")
+    check("U1" not in refs_on(n + "_5V"), f"{n}_5V must not reach the ESP32")
+for n in ("TP_RST", "TP_INT"):
+    check(has_res(n, "+3V3"), f"{n}: pull-up")
+for n in ("TP_SCL", "TP_SDA", "SEN_SCL", "SEN_SDA"):
+    check(n in nets, f"net {n} missing")
 
 # --- USB input and 3.3 V buck (D-040) -------------------------------------------
 UF = {"p": 1e-6, "n": 1e-3, "u": 1.0}

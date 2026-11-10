@@ -1,5 +1,7 @@
 # UI parts and board connectors (JLCPCB Standard PCBA)
 
+**2026-11-09 (D-048):** the encoder, front-panel tacts and 1×8 header are no longer used; J6 is C2897377 (1×14). Those entries are kept for `docs/physical-controls-record.md`.
+
 Checked 2026-10-28. Stock/price are LCSC product-detail data for that day (USD, price at qty 10 or nearest tier above the MOQ shown). JLC class and assembly type are from the jlcpcb.com part page. Assembly type: "SMT" = JLC places; "Wave" = THT, JLC wave-solders or hand-solders (Standard PCBA lists THT on the same side as SMT). Nothing here needs owner hand-soldering. Re-check stock at order time.
 
 Result up front: no part below is JLC Basic. Everything is Extended (+$1.53 each on Standard). The only Basic candidate is the SMD tact switch (C318884), and the JLC page did not state its class outright. Verify in the JLC order tool.

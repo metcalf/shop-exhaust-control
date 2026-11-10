@@ -24,7 +24,6 @@ P = {
     "BRIDGE": ("Diode_Bridge:MB6S", "Diode_SMD:Diode_Bridge_Vishay_MBLS", "C2488", "MB10S", "D"),
     "NFET": ("Transistor_FET:2N7002", "Package_TO_SOT_SMD:SOT-23", "C8545", "2N7002", "Q"),
     "NFET_LL": ("Transistor_FET:AO3400A", "Package_TO_SOT_SMD:SOT-23", "C20917", "AO3400A", "Q"),
-    "PFET": ("Transistor_FET:AO3401A", "Package_TO_SOT_SMD:SOT-23", "C15127", "AO3401A", "Q"),
 
     # power (sourcing/power.md)
     "USBC": ("Connector:USB_C_Receptacle_USB2.0_16P",
@@ -33,9 +32,6 @@ P = {
     "ESD": ("Power_Protection:USBLC6-2SC6", "Package_TO_SOT_SMD:SOT-23-6", "C2827654", "USBLC6-2SC6", "U"),
 
     # UI and connectors (sourcing/ui-connectors.md)
-    "ENC": ("Device:RotaryEncoder_Switch",
-            "Rotary_Encoder:RotaryEncoder_Alps_EC11E-Switch_Vertical_H20mm", "C255515", "EC11E18244A5", "SW"),
-    "TACT": ("Switch:SW_Push", "Button_Switch_THT:SW_PUSH_6mm_H9.5mm", "C2845262", "TC-6610-9.5", "SW"),
     "RGB": ("Device:LED_ARGB", "LED_SMD:LED_Cree-PLCC4_3.2x2.8mm_CCW", "C601699", "RGB CA 3528", "D"),
     "TERM2": ("Connector:Screw_Terminal_01x02",
               "TerminalBlock_Phoenix:TerminalBlock_Phoenix_PT-1,5-2-3.5-H_1x02_P3.50mm_Horizontal",
@@ -45,8 +41,8 @@ P = {
               "C557656", "XY350V-3.5-4P", "J"),
     "SENCONN": ("Connector_Generic:Conn_01x06",
                 "Connector_JST:JST_GH_SM06B-GHS-TB_1x06-1MP_P1.25mm_Horizontal", "C133065", "SM06B-GHS-TB", "J"),
-    "DISP_HDR": ("Connector:Conn_01x08_Socket", "Connector_PinSocket_2.54mm:PinSocket_1x08_P2.54mm_Vertical",
-                 "C2897371", "display 1x8", "J"),
+    "DISP_HDR": ("Connector:Conn_01x14_Socket", "Connector_PinSocket_2.54mm:PinSocket_1x14_P2.54mm_Vertical",
+                 "C2897377", "display 1x14", "J"),
     "TP": ("Connector:TestPoint", "TestPoint:TestPoint_Pad_D1.5mm", "", "", "TP"),
 
     # SEN6x connector (SEN6x datasheet §3 Table 17, sourcing/off-board.md):
