@@ -7,13 +7,13 @@ Claude batches questions here. Each has an ID, why it matters, and the default C
 
 | ID | Question | Why it matters | Default if unanswered | Blocks | Answer |
 |----|----------|----------------|-----------------------|--------|--------|
-| Q-33 | D-029 checkpoint: OK to start layout on the schematic and priced list in `sourcing/priced-parts.md`? The total is now ≈ $242–267 with Standard PCBA (Q-36 removed the supply and cable). You asked about the assembly-route savings (2026-10-29). Estimates for 2 boards are in `priced-parts.md` § Assembly routes: **Economic with the module soldered yourself saves ≈ $24, or nothing** if Standard turns out not to charge for Basic parts. **Bare PCB + stencil with everything yourself saves ≈ $20–70.** The layout is the same either way, apart from optional back-solder vias under the module EPAD for route B. | D-029 stops here for your review. | None: layout waits for your OK. Assumed when you OK it: a route-agnostic layout (EPAD vias only if you say B), with the route picked at G4 from a live JLC quote on the real files. Enclosure stays MJF unless you say FDM. | Layout, mech, firmware | |
 | Q-37 | Nightly no-ops: 2026-11-01 and 2026-11-05 both found only Q-33/Q-35 open and changed nothing. Want me to add the skip to this repo's `scripts/nightly.sh` now (skip when STATE.md has `Blocked-on: andrew` and nothing has been committed since the last nightly), rather than waiting for the DC repo? | Each blocked run costs a session start and usage for nothing. | No change: runs continue nightly and no-op until you answer Q-33/Q-35. | Nothing (tooling only) | |
 
 ## Answered
 
 | ID | Question | Answer | Answered | Applied to |
 |----|----------|--------|----------|------------|
+| Q-33 | D-029 checkpoint: OK to start layout? Assembly route? | Schematic approved; start layout. Defaults taken: route-agnostic layout (no EPAD back-solder vias), route picked at G4 from a live JLC quote, enclosure stays MJF | 2026-11-09 | D-029 status, STATE |
 | Q-35 | Display module? | Elecrow DLS29028B (MSP2834), with touch used as the only control. Physical controls dropped. | 2026-11-09 | D-048, J6, `pcb/design.md` §7, requirements §3/FR-01 |
 | Q-34 | SEN65 stock / SEN66 fallback | In stock at Mouser. | 2026-10-29 | `sourcing/priced-parts.md` (buy at Mouser; SEN65 stays) |
 | Q-36 | Raspberry Pi supply cable reach | Andrew supplies the power supply and cable from stock. | 2026-10-29 | `sourcing/priced-parts.md` (supply and cable $0); model to confirm at G3 (listing, ≥ 5 V / 1.5 A) |

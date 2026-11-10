@@ -1,12 +1,12 @@
 # Project State
 
 **Updated:** 2026-11-09
-**Phase:** 3, detailed design (**G2 approved 2026-10-28**). D-029 order: vendor check ✓ → schematic ✓ → priced parts list ✓ → **stopped for Andrew** → layout, mech, firmware.
-**Waiting on:** Andrew: Q-33 (OK to start layout; assembly-route costs in `sourcing/priced-parts.md`) blocks layout. Q-34, Q-35 and Q-36 answered.
+**Phase:** 3, detailed design (**G2 approved 2026-10-28**). D-029 order: vendor check ✓ → schematic ✓ → priced parts list ✓ → **schematic approved by Andrew 2026-11-09 (Q-33)** → **layout (next)**, mech, firmware.
+**Waiting on:** nothing for layout. Q-37 (nightly skip) is open but no longer matters while work is unblocked.
 
 ## Next actions (in order; each is Claude's unless marked)
-1. **Andrew:** answer Q-33 (layout OK; route A/B/C). Optional: Q-37 (skip blocked nightlies).
-2. Once Q-33 is OK'd: **layout**.
+1. (Done 2026-11-09: Q-33, schematic approved; route-agnostic layout, no EPAD vias, MJF enclosure.)
+2. **Layout (start here).** The first layout commit switches the source of truth from `pcb/gen/build.py` to `pcb/exhaust.kicad_sch` (D-035): note it in the commit and stop editing the generator. Keep the fan island and its ≥ 3 mm barrier (D-050). Board outline and mounting are Claude's call for now (mech follows layout and reads positions from the `.kicad_pcb`); log the outline as an assumption for Andrew's layout review.
    - Fix the footprints against the LCSC drawings, using `easyeda2kicad` (in `.venv`) where stock ones differ (design.md O-3).
    - At bring-up, confirm O-6 with `espefuse.py summary` (VDD_SPI 3.3 V). It's closed against the datasheets (`sourcing/gpio47-vdd-spi.md`).
    - Write the creepage DRC rules from `pcb/SAFETY.md` and lay out the 2-layer board.
@@ -25,12 +25,12 @@
 - Known cosmetic issues: field text on rotated parts needs GUI touch-up; placement wasn't laid out for wiring, so some blocks are still label-heavy.
 
 ## Notes for an unattended run
-- If Q-33 is still unanswered, there's no layout, mech or firmware work allowed (D-029).
+- Layout is unblocked (Q-33, 2026-11-09). Mech and firmware follow layout per D-029; don't start them before a layout commit exists.
 - CLAUDE.md's phase table still puts sourcing after the full detailed design. D-029 (Andrew) overrides that for this project. Don't edit CLAUDE.md.
 - No mains anywhere (D-018), so G3 is light: receptacle, the listing of Andrew's own supply (Q-36) and the 24 VAC hookup.
 
 ## Blockers
-- Layout is blocked on Q-33 (D-029 checkpoint).
+- None.
 
 ## Log
 - 2026-10-22: Repo created from the kickoff conversation. See `docs/context.md`.
@@ -80,3 +80,4 @@
 - 2026-11-09: Touch-only panel on the Elecrow DLS29028B; encoder, buttons and backlight FET removed; J6 1×14 on `+5V`; 2N7002 touch I²C shifters (Andrew; D-048, Q-35). ERC 0, netlist assertions pass. 2-board PCBA ≈ $135, project ≈ $242–267. The physical-controls design is recorded in `docs/physical-controls-record.md`.
 - 2026-11-09: J-FAN split into two 2-pos KF128L (J2 + J7); each AC input's 2 × 2.7 k → one 10 k 1206 Basic (Andrew; D-049). ERC 0, netlist assertions pass. 2-board PCBA ≈ $133, project ≈ $240–265. `sourcing/priced-parts.md` assembly-routes section (2026-10-29) is stale; refresh from the live JLC quote at G4.
 - 2026-11-09: Kept the fan-side opto barrier (Andrew; D-050). Non-isolated, ferrite and capacitive-coupling options logged as rejected (≈ $4 saving vs. touch-panel noise risk). No design change.
+- 2026-11-09: Schematic approved (Andrew; Q-33, D-029 checkpoint passed). Layout unblocked for the nightly run, with Q-33's defaults (route-agnostic, no EPAD vias, MJF).

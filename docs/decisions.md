@@ -258,7 +258,7 @@ Template:
 
 ## D-029: Phase 3 starts with the schematic and a priced parts list
 - Date: 2026-10-28
-- Status: Accepted (Andrew)
+- Status: Accepted (Andrew). Checkpoint passed 2026-11-09: Andrew approved the schematic and priced list (Q-33); layout may start
 - Context: The part choices (ESP32 module, H11L1-class opto, regulators, display) drive cost, JLC extended-part fees, board size and enclosure dimensions. Pricing was planned for phase 4, after the mech and firmware work that depends on those parts.
 - Decision: After G2, phase 3 runs in this order: (1) PCBA vendor check (JLC Economic rules, Q-14); (2) KiCad schematic, ERC clean; (3) priced parts list from the schematic: LCSC basic/preferred/extended status, stock, price, fees, plus off-board parts; Andrew reviews it as a checkpoint; (4) only then PCB layout, mech and firmware. G4 still approves the final BOM.
 - Alternatives considered: phase order as in CLAUDE.md (design everything, then source).
