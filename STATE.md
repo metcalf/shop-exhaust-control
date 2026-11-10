@@ -19,7 +19,7 @@
    - Touch UI (`docs/control-logic.md` §8): FT6336G on its own 100 kHz I²C bus (D-048).
 
 ## Schematic status (where it stopped)
-- `pcb/gen/run.sh` regenerates `pcb/exhaust.kicad_sch`, runs ERC (0 violations) and the netlist assertions (all pass), and exports the SVG and raw BOM to `pcb/reports/`. 101 parts, 29 unique LCSC parts.
+- `pcb/gen/run.sh` regenerates `pcb/exhaust.kicad_sch`, runs ERC (0 violations) and the netlist assertions (all pass), and exports the SVG and raw BOM to `pcb/reports/`. 100 parts, 28 unique LCSC parts.
 - G2 review hardware items folded in: S-2 (fan side ≤ 4.1 mA at datasheet max), S-4 (`pcb/SAFETY.md`, every crossing asserted), S-5 (D-036), S-14 (EN RC, BOOT/EN recovery pads per D-041, strapping pins asserted unconnected), S-13 and S-17 (already applied). Interfaces §2.2–2.3 still name the LTV-814; D-036 supersedes it, and the doc gets updated at layout.
 - Generator draws wires within blocks and power symbols for GND/+3V3/+5V (D-038, at Andrew's request during his schematic review). Netlist unchanged.
 - Known cosmetic issues: field text on rotated parts needs GUI touch-up; placement wasn't laid out for wiring, so some blocks are still label-heavy.
@@ -78,3 +78,4 @@
 - 2026-11-09: Removed the SMBJ48CA TVS diodes from J-OCC and J-DC (Andrew; D-046). ERC 0, netlist assertions pass. Standard PCBA for 2 boards ≈ $143, total ≈ $253–283.
 - 2026-11-09: Removed the SEN65 power switch; sensor on `+3V3`, GPIO10 spare (Andrew; D-047). ERC 0, netlist assertions pass. Cost unchanged at ≈ $143 for 2 boards.
 - 2026-11-09: Touch-only panel on the Elecrow DLS29028B; encoder, buttons and backlight FET removed; J6 1×14 on `+5V`; 2N7002 touch I²C shifters (Andrew; D-048, Q-35). ERC 0, netlist assertions pass. 2-board PCBA ≈ $135, project ≈ $242–267. The physical-controls design is recorded in `docs/physical-controls-record.md`.
+- 2026-11-09: J-FAN split into two 2-pos KF128L (J2 + J7); each AC input's 2 × 2.7 k → one 10 k 1206 Basic (Andrew; D-049). ERC 0, netlist assertions pass. 2-board PCBA ≈ $133, project ≈ $240–265. `sourcing/priced-parts.md` assembly-routes section (2026-10-29) is stale; refresh from the live JLC quote at G4.

@@ -54,8 +54,8 @@ for r, c in comps.items():
 DOMAIN_ROOTS = {
     "fan": {"GND_F", "+10V_F", "FAN_SPD", "FAN_TACH_F", "Q_FAN_G", "TACH_LED_A",
             "PRES_LED_A"},
-    "occ": {"OCC_A", "OCC_B", "OCC_R", "OCC_AC", "OCC_P", "OCC_N"},
-    "dci": {"DCI_A", "DCI_B", "DCI_R", "DCI_AC", "DCI_P", "DCI_N"},
+    "occ": {"OCC_A", "OCC_B", "OCC_AC", "OCC_P", "OCC_N"},
+    "dci": {"DCI_A", "DCI_B", "DCI_AC", "DCI_P", "DCI_N"},
 }
 
 

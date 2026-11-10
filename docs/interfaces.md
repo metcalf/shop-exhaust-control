@@ -47,7 +47,7 @@ GPIOs assume an ESP32-S3-WROOM-1-N16R8 (D-022): GPIO 0/3/45/46 (strapping), 19/2
 
 | Signal | Dir | Type | Level | Connector | GPIO | Notes |
 |--------|-----|------|-------|-----------|------|-------|
-| `FAN_PWM` | Out | Opto LED drive (§2.1) | 3.3 V, ~5 mA | J-FAN (4-pos fixed screw terminal, 3.5 mm, fan side of the barrier) | 4 | LEDC 5 kHz, ≥ 10-bit. LED on = speed line released (high). 10 kΩ external pull-down keeps the LED off through reset/boot |
+| `FAN_PWM` | Out | Opto LED drive (§2.1) | 3.3 V, ~5 mA | J-FAN (two 2-pos fixed screw terminals J2 + J7, 3.5 mm, fan side of the barrier; D-049) | 4 | LEDC 5 kHz, ≥ 10-bit. LED on = speed line released (high). 10 kΩ external pull-down keeps the LED off through reset/boot |
 | `FAN_TACH` | In | Opto phototransistor, 10 kΩ pull-up | 3.3 V | J-FAN | 5 | Edge timing via GPIO ISR (30–150 Hz); frequency only (pulses/rev unknown) |
 | `FAN_PRESENT` | In | Opto phototransistor, 10 kΩ pull-up | 3.3 V, low = fan side powered | J-FAN | 6 | Fan-side +10 V present. Lost when the fan cable is unplugged **or** the fan loses mains (§2.1) |
 | `OCC_IN` | In | AC-input opto, RC-filtered | 3.3 V, low = 24 VAC present | J-OCC (2-pos fixed screw terminal, 3.5 mm) | 7 | Bridge and opto (D-036), no input TVS (D-046). Firmware debounce C-20 |
@@ -61,7 +61,7 @@ GPIOs assume an ESP32-S3-WROOM-1-N16R8 (D-022): GPIO 0/3/45/46 (strapping), 19/2
 | USB: power in + flash/log | Bidir | ESP32-S3 native USB (USB-Serial-JTAG), 5 V VBUS | 5 V nominal, ≥ 4.4 V at the board under peak load | J-USB (USB-C receptacle, 16-pin, **external**, gasketed opening) | 19 / 20 | D-030. The only power input. 5.1 kΩ Rd on CC1/CC2; ESD array on D± and CC; TVS on VBUS, no series fuse (D-040) |
 | Spare | — | — | — | unconnected | 2, 10, 38, 39, 40 | Reserved |
 
-**S6 control port (UIS), measured by Andrew 2026-10-25 (Q-15):** black = GND, red = +10 V from the fan (low current), yellow = speed (fan pulls up via 2.2 kΩ; the controller pulls it low; 5 kHz PWM, high-time duty = speed; 20/46/100 % at levels 1/4/10), white = tach (50 % square, ~30/75/144 Hz at levels 1/4/10; stock controller pulls it up 10 kΩ to its 5 V). Unplugged = full speed. The fan end of the cable is USB-C (stock controller J1 is a USB-C receptacle, `docs/site/ac infinity controller pcb.jpg`), but the node doesn't use USB-C: Andrew hard-wires the four conductors into J-FAN by color (Q-25, D-026), so the USB-C contact map isn't needed. J-FAN is labelled `GND (BLK) / +10V (RED) / SPD (YEL) / TACH (WHT)`. Fan GND vs. mains (Q-22, Q-30): unplugged, open to L, N and earth on resistance and diode checks; plugged in, ~65 VAC open-circuit to N/earth, which looks like Y-capacitor coupling from an isolated supply. Q-31 confirmed it: ≈ 60 µA into 10 kΩ (SR-09, D-028).
+**S6 control port (UIS), measured by Andrew 2026-10-25 (Q-15):** black = GND, red = +10 V from the fan (low current), yellow = speed (fan pulls up via 2.2 kΩ; the controller pulls it low; 5 kHz PWM, high-time duty = speed; 20/46/100 % at levels 1/4/10), white = tach (50 % square, ~30/75/144 Hz at levels 1/4/10; stock controller pulls it up 10 kΩ to its 5 V). Unplugged = full speed. The fan end of the cable is USB-C (stock controller J1 is a USB-C receptacle, `docs/site/ac infinity controller pcb.jpg`), but the node doesn't use USB-C: Andrew hard-wires the four conductors into J-FAN by color (Q-25, D-026), so the USB-C contact map isn't needed. J-FAN is two 2-pos blocks end to end (D-049): J2 `GND (BLK) / +10V (RED)`, J7 `SPD (YEL) / TACH (WHT)`. Fan GND vs. mains (Q-22, Q-30): unplugged, open to L, N and earth on resistance and diode checks; plugged in, ~65 VAC open-circuit to N/earth, which looks like Y-capacitor coupling from an isolated supply. Q-31 confirmed it: ≈ 60 µA into 10 kΩ (SR-09, D-028).
 
 ### 2.1 Fan interface: isolated, fail-off (SR-08, SR-09, FR-10, FR-18)
 
@@ -98,7 +98,7 @@ Behavior:
 J-FAN sits on the fan side of the barrier, with ≥ 3 mm to any node-side copper. Its conductors carry nothing the fan's own cable doesn't already expose.
 
 ### 2.2 Occupancy input (FR-07)
-*Schematic (D-036) supersedes the parts below for §2.2 and §2.3: no input TVS (D-046), 2 × 2.7 k → MB10S bridge → LTV-817S-TA1-C (D-045), 47 k pull-up, 1 µF, one circuit for both inputs. Values and worst cases are in `pcb/design.md` §3.*
+*Schematic (D-036) supersedes the parts below for §2.2 and §2.3: no input TVS (D-046), one 10 k 1206 (D-049) → MB10S bridge → LTV-817S-TA1-C (D-045), 47 k pull-up, 1 µF, one circuit for both inputs. Values and worst cases are in `pcb/design.md` §3.*
 
 24 VAC from the lighting transformer's secondary (the same terminals that drive the old fan relay coil, Q-16) → 2-pos terminal → 2 × 2.2 kΩ (1206, series) → AC-input opto (LTV-814/PC814-class) → phototransistor with 10 kΩ pull-up and 1 µF to GND (τ ≈ 10 ms bridges the zero crossings) → GPIO7. Input draw ≈ 5–6 mA rms. Same ≥ 3 mm barrier as §2.1. Firmware debounce C-20 (0.5 s), well inside AC-04's 2 s.
 

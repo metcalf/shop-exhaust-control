@@ -14,7 +14,7 @@ OUT = os.path.join(os.path.dirname(__file__), "..", "exhaust.kicad_sch")
 sh = Sheet("Shop exhaust controller v1")
 _n = {}
 # Fixed designators for parts named in docs/interfaces.md; the counter skips them.
-RESERVED = {"J1", "J2", "J3", "J4", "J5", "J6", "U1"}
+RESERVED = {"J1", "J2", "J3", "J4", "J5", "J6", "J7", "U1"}
 
 
 def ref(prefix):
@@ -101,9 +101,11 @@ sh.begin("fan")
 X, Y = 40, 200
 sh.note("FAN INTERFACE - FAN DOMAIN (GND_F). Fail-off, isolated (SR-08, SR-09, D-023, "
         "interfaces §2.1). >= 3 mm to node copper (pcb/SAFETY.md)", (X - 10, Y - 15))
-part("TERM4", (X, Y + 15), {"1": "GND_F", "2": "+10V_F", "3": "FAN_SPD", "4": "FAN_TACH_F"},
-     value="J-FAN", r="J2")
-sh.note("J-FAN 1 GND (BLK), 2 +10V (RED), 3 SPD (YEL), 4 TACH (WHT)", (X - 10, Y + 45), size=1.27)
+# J-FAN is two 2-pos KF128L blocks end to end (one fewer unique Extended part than a 4-pos)
+part("TERM2", (X, Y + 5), {"1": "GND_F", "2": "+10V_F"}, r="J2")
+part("TERM2", (X, Y + 25), {"1": "FAN_SPD", "2": "FAN_TACH_F"}, r="J7")
+sh.note("J-FAN = J2 + J7: J2.1 GND (BLK), J2.2 +10V (RED), J7.1 SPD (YEL), J7.2 TACH (WHT)",
+        (X - 10, Y + 45), size=1.27)
 flag("GND_F", (X - 5, Y + 35))
 flag("+10V_F", (X + 5, Y))
 cap("1u", (X + 45, Y + 18), "+10V_F", "GND_F")   # 0603 1 uF is 50 V
@@ -129,8 +131,7 @@ def ac_input(X, Y, term, a, b, mid, out, title):
     sh.begin(term)
     sh.note(title, (X - 10, Y - 15))
     part("TERM2", (X, Y + 10), {"1": a, "2": b}, r=term)
-    res("2.7k", (X + 30, Y + 5), a, mid + "_R", key="R1206", rot=90)
-    res("2.7k", (X + 45, Y + 5), mid + "_R", mid + "_AC", key="R1206", rot=90)
+    res("10k", (X + 35, Y + 5), a, mid + "_AC", key="R1206", rot=90)
     part("BRIDGE", (X + 65, Y + 15), {"1": mid + "_AC", "2": b, "3": mid + "_P", "4": mid + "_N"})
     part("PC817", (X + 90, Y + 15), {"1": mid + "_P", "2": mid + "_N", "3": "GND", "4": out})
     res("47k", (X + 110, Y), "+3V3", out)

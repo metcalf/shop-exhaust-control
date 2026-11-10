@@ -74,7 +74,7 @@ flowchart LR
 - **Power:** 5 V USB-C in (also the flash/log port), one 5→3.3 V regulator (`docs/interfaces.md` §3, D-030). Peak ≈ 5.5 W for milliseconds, typical ≈ 1.7 W.
 - **Panel:** touch display module on a header, behind the bezel (D-048). Plain RGB LEDs feed a short light strip along one display edge (D-031).
 - **PCBA (NFR-05):** SMT on one side from JLC basic/preferred parts where possible. Through-hole (terminal blocks, display header) is hand-soldered or done as a THT add-on. The tier rules are checked in the phase 3 vendor research.
-- **Off-board wiring:** fan cable hard-wired into a 4-pos terminal (D-026), 2-conductor thermostat wire to the 24 VAC terminals, optional 2-conductor DC backup, USB-C cable for power. WireViz drawing in `electrical/` in phase 3 (D-010).
+- **Off-board wiring:** fan cable hard-wired into J-FAN, two 2-pos terminals (D-026, D-049), 2-conductor thermostat wire to the 24 VAC terminals, optional 2-conductor DC backup, USB-C cable for power. WireViz drawing in `electrical/` in phase 3 (D-010).
 
 ## 4. Firmware (ESP-IDF, C++)
 

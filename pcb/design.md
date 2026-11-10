@@ -31,18 +31,18 @@ Circuit as in `docs/interfaces.md` §2.1, with these parts: U4 H11L1S-TA1-L, VCC
 - H11L1 propagation is ≤ 0.5 µs (Lite-On), < 0.3 % of the 200 µs PWM period.
 
 ## 3. 24 VAC occupancy and wired DC inputs (FR-07, IR-01, D-025, D-036; G2 review S-5)
-J-OCC and J-DC use one identical circuit, with no input TVS (D-046): terminals → 2 × 2.7 kΩ 1206 in series (5.4 k) → MB10S bridge → LTV-817S-TA1-C LED. The output has a 47 k pull-up to 3.3 V and 1 µF to GND. A bridge, not an antiparallel diode (D-036): half-wave conduction leaves ≥ 8 ms gaps per cycle, which the RC would have to bridge.
+J-OCC and J-DC use one identical circuit, with no input TVS (D-046): terminals → one 10 kΩ 1206 (D-049) → MB10S bridge → LTV-817S-TA1-C LED. The output has a 47 k pull-up to 3.3 V and 1 µF to GND. A bridge, not an antiparallel diode (D-036): half-wave conduction leaves ≥ 8 ms gaps per cycle, which the RC would have to bridge.
 
 Path drop, worst case: LED 1.4 V + two bridge diodes ≈ 1.8 V, so ≈ 3.2 V. The pull-up needs 3.3 V / 47 k = 70 µA.
 
 | Case | Result |
 |------|--------|
-| 12 VDC − 10 % (10.8 V) | IF ≥ (10.8 − 3.2) / 5.4 k = 1.4 mA. With CTR 80 % (typical at 1 mA, as §2), IC ≈ 1.1 mA, ≈ 16× the 70 µA needed |
-| 12 VAC − 10 % (15.3 V pk) | Conducts usefully (IF ≥ 0.3 mA) above 4.8 V, i.e. above 18° of each half-cycle. Gap ≈ 1.7 ms per half-cycle; RC τ = 47 ms, so the output rises ≈ 3.3 × 1.7 / 47 = 0.12 V, well below VIL (0.83 V). No chatter |
-| 24 VAC + 10 % (26.4 V, 37.3 V pk) | IF pk 6.5 mA (LTV-817 max 50 mA). P ≈ 26.4² / 5.4 k ≈ 0.13 W total, 65 mW per 1206 (rated 0.25 W) |
-| Lightly loaded Class 2 secondary, 29 VAC / 41 V pk | IF pk 7.1 mA, 0.155 W total |
-| 26.4 VDC either polarity | 4.4 mA, 0.105 W. The bridge makes polarity irrelevant |
-| Assert / release | Assert: the opto discharges 1 µF at ≥ 1.4 mA, ≈ 2 ms. Release: rises to VIH (2.48 V) in −τ ln 0.25 ≈ 65 ms. Both are well inside the 0.5 s debounce (C-20 / C-31) |
+| 12 VDC − 10 % (10.8 V) | IF ≥ (10.8 − 3.2) / 10 k = 0.76 mA. With CTR 80 % (typical at 1 mA, as §2; somewhat lower at 0.76 mA), IC ≈ 0.6 mA, ≈ 8× the 70 µA needed |
+| 12 VAC − 10 % (15.3 V pk) | Conducts usefully (IF ≥ 0.3 mA) above 6.2 V, i.e. above 24° of each half-cycle. Gap ≈ 2.2 ms per half-cycle; RC τ = 47 ms, so the output rises ≈ 3.3 × 2.2 / 47 = 0.16 V, well below VIL (0.83 V). No chatter |
+| 24 VAC + 10 % (26.4 V, 37.3 V pk) | IF pk 3.4 mA (LTV-817 max 50 mA). P ≤ 26.4² / 10 k ≈ 70 mW in the 1206 (rated 0.25 W) |
+| Lightly loaded Class 2 secondary, 29 VAC / 41 V pk | IF pk 3.8 mA, ≤ 84 mW |
+| 26.4 VDC either polarity | 2.3 mA, 54 mW. The bridge makes polarity irrelevant |
+| Assert / release | Assert: the opto sinks ≈ 0.6 mA at 12 VDC − 10 %, so 1 µF falls to VIL in ≈ 5 ms. Release: rises to VIH (2.48 V) in −τ ln 0.25 ≈ 65 ms. Both are well inside the 0.5 s debounce (C-20 / C-31) |
 | Open input | LED dark, pulled high: reads not asserted |
 
 ## 4. SEN65 rail (D-031, S-13)
