@@ -33,7 +33,7 @@ Record every gate approval in `docs/decisions.md` with the date. Never start a p
 - **Reversible choices:** decide, log the assumption, and keep going.
 - **Costly or hard-to-reverse choices** (fan/duct sizing, wall or roof penetrations, enclosure cutouts, mains wiring): don't stop. Make the call, log it in `docs/decisions.md` with status `proposed — needs Andrew`, add it to `docs/open-questions.md`, and keep going. Nothing is built or bought before its gate (G3 for mains, G4 for the BOM), so that's where these get reviewed.
 - When you hand something over, lead with what you need from him (approve, answer, measure), then the summary.
-- Andrew wants local, physical day-to-day controls (buttons, knobs, a small display; touch only if it clearly earns its place); he shouldn't need a phone in the shop. Home Assistant is for history, alerts and texts, not primary control.
+- Andrew wants local day-to-day control at the unit; he shouldn't need a phone in the shop. v1 uses a 2.8" capacitive touch display as the only local input (D-048). The physical-controls design is kept in `docs/physical-controls-record.md` in case gloves or a failed panel make it worth reviving. Home Assistant is for history, alerts and texts, not primary control.
 
 ## Working with subagents
 Subagents start with no context, so each one has to rebuild what you already know. Use them sparingly:
