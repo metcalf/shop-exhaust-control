@@ -2,13 +2,13 @@
 
 **Updated:** 2026-11-10
 **Phase:** 3, detailed design (**G2 approved 2026-10-28**). **Architecture changed by D-054 (accepted 2026-11-10):** Waveshare ESP32-S3-Touch-LCD-2.8B + minimal carrier PCB. The custom board in `pcb/` (schematic and placement) is now reference only.
-**Waiting on:** nothing blocking. Q-45 (off-board LED strip) is open; default yes.
+**Waiting on:** nothing blocking.
 Blocked-on: none
 
 ## Next actions (D-054; these replace the old layout actions below)
 1. Amend requirements per D-054: FR-18 (drop the fan-port fault), IR-01/AC-06 (BLE only, D-025 reverted), FR-01 and §3 panel hardware (Waveshare 480×640, GT911), NFR-04 (USB-C on the Waveshare edge). Rewrite `docs/interfaces.md` §2 from the eval doc's "Chosen" table, and `docs/architecture.md` (block diagram, power, mech concept).
-2. Carrier schematic in `pcb/carrier/`, reusing the `pcb/gen` flow. Basic and Economic parts only; Waveshare 2×12 socket, KF128 terminals and GH-6 hand-soldered (DNP at JLC). Run ERC and netlist assertions; barrier per D-050 / `pcb/SAFETY.md`.
-3. Bench plan for Andrew: R24 lift, U6 removal, and the LTV-817 PWM duty at 5 kHz (needs a prototype carrier or a breadboard of the fan-side stage, which is worth doing now since it's 5 parts).
+2. Carrier schematic in `pcb/carrier/`, reusing the `pcb/gen` flow. Basic and Economic parts only; Waveshare 2×12 socket, KF128 terminals and GH-6 hand-soldered (DNP at JLC). Indicator: SK6812SIDE-A row on the carrier's room-side edge (D-055, the one Extended part). Run ERC and netlist assertions; barrier per D-050 / `pcb/SAFETY.md`.
+3. Bench plan for Andrew: R24 lift, U6 removal, and the LTV-817 PWM duty at 5 kHz (needs a prototype carrier or a breadboard of the fan-side stage, which is worth doing now since it's 5 parts).; and a display stress test: Waveshare demo at 480×640 with Wi-Fi up and a loop of flash writes, watching for drift (fallback: non-B 2.8 SPI board).
 4. Carrier layout (≈ 50 × 70 mm, Waveshare M2 pattern 40.9 × 59.7 mm), mech stack-up from the Waveshare STEP, then firmware (ST7701S RGB with bounce buffers, GT911, non-inverted PWM (as before), RMT LED).
 
 ## Superseded custom-board actions (kept for reference)
@@ -99,3 +99,4 @@ Blocked-on: none
 - 2026-11-10: Evaluated the Waveshare ESP32-S3-Touch-LCD-2.8B as a replacement for the custom PCB (Andrew). The schematic shows GPIO16 is touch INT, not a spare as the docs say, and the SEN65 clashes with the IMU at 0x6B. That leaves four usable pins (43, 44, 4 after lifting R24, and 0 for output only), which is enough without FAN_PRESENT and DC_IN. Fail-off needs a relay NC contact. D-053 proposed; Q-40…Q-43.
 - 2026-11-10: Costed route B (Andrew): Waveshare board + minimal carrier PCB keeps every signal and the D-023 fail-off. No S3 module on our board means JLC Economic applies (every S3 module is "Standard Only", checked live). Electronics ≈ $65–100 per unit. D-054 proposed; Q-40 reframed, Q-44/Q-45 added.
 - 2026-11-10: Andrew chose route B, stripped down (D-054 accepted): LTV-817 for PWM, desolder the QMI8658, lift R24 for OCC. FAN_PRESENT and DC_IN dropped. The carrier has no Extended parts (JLC Economic, ≈ $9.71 in fees); one unit's electronics ≈ $58–87.
+- 2026-11-10: Indicator: on-board side-view SK6812SIDE-A on the carrier edge, not an off-board strip (Q-45, D-055). One Extended part, ≈ $3–4.50 per order. Display: stay on the 2.8B (480×640 RGB); stress-test the Waveshare demo with Wi-Fi and flash writes on arrival, with the non-B 2.8 (SPI) as fallback.

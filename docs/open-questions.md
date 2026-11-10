@@ -8,12 +8,12 @@ Claude batches questions here. Each has an ID, why it matters, and the default C
 | ID | Question | Why it matters | Default if unanswered | Blocks | Answer |
 |----|----------|----------------|-----------------------|--------|--------|
 | Q-37 | Nightly no-ops: 2026-11-01 and 2026-11-05 both found only Q-33/Q-35 open and changed nothing. Want me to add the skip to this repo's `scripts/nightly.sh` now (skip when STATE.md has `Blocked-on: andrew` and nothing has been committed since the last nightly), rather than waiting for the DC repo? | Each blocked run costs a session start and usage for nothing. | No change: runs continue nightly and no-op until you answer Q-33/Q-35. | Nothing (tooling only) | |
-| Q-45 | Route B: indicator as an off-board WS2812-class strip on a 3-pin terminal, with a 2N7002 level shifter on the carrier? | The carrier sits behind the display, so on-board LEDs wouldn't show. A strip can wrap the corner (D-033) | Yes, off-board strip | Carrier schematic, mech | |
 
 ## Answered
 
 | ID | Question | Answer | Answered | Applied to |
 |----|----------|--------|----------|------------|
+| Q-45 | Route B indicator: off-board strip, on-board addressable, or single-colour Basic? | On-board SK6812SIDE-A (side-view, C5378721, Economic-eligible). | 2026-11-10 | D-055; eval doc "Chosen"; STATE |
 | Q-38 / Q-39 | Freerouting jar; custom-board placement | Moot: the custom board is superseded by D-054 | 2026-11-10 | — |
 | Q-40 | Route A/B/C | B: Waveshare board + minimal carrier PCB | 2026-11-10 | D-054 accepted, D-053 superseded |
 | Q-44 | H11L1 or LTV-817 for PWM | LTV-817 | 2026-11-10 | D-054; eval doc "Chosen" (2.2 kΩ gate pull-up, bench check) |

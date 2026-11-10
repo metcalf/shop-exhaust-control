@@ -114,12 +114,12 @@ Andrew chose route B with three cuts: LTV-817 for PWM, desolder the QMI8658 (U6)
 | `FAN_PWM` | GPIO44 | Node side: 390 Ω to the LTV-817 LED, 10 kΩ pull-down (dark through reset and boot). Fan side: LTV-817 output pulls Q1's (AO3400A) gate low against **2.2 kΩ** to +10V_F (was 10 kΩ, to speed turn-off). LED lit → Q1 off → line released → fan runs. Unlit or unpowered → Q1 on → **fan off** (SR-08 unchanged) |
 | `FAN_TACH` | GPIO43 | LTV-817, LED from +10V_F through 10 kΩ into white; 22 kΩ pull-up to 3V3 |
 | `OCC_IN` | GPIO4 (R24 lifted) | 10 kΩ 1206 → MB10S → LTV-817; 47 kΩ / 1 µF; firmware debounce C-20 |
-| Indicator | GPIO0 | 2N7002 inverter, 1 kΩ to 5V, 10 kΩ gate pull-up to 3V3; off-board strip (Q-45 default) |
+| Indicator | GPIO0 | 2N7002 inverter, 1 kΩ to 5V, 10 kΩ gate pull-up to 3V3; on-board SK6812SIDE-A row on the carrier's room-side edge, 100 nF each (D-055) |
 | SEN65 | I²C 7/15 directly (U6 removed) | 6-pin GH, hand-soldered |
 
 - **Fan-side budget:** gate pull-up (10 − 0.2) / 2.2 k ≈ 4.5 mA (only while the LED is lit) plus the tach LED at 0.9 mA, about 5.4 mA, within the ≤ 9 mA the port supplies (Q-26). The H11L1 (1.3 mA) and the presence opto are gone.
 - **PWM drive margin:** I_F ≈ (3.3 − 1.2) / 390 ≈ 5.4 mA. C-rank CTR ≥ 200 % gives ≥ 10.8 mA against the 4.5 mA needed, a 2.4× margin, or 1.2× after 50 % aging. If the bench shows marginal saturation, drop to 270 Ω.
 - **Bench check (before G4):** scope the yellow line at a commanded 10/50/90 % at 5 kHz. Expect the high time to stretch by the LTV-817 storage time plus the gate RC. Firmware can map commanded duty to tach. If the error is too large, try a lower PWM frequency on the fan.
-- **Carrier BOM:** no Extended parts left. LTV-817 ×3, MB10S, AO3400A, 2N7002, and 0603/1206 resistors and capacitors are all Basic and Economic-eligible (live check, 2026-11-10). JLC Economic fees ≈ $9.71 per order.
-- **Cost (unquoted):** 2 carriers ≈ $25–37 (fees $9.71, parts ≈ $2, PCBs $2–5, shipping $10–20). One unit's electronics ≈ $58–87 with the Waveshare board, hand-soldered connectors and a strip.
+- **Carrier BOM:** one Extended part, SK6812SIDE-A (D-055); everything else Basic. LTV-817 ×3, MB10S, AO3400A, 2N7002, and 0603/1206 resistors and capacitors are all Basic and Economic-eligible (live check, 2026-11-10). JLC Economic fees ≈ $9.71 per order, plus one Extended fee ($1.50–3.07) for the LEDs.
+- **Cost (unquoted):** 2 carriers ≈ $28–42 (fees ≈ $11–13, parts ≈ $3, PCBs $2–5, shipping $10–20). One unit's electronics ≈ $58–87 with the Waveshare board, and hand-soldered connectors (no strip).
 - **Rework on each Waveshare board:** lift R24 (0 Ω, BAT_ADC → GPIO4), and hot-air U6 (QMI8658, LGA-14). Then check that I²C 0x6B answers only once the SEN65 is plugged in.
