@@ -8,7 +8,7 @@
 1. **Andrew:** answer Q-33 (layout OK; route A/B/C). Optional: Q-37 (skip blocked nightlies).
 2. Once Q-33 is OK'd: **layout**.
    - Fix the footprints against the LCSC drawings, using `easyeda2kicad` (in `.venv`) where stock ones differ (design.md O-3).
-   - Settle O-6 (GPIO47/48 voltage; GPIO47 now drives the module's backlight FET gate directly).
+   - At bring-up, confirm O-6 with `espefuse.py summary` (VDD_SPI 3.3 V). It's closed against the datasheets (`sourcing/gpio47-vdd-spi.md`).
    - Write the creepage DRC rules from `pcb/SAFETY.md` and lay out the 2-layer board.
    - Run DRC, export Gerbers/BOM/CPL. After layout starts the `.kicad_sch` becomes the source (D-035); keep running `pcb/gen/check.py` on it.
 3. After layout: mech (build123d, positions from the `.kicad_pcb`), then the firmware host-tested logic.
