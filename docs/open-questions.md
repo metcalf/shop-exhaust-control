@@ -18,7 +18,7 @@ Claude batches questions here. Each has an ID, why it matters, and the default C
 | Q-40 | Route A/B/C | B: Waveshare board + minimal carrier PCB | 2026-11-10 | D-054 accepted, D-053 superseded |
 | Q-44 | H11L1 or LTV-817 for PWM | LTV-817 | 2026-11-10 | D-054; eval doc "Chosen" (2.2 kΩ gate pull-up, bench check) |
 | Q-42 | SEN65/QMI8658 0x6B clash | Desolder the IMU (U6) | 2026-11-10 | D-054 |
-| Q-43 | FAN_PRESENT / DC_IN | Lift R24 (OCC on GPIO4), no expander, so both dropped (taken from the chosen cut) | 2026-11-10 | D-054; FR-18 fan-port fault and D-025 to be amended |
+| Q-43 | FAN_PRESENT / DC_IN | Dropped (Andrew confirmed 2026-11-10, after the GPIO42 and TCA9554 P4/P5 bodge options, the PCA9536 expander, and PSRAM pins 33–37 (octal, not freeable) were all considered) | 2026-11-10 | D-054; FR-18 fan-port fault and D-025 to be amended |
 | Q-41 | Relay fail-off (route A) | Moot: route B keeps the D-023 fan-side hold-off | 2026-11-10 | — |
 | Q-33 | D-029 checkpoint: OK to start layout? Assembly route? | Schematic approved; start layout. Defaults taken: route-agnostic layout (no EPAD back-solder vias), route picked at G4 from a live JLC quote, enclosure stays MJF | 2026-11-09 | D-029 status, STATE |
 | Q-35 | Display module? | Elecrow DLS29028B (MSP2834), with touch used as the only control. Physical controls dropped. | 2026-11-09 | D-048, J6, `pcb/design.md` §7, requirements §3/FR-01 |
