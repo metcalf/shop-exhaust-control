@@ -1,5 +1,8 @@
 # PCB safety and isolation record
 
+> **Route B (D-054, 2026-11-10): the carrier PCB (`pcb/carrier/`) replaces the custom main board.** Same rules, fewer domains. The carrier has two field domains, **Fan** (GND_F, +10V_F, FAN_SPD, FAN_TACH_F, Q_FAN_G, TACH_LED_A) and **OCC** (OCC_*). The DC domain and the presence opto are gone. Barrier crossings on the carrier are exactly three LTV-817S-TA1-C (UL 1577 5 kVrms, E113898): U1 node LED → fan output (PWM, pulls Q1's gate to GND_F), U2 fan LED → node (tach), U3 OCC LED → node. `pcb/carrier/gen/check.py` asserts it (`pcb/carrier/reports/netlist-check.txt`). Spacing rules below carry over unchanged; the carrier `.kicad_dru` and the layout record go here before G3. The original board's record follows for reference.
+
+
 **No mains on the board or in the enclosure** (D-018, SR-01). The only connection to mains is the listed 5 V USB-C adapter (LPS), which plugs into the cabinet receptacle. IEC 62368-1 reinforced-insulation rules for a mains section don't apply. This file records the isolation barriers between the low-voltage domains (G2 review S-4) and how each is checked. A licensed electrician should verify the receptacle and the 24 VAC hookup at install (G3), not this board.
 
 This controller is a convenience control, not a life-safety device. Air-quality sensing here does not, on its own, protect anyone's health.

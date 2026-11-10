@@ -6,7 +6,7 @@
 Blocked-on: none
 
 ## Next actions (D-054; these replace the old layout actions below)
-1. Carrier schematic in `pcb/carrier/`, reusing the `pcb/gen` flow. Basic and Economic parts only; Waveshare 2×12 socket, KF128 terminals and GH-6 hand-soldered (DNP at JLC). Indicator: SK6812SIDE-A row on the carrier's room-side edge (D-055, the one Extended part). Run ERC and netlist assertions; barrier per D-050 / `pcb/SAFETY.md`.
+1. **Andrew:** review the carrier schematic (`pcb/carrier/carrier.kicad_sch`, notes in `pcb/carrier/DESIGN.md`). ERC 0, netlist assertions pass. Then carrier layout (below).
 2. Bench plan for Andrew: R24 lift, U6 removal, and the LTV-817 PWM duty at 5 kHz (needs a prototype carrier or a breadboard of the fan-side stage, which is worth doing now since it's 5 parts).
 3. Carrier layout (≈ 50 × 70 mm, Waveshare M2 pattern 40.9 × 59.7 mm), mech stack-up from the Waveshare STEP, then firmware (ST7701S RGB with bounce buffers, GT911, non-inverted PWM (as before), RMT LED).
 
@@ -100,3 +100,4 @@ Blocked-on: none
 - 2026-11-10: Andrew chose route B, stripped down (D-054 accepted): LTV-817 for PWM, desolder the QMI8658, lift R24 for OCC. FAN_PRESENT and DC_IN dropped. The carrier has no Extended parts (JLC Economic, ≈ $9.71 in fees); one unit's electronics ≈ $58–87.
 - 2026-11-10: Indicator: on-board side-view SK6812SIDE-A on the carrier edge, not an off-board strip (Q-45, D-055). One Extended part, ≈ $3–4.50 per order. Display: stay on the 2.8B (480×640 RGB). No up-front stress test (Andrew): the UI is simple; tune PCLK, bounce buffers and partial refresh in firmware if drift shows up.
 - 2026-11-10: Docs amended for route B (D-054/D-055): requirements §1, §3, FR-18 (fan-port fault dropped), NFR-04/05, IR-01, AC-06/07; interfaces §1, §2 (J7 pin map read from the Waveshare schematic), §3 power, §5 mech; architecture block diagram, §3, §4, §5, §6, §7, §8 (≈ $215), §9; control-logic drops `dc_wired`, `fan_port`, C-16, C-31.
+- 2026-11-10: Carrier schematic generated (`pcb/carrier/`, reusing `pcb/gen/sch.py`): header J1 per the Waveshare J7 map, LTV-817 fail-off stage, tach, OCC, SEN65 (DNP pull-up pads), 2N7002 → 470 Ω → 6 × SK6812SIDE-A. ERC 0; carrier `check.py` passes and is mutation-checked. SK6812SIDE-A footprint from easyeda2kicad, pads remapped to `LED:SK6812`. `pcb/SAFETY.md` notes the carrier's three crossings.
