@@ -2,10 +2,11 @@
 
 **Updated:** 2026-11-10
 **Phase:** 3, detailed design (**G2 approved 2026-10-28**). **Paused for D-053:** Andrew proposed replacing the custom PCB with the Waveshare ESP32-S3-Touch-LCD-2.8B plus off-the-shelf modules. Evaluation in `docs/eval-offtheshelf-board.md`; recommended.
-**Waiting on:** Andrew. Q-40 (go/no-go), Q-41 (fail-off relay), Q-42 (SEN65/IMU 0x6B clash), Q-43 (drop or expander for FAN_PRESENT/DC_IN). If Q-40 is no, resume with Q-38/Q-39 and the Quilter upload below.
+**Waiting on:** Andrew. Q-40 (route A modules / **B Waveshare + carrier PCB, recommended** / C lean all-custom), Q-44, Q-45, Q-41 (fail-off relay), Q-42 (SEN65/IMU 0x6B clash), Q-43 (drop or expander for FAN_PRESENT/DC_IN). If Q-40 is no, resume with Q-38/Q-39 and the Quilter upload below.
 Blocked-on: andrew
 
-## If Q-40 = switch (replaces actions 1–4 below)
+## If Q-40 = B (D-054): carrier schematic from the existing fan/opto blocks in `pcb/gen/sch.py`, Waveshare header + PCA9536 + TCA9543A + LED shifter, Economic-only parts; then interfaces/architecture rewrite, mech stack-up, firmware.
+## If Q-40 = A (replaces actions 1–4 below)
 1. Rewrite `docs/interfaces.md` §2 and `docs/architecture.md` for the new allocation; amend SR-08, FR-18, IR-01 per Q-41/Q-43; supersede D-008/D-022/D-025/D-030/D-031/D-048/D-050 entries.
 2. Bench plan for Andrew: PC817 duty at 5 kHz on the fan's yellow line, LED data at 3.3 V, the R24 lift and U6 removal.
 3. Sourcing (one subagent): Waveshare board, PC817 module (≤ 470 Ω input, screw terminals), AC-input 24 VAC opto module, 5 V relay module, addressable LED strip, and an optional TCA9548A/PCF8574A. Then mech (Waveshare STEP + module tray), then firmware.
@@ -96,3 +97,4 @@ Blocked-on: andrew
 - 2026-11-09: Layout plan in STATE aligned with D-010: scripted placement, then a Quilter candidate (Andrew uploads) and a Freerouting candidate from the same locked placement.
 - 2026-11-09: D-010 (PCB/electrical toolchain) accepted (Andrew).
 - 2026-11-10: Evaluated the Waveshare ESP32-S3-Touch-LCD-2.8B as a replacement for the custom PCB (Andrew). The schematic shows GPIO16 is touch INT, not a spare as the docs say, and the SEN65 clashes with the IMU at 0x6B. That leaves four usable pins (43, 44, 4 after lifting R24, and 0 for output only), which is enough without FAN_PRESENT and DC_IN. Fail-off needs a relay NC contact. D-053 proposed; Q-40…Q-43.
+- 2026-11-10: Costed route B (Andrew): Waveshare board + minimal carrier PCB keeps every signal and the D-023 fail-off. No S3 module on our board means JLC Economic applies (every S3 module is "Standard Only", checked live). Electronics ≈ $65–100 per unit. D-054 proposed; Q-40 reframed, Q-44/Q-45 added.

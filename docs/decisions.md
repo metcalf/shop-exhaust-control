@@ -467,3 +467,11 @@ Template:
 - Decision: Use the Waveshare board. GPIO44 `FAN_PWM` (inverted, through a PC817 module), GPIO43 `FAN_TACH` (PC817 module), GPIO4 `OCC_IN` (lift R24; AC-input opto module), GPIO0 addressable LED data, SEN65 on the shared external I²C. Fail-off comes from a coil-powered 5 V relay module whose NC contact sits across speed–GND_F, plus a pull-up that keeps the PWM opto lit through boot. Drop `FAN_PRESENT` (FR-18 fan-port fault) and the wired `DC_IN` (D-025).
 - Alternatives considered: keep the custom PCB (layout already placed; about $151 for 2 boards plus the display, more lead time); non-isolated BSS138 shifters (still fail-full when unpowered, and reintroduces the ground loop D-050 avoided); a PCF8574A expander for the dropped inputs (kept as an add-on, Q-43).
 - Consequences: Amends D-008, D-022, D-025, D-030, D-031, D-048, D-050, SR-08 wording, FR-18, IR-01. Two board reworks (R24 lift, plus QMI8658 removal or an I²C mux, Q-42). Bench checks before G4: PC817 duty at 5 kHz, 3.3 V LED data, RGB panel stability with Wi-Fi.
+
+## D-054: Waveshare board + minimal carrier PCB (route B)
+- Date: 2026-11-10
+- Status: Proposed — needs Andrew (Q-40, Q-42…Q-45). Alternative to D-053
+- Context: Andrew wants a custom board without a mess of modules, but much smaller, using the Waveshare ESP32-S3-Touch-LCD-2.8B for the MCU, display and USB. Analysis and costing: `docs/eval-offtheshelf-board.md` (Option B).
+- Decision: A carrier on the Waveshare 2×12 header holds the D-023 fan interface unchanged (H11L1 + Q1 from +10V_F, so fail-off as written), LTV-817 tach, a PCA9536 (0x41) for FAN_PRESENT/OCC/DC, a TCA9543A (0x70) to put the SEN65 on its own channel, and a 2N7002 shifter for an off-board LED strip on GPIO0. GPIO44 PWM, GPIO43 tach. No Waveshare rework. JLC Economic PCBA with Basic parts wherever possible; Andrew hand-solders the connectors.
+- Alternatives considered: route A (modules plus relay, D-053); lean all-custom (≈ same cost; keeps the module, USB and power design risk); R24 lift plus QMI8658 removal (cheaper by ≈ $6–9, but rework on the display board).
+- Consequences: Supersedes pcb/ placement (kept as reference). Amends D-008, D-022, D-030, D-031, D-048. Keeps D-023, D-025, D-050, FR-18, SR-08. Electronics ≈ $65–100 per unit, against ≈ $144.

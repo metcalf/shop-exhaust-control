@@ -59,3 +59,47 @@ Cost: about 70 mA of continuous coil current from USB, one module and one resist
 - **Firmware:** ST7701S RGB + GT911 + TCA9554 drivers (Espressif component registry), 480 × 640 LVGL layout, inverted PWM, RMT LED, USB-Serial-JTAG console. The pure-C++ control logic is unaffected apart from removing `fan_port` and `dc_wired`.
 - **Cost:** board price, unverified, roughly $25–35, plus about $10–15 in modules, against about $151 for two PCBA boards plus the display. G4 confirms.
 - **Reverts / amends:** D-008 (custom PCB), D-022, D-030 (USB-C path), D-031 (indicator), D-048 (display hardware), D-025, D-050 (barrier now off-the-shelf modules), SR-08 wording, FR-18, IR-01.
+
+---
+
+# Option B (Andrew, 2026-11-10): Waveshare board + minimal custom carrier PCB
+
+The Waveshare board keeps the ESP32-S3, display, touch, USB-C and 3.3 V supply. Our PCB is a backpack plugged onto its 2×12 header (2.54 mm, M2 standoffs on the same 40.9 × 59.7 mm hole pattern). It holds only what modules do badly: the isolated **fail-off** fan interface (D-023, unchanged), the occupancy and DC optos, the SEN65 connector and the LED-strip driver. Nothing on it needs the ESP32 module, USB, regulator, display socket or touch shifters.
+
+## Pin plan: every signal kept, no relay, no Waveshare rework
+| Signal | Where | Carrier circuit |
+|--------|-------|-----------------|
+| `FAN_PWM` | GPIO44 (input through boot) | H11L1 + Q1 powered from +10V_F, exactly as now. 10 kΩ pull-down keeps the LED dark → **fan held off unpowered, in reset and booting** (SR-08 as written) |
+| `FAN_TACH` | GPIO43 | LTV-817, 22 kΩ pull-up. The ROM boot log drives TX through Waveshare's 499 Ω; harmless against an opto collector |
+| Indicator | GPIO0 | 2N7002 inverter, 1 kΩ pull-up to 5 V, 10 kΩ gate pull-up to 3V3 (keeps GPIO0 high for a normal boot and the strip's DIN low/idle). RMT with `invert_out`. Strip off-board on a 3-pin terminal |
+| `FAN_PRESENT`, `OCC_IN`, `DC_IN` | **PCA9536** 4-bit I²C expander, fixed 0x41 (no clash), polled at 10 Hz | LTV-817 (+ MB10S on the AC inputs), as now. One input spare |
+| SEN65 | **TCA9543A** I²C switch, 0x70, channel 0 | Fixes the 0x6B clash with the board's QMI8658 without rework, and keeps the SEN65 cable's capacitance and noise off the touch bus |
+| GPIO4 | spare (R24 stays) | — |
+
+Power comes from the header: 3V3 (Waveshare MP1605, 2 A) for the logic and SEN65, 5V (direct VBUS) for the strip, with the 300 mA firmware cap kept.
+
+## Cost: what moves parts toward Basic and fees toward zero
+Live JLC data, 2026-11-10 (parts API and part pages). JLC exposes no "preferred" or "promotional" flag on these parts, so check that at BOM upload. **Fees:** the sources disagree on the Extended-part fee: $3.07 (our notes) or $1.50 (a third-party note dated 2025-12). Both are shown.
+
+| Lever | Effect |
+|-------|--------|
+| **JLC Economic, not Standard.** Possible now because no ESP32 module is on our board. All the S3 modules are "Standard Only"; every carrier part checked is Economic-eligible | Setup + stencil $9.71 instead of $33.77. Basic parts carry no fee (Standard charged $1.53 each, for all 28) |
+| **You hand-solder all THT and connectors:** 2×12 socket, KF128 terminals, GH-6 | No hand-solder fee, and three fewer Extended lines |
+| Basic only, wherever there's a choice: LTV-817, MB10S, AO3400A, 2N7002, 0603 passives | Placed for free on Economic. Consolidating values no longer saves anything |
+| LED strip off-board (it can also wrap the room-side corner, D-033); the carrier sits behind the display anyway | No LED parts on board (the 2812-class parts that can wrap a corner are mostly "Standard Only") |
+| Remaining Extended placed: **H11L1, PCA9536, TCA9543A** | 3 × $1.50–3.07 |
+| Board ≈ 50 × 70 mm, under 100 × 100 | Cheapest 2-layer tier |
+
+**Estimate for 2 carriers (unquoted):** fees $14–19, joints <$1, parts ≈ $5 (≈ $2.50/board), PCBs ≈ $2–5, shipping ≈ $10–20 → **≈ $32–50**. Hand-soldered connectors ≈ $3–5. LED strip ≈ $5–10. Waveshare board ≈ $25–35 (its non-touch listing is $22.99–29.99; touch price unverified).
+**One complete unit, electronics ≈ $65–100**, against $144 for the current plan (2 custom boards plus display).
+
+## More cuts, with what each costs
+| Cut | Saves (2 boards) | Price |
+|-----|------------------|-------|
+| H11L1 → LTV-817 (Basic) for PWM; drop the Q1 gate pull-up to 2.2 kΩ to speed turn-off | $2.40–4 | Duty distortion at 5 kHz (storage time, roughly tens of µs out of 200). Bench check needed; firmware can map duty to tach. **Not recommended**: the one place speed matters |
+| Remove the QMI8658 from the Waveshare board instead of using the TCA9543A | $2.90–4.50 | Hot-air an LGA-14 next to the RGB FPC, and the SEN65 shares the touch bus |
+| Lift R24, OCC on GPIO4, drop the PCA9536 (and with it FAN_PRESENT and DC_IN) | $3.20–4.70 | The signals Option A had to drop anyway |
+| DIY assembly (bare PCB + $7 stencil + LCSC parts) | ≈ $5–15 | LCSC shipping eats most of it; ~1 h per board |
+
+## Honest comparison
+A lean **all-custom** board (S3 module hand-soldered so Economic applies, AMS1117 (Basic) instead of the buck, connectors hand-soldered) works out to ≈ $50–75 for 2 boards plus a $10.90 display, about the same as Option B. B's case isn't price. It's that the riskiest custom work (module, USB, power, display) becomes a proven board, the custom board shrinks to ~40 parts with no RF or USB, and we get a 480 × 640 IPS panel. B costs us: the RGB display firmware (bounce buffers, Wi-Fi drift), a stack-up enclosure, and dependence on one Waveshare SKU.
