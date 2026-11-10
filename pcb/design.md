@@ -1,6 +1,6 @@
 # Schematic design notes (v1)
 
-Source: `pcb/gen/build.py` → `pcb/exhaust.kicad_sch` (D-035). Checks: `pcb/gen/run.sh` (ERC, netlist assertions, SVG, raw BOM into `pcb/reports/`). Parts: `pcb/gen/parts.py`, sourced in `sourcing/*.md` (2026-10-28). Isolation: `pcb/SAFETY.md`.
+Source: `pcb/exhaust.kicad_sch` since layout started (2026-11-09, D-035); `pcb/gen/build.py` generated it and is now frozen. Checks: `pcb/gen/run.sh` (ERC, netlist assertions, SVG, raw BOM into `pcb/reports/`). Parts: `pcb/gen/parts.py`, sourced in `sourcing/*.md` (2026-10-28). Isolation: `pcb/SAFETY.md`.
 
 Datasheet figures below come from the sourcing notes. Where a value is assumed rather than read, it says so.
 
@@ -72,7 +72,7 @@ Six C601699 3528 common-anode RGB LEDs on `+5V`, one resistor per colour per LED
 |----|------|
 | O-1 | ~~SEN6x connector pinout~~: closed, datasheet Table 17 matches the schematic |
 | O-2 | ~~Display module choice~~: closed, DLS29028B / MSP2834 (D-048, Q-35) |
-| O-3 | Footprints against the LCSC drawings. Stock KiCad footprints are placeholders: H11L1S lead span (SMDIP W9.53), LTV-817S lead span (10.16 ± 0.3 mm tip to tip, 1.0 mm feet, so ≈ 9.2 mm foot centers against the W9.53 footprint), MB10S (MBS vs the MBLS footprint used), 3528 RGB pin map against the LED_ARGB symbol numbering, KF128L terminals, all four incl. J-FAN = J2 + J7 (the Phoenix PT footprint used differs), GH header, HRO USB-C pin map. Use `easyeda2kicad` footprints where they exist |
+| O-3 | ~~Footprints against the LCSC drawings~~: closed 2026-11-09. Project library `pcb/lib/exhaust.pretty`; the RGB LED and MB10S needed renumbering (the stock LED map would have put +5 V on a cathode). Details: `pcb/LAYOUT.md` §2 |
 | O-4 | ~~VBUS hot-plug overshoot against the buck's abs max~~: closed by D-040, wide-input buck (§1) |
-| O-5 | Opto package creepage. Pad-to-pad across the 9.53 mm gull-wing span is ≈ 7 mm, which comfortably exceeds the 3 mm basic barrier (D-028). Confirm from the drawings |
+| O-5 | ~~Opto package creepage~~: closed 2026-11-09 from the LCSC footprints: 6.16 mm across the H11L1S rows and 7.0 mm across the LTV-817S rows, against the 3.0 mm rule; checked by DRC (`pcb/LAYOUT.md` §4) |
 | O-6 | Closed 2026-11-09 against the datasheets: 3.3 V on the N16R8 (`sourcing/gpio47-vdd-spi.md`). Confirm with `espefuse.py summary` at bring-up |

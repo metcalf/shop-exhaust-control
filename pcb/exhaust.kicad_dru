@@ -1,0 +1,32 @@
+(version 1)
+# Isolation barriers from pcb/SAFETY.md (S-4, D-028, D-050). Domains are netclasses set in exhaust.kicad_pro:
+# FAN, OCC, DCI; everything else with a net is the node domain.
+# Node <-> field: >= 3.0 mm clearance and creepage (basic insulation, <= 150 V, pollution degree 2).
+# Field <-> field: >= 1.5 mm (functional; all SELV).
+
+(rule "barrier: fan-node"
+  (constraint clearance (min 3.0mm))
+  (constraint creepage (min 3.0mm))
+  (condition "A.hasNetclass('FAN') && B.NetName != '' && !B.hasNetclass('FAN') && !B.hasNetclass('OCC') && !B.hasNetclass('DCI')"))
+
+(rule "barrier: occ-node"
+  (constraint clearance (min 3.0mm))
+  (constraint creepage (min 3.0mm))
+  (condition "A.hasNetclass('OCC') && B.NetName != '' && !B.hasNetclass('FAN') && !B.hasNetclass('OCC') && !B.hasNetclass('DCI')"))
+
+(rule "barrier: dci-node"
+  (constraint clearance (min 3.0mm))
+  (constraint creepage (min 3.0mm))
+  (condition "A.hasNetclass('DCI') && B.NetName != '' && !B.hasNetclass('FAN') && !B.hasNetclass('OCC') && !B.hasNetclass('DCI')"))
+
+(rule "functional: field-field"
+  (constraint clearance (min 1.5mm))
+  (constraint creepage (min 1.5mm))
+  (condition "(A.hasNetclass('FAN') && (B.hasNetclass('OCC') || B.hasNetclass('DCI'))) || (A.hasNetclass('OCC') && B.hasNetclass('DCI'))"))
+
+# Recovery pads (D-041): EN/BOOT to their GND pad at the board minimum, so a screwdriver bridges them.
+(rule "recovery pads"
+  (constraint clearance (min 0.15mm))
+  (condition "A.Reference == 'TP6' || A.Reference == 'TP7'"))
+
+# JLC 2-layer standard capability (pcb/design.md): 0.15 mm track/space used as the floor.

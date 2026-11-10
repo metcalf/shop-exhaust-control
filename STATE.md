@@ -1,21 +1,28 @@
 # Project State
 
 **Updated:** 2026-11-09
-**Phase:** 3, detailed design (**G2 approved 2026-10-28**). D-029 order: vendor check ✓ → schematic ✓ → priced parts list ✓ → **schematic approved by Andrew 2026-11-09 (Q-33)** → **layout (next)**, mech, firmware.
-**Waiting on:** nothing for layout. Q-37 (nightly skip) is open but no longer matters while work is unblocked.
+**Phase:** 3, detailed design (**G2 approved 2026-10-28**). D-029 order: vendor check ✓ → schematic ✓ → priced parts list ✓ → schematic approved (Q-33) ✓ → **layout: placement locked ✓, routing candidates pending** → mech, firmware.
+**Waiting on:** Andrew. Quilter upload of `pcb/exhaust-placed.kicad_pcb`; Q-38 (Freerouting jar blocked in the nightly); Q-39 (placement assumptions).
+Blocked-on: andrew
 
 ## Next actions (in order; each is Claude's unless marked)
-1. (Done 2026-11-09: Q-33, schematic approved; route-agnostic layout, no EPAD vias, MJF enclosure.)
-2. **Layout (start here), per D-010:** Claude scripts placement and Quilter routes, with Freerouting as the comparison. (a) Scripted placement via the pcbnew API: board outline, edge connectors, antenna keepout, fan island with its ≥ 3 mm barrier (D-050), net classes. Lock it. (b) Write the creepage/clearance DRC rules from `pcb/SAFETY.md`. (c) Commit the placed, unrouted board as `pcb/exhaust-placed.kicad_pcb`: this is the Quilter input. (d) Route a Freerouting candidate from that placement (Java 24 is installed; fetch the Freerouting jar into a gitignored `pcb/tools/`). Run DRC on it, and render and commit it. (e) Stop for Andrew: he uploads (c) to Quilter (cloud, his account; Claude never uploads it). Both candidates must pass our DRC; Andrew picks one. The first layout commit makes `pcb/exhaust.kicad_sch` the source instead of `pcb/gen/build.py` (D-035): say so in the commit and stop editing the generator. Board outline and mounting are Claude's call for now; log the outline as an assumption.
-   - Before placement: fix the footprints against the LCSC drawings, using `easyeda2kicad` (in `.venv`) where stock ones differ (design.md O-3). If LCSC/EasyEDA can't be reached, keep the stock footprints and list which are unchecked.
-   - At bring-up, confirm O-6 with `espefuse.py summary` (VDD_SPI 3.3 V). It's closed against the datasheets (`sourcing/gpio47-vdd-spi.md`).
-   - 2-layer. After Andrew picks a candidate: DRC, export Gerbers/BOM/CPL, record the barrier spacings in `pcb/SAFETY.md`. Keep running `pcb/gen/check.py` on the `.kicad_sch`.
-3. Mech (build123d) can start from the locked placement in `pcb/exhaust-placed.kicad_pcb` while the routing candidates are compared, since routing doesn't move parts. Then the firmware host-tested logic.
-4. **Firmware backlog, for implementation later (not now):**
+1. **Andrew:** upload `pcb/exhaust-placed.kicad_pcb` (with its `.kicad_pro` and `.kicad_dru`) to Quilter, then drop the routed board in as `pcb/exhaust-quilter.kicad_pcb`. Answer Q-38 and Q-39 (`pcb/LAYOUT.md` §3 lists the assumptions A1–A8).
+2. **Freerouting candidate:** once Q-38 allows the jar, run `pcb/layout/route_freerouting.sh`. It routes, adds GND pours and writes DRC and renders for `pcb/exhaust-freerouting.kicad_pcb`. The jar is already in `pcb/tools/bin/` (gitignored); the script header has the download line.
+3. **Each routed candidate:** `kicad-cli pcb drc --refill-zones` against `exhaust.kicad_dru` (copy the `.kicad_pro`/`.kicad_dru` next to it under its basename). Both must pass; Andrew picks one. Then: silk cleanup, Gerbers/BOM/CPL, the barrier screenshot and record in `pcb/SAFETY.md`, and the chosen board becomes `pcb/exhaust.kicad_pcb`.
+4. If Q-39 moves parts: edit `POS` in `pcb/layout/place.py`, rerun `pcb/layout/run.sh`, and re-export for both routers.
+5. **Mech** (build123d) starts from the locked placement once Q-39 is answered, since mirroring or moving parts changes the enclosure. Read positions from the `.kicad_pcb`. Then the firmware host-tested logic.
+   - At bring-up, confirm O-6 with `espefuse.py summary` (VDD_SPI 3.3 V).
+6. **Firmware backlog, for implementation later (not now):**
    - G2 review items: S-3 overspeed / tach at 0 %; S-6 frozen-sequence DC frames (record in D-021 when the DC project starts); S-7 SprayRunOn upper bound while occupied (an FR-08 change, ask Andrew then); S-8, S-9, S-10, S-11, S-12, S-15; S-16 MQTT keepalive ≤ 30 s (check `BaseMqttClient`).
    - S-14 boot config: TWDT panic, RTC WDT, LEDC at duty 0 before routing.
    - SEN65 reset-and-retry at startup; I²C bus recovery and module reset on `sensor_no_data` (D-047).
    - Touch UI (`docs/control-logic.md` §8): FT6336G on its own 100 kHz I²C bus (D-048).
+
+## Layout status (where it stopped)
+- `pcb/layout/run.sh`: schematic netlist → `check.py` (passes) → project footprints → locked placement → DRC: **0 errors**. 96 silk warnings, 2 intentional TP footprint mismatches, 203 unrouted. Renders: `pcb/reports/render/placed-{front,back}.png`.
+- `pcb/exhaust.kicad_sch` is the source now (D-035, D-051). `pcb/gen/run.sh` checks it and only regenerates with `REGENERATE=1`. Don't edit `build.py`.
+- Barrier: netclasses, plus clearance and creepage rules, plus keepouts; mutation-checked (`pcb/LAYOUT.md` §4). Placement minimums: 6.16 mm node↔field, 2.18 mm field↔field.
+- A KiCad lock file (`pcb/~exhaust.kicad_sch.lck`, 20:36) was present at the start of this run. If the schematic was open in the GUI, reload it before saving, or the footprint-field changes (D-051) get overwritten.
 
 ## Schematic status (where it stopped)
 - `pcb/gen/run.sh` regenerates `pcb/exhaust.kicad_sch`, runs ERC (0 violations) and the netlist assertions (all pass), and exports the SVG and raw BOM to `pcb/reports/`. 100 parts, 28 unique LCSC parts.
@@ -24,12 +31,12 @@
 - Known cosmetic issues: field text on rotated parts needs GUI touch-up; placement wasn't laid out for wiring, so some blocks are still label-heavy.
 
 ## Notes for an unattended run
-- Layout is unblocked (Q-33, 2026-11-09). Mech and firmware follow layout per D-029; don't start them before a layout commit exists.
+- Everything left is waiting on Andrew (Quilter upload, Q-38, Q-39). Don't hand-route a final board or upload anything to Quilter. Mech waits for Q-39.
 - CLAUDE.md's phase table still puts sourcing after the full detailed design. D-029 (Andrew) overrides that for this project. Don't edit CLAUDE.md.
 - No mains anywhere (D-018), so G3 is light: receptacle, the listing of Andrew's own supply (Q-36) and the 24 VAC hookup.
 
 ## Blockers
-- None.
+- Freerouting can't run unattended until Q-38 is answered. Quilter is Andrew's upload.
 
 ## Log
 - 2026-10-22: Repo created from the kickoff conversation. See `docs/context.md`.
@@ -80,5 +87,6 @@
 - 2026-11-09: J-FAN split into two 2-pos KF128L (J2 + J7); each AC input's 2 × 2.7 k → one 10 k 1206 Basic (Andrew; D-049). ERC 0, netlist assertions pass. 2-board PCBA ≈ $133, project ≈ $240–265. `sourcing/priced-parts.md` assembly-routes section (2026-10-29) is stale; refresh from the live JLC quote at G4.
 - 2026-11-09: Kept the fan-side opto barrier (Andrew; D-050). Non-isolated, ferrite and capacitive-coupling options logged as rejected (≈ $4 saving vs. touch-panel noise risk). No design change.
 - 2026-11-09: Schematic approved (Andrew; Q-33, D-029 checkpoint passed). Layout unblocked for the nightly run, with Q-33's defaults (route-agnostic, no EPAD vias, MJF).
+- 2026-11-09 (nightly): Layout started per D-010. Footprints checked against LCSC drawings and datasheets (O-3, O-5 closed; LED and bridge pin maps fixed; D-051). Schematic is now the source. Placement scripted and locked: 72 × 123 mm, barrier netclasses, creepage and clearance rules, keepouts; DRC 0 errors, rules mutation-checked (D-052 proposed). DSN exported. Freerouting was blocked by the permission classifier (Q-38). Placement review in Q-39. Interfaces §2.2–2.3 now match the schematic.
 - 2026-11-09: Layout plan in STATE aligned with D-010: scripted placement, then a Quilter candidate (Andrew uploads) and a Freerouting candidate from the same locked placement.
 - 2026-11-09: D-010 (PCB/electrical toolchain) accepted (Andrew).

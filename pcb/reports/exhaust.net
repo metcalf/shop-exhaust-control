@@ -2,7 +2,7 @@
 	(version "E")
 	(design
 		(source "/Users/andrew/code/shop-exhaust-control/pcb/exhaust.kicad_sch")
-		(date "2026-11-09T21:39:30")
+		(date "2026-11-09T22:13:56")
 		(tool "Eeschema 10.0.7")
 		(sheet
 			(number "1")
@@ -910,12 +910,12 @@
 		(comp
 			(ref "D2")
 			(value "MB10S")
-			(footprint "Diode_SMD:Diode_Bridge_Vishay_MBLS")
+			(footprint "exhaust:Bridge_MBS_MB10S")
 			(fields
 				(field
 					(name "LCSC") "C2488")
 				(field
-					(name "Footprint") "Diode_SMD:Diode_Bridge_Vishay_MBLS")
+					(name "Footprint") "exhaust:Bridge_MBS_MB10S")
 				(field
 					(name "Datasheet")
 				)
@@ -976,12 +976,12 @@
 		(comp
 			(ref "D3")
 			(value "MB10S")
-			(footprint "Diode_SMD:Diode_Bridge_Vishay_MBLS")
+			(footprint "exhaust:Bridge_MBS_MB10S")
 			(fields
 				(field
 					(name "LCSC") "C2488")
 				(field
-					(name "Footprint") "Diode_SMD:Diode_Bridge_Vishay_MBLS")
+					(name "Footprint") "exhaust:Bridge_MBS_MB10S")
 				(field
 					(name "Datasheet")
 				)
@@ -1042,12 +1042,12 @@
 		(comp
 			(ref "D4")
 			(value "RGB CA 3528")
-			(footprint "LED_SMD:LED_Cree-PLCC4_3.2x2.8mm_CCW")
+			(footprint "exhaust:RGB_3528_TJ-S3528")
 			(fields
 				(field
 					(name "LCSC") "C601699")
 				(field
-					(name "Footprint") "LED_SMD:LED_Cree-PLCC4_3.2x2.8mm_CCW")
+					(name "Footprint") "exhaust:RGB_3528_TJ-S3528")
 				(field
 					(name "Datasheet")
 				)
@@ -1108,12 +1108,12 @@
 		(comp
 			(ref "D5")
 			(value "RGB CA 3528")
-			(footprint "LED_SMD:LED_Cree-PLCC4_3.2x2.8mm_CCW")
+			(footprint "exhaust:RGB_3528_TJ-S3528")
 			(fields
 				(field
 					(name "LCSC") "C601699")
 				(field
-					(name "Footprint") "LED_SMD:LED_Cree-PLCC4_3.2x2.8mm_CCW")
+					(name "Footprint") "exhaust:RGB_3528_TJ-S3528")
 				(field
 					(name "Datasheet")
 				)
@@ -1174,12 +1174,12 @@
 		(comp
 			(ref "D6")
 			(value "RGB CA 3528")
-			(footprint "LED_SMD:LED_Cree-PLCC4_3.2x2.8mm_CCW")
+			(footprint "exhaust:RGB_3528_TJ-S3528")
 			(fields
 				(field
 					(name "LCSC") "C601699")
 				(field
-					(name "Footprint") "LED_SMD:LED_Cree-PLCC4_3.2x2.8mm_CCW")
+					(name "Footprint") "exhaust:RGB_3528_TJ-S3528")
 				(field
 					(name "Datasheet")
 				)
@@ -1240,12 +1240,12 @@
 		(comp
 			(ref "D7")
 			(value "RGB CA 3528")
-			(footprint "LED_SMD:LED_Cree-PLCC4_3.2x2.8mm_CCW")
+			(footprint "exhaust:RGB_3528_TJ-S3528")
 			(fields
 				(field
 					(name "LCSC") "C601699")
 				(field
-					(name "Footprint") "LED_SMD:LED_Cree-PLCC4_3.2x2.8mm_CCW")
+					(name "Footprint") "exhaust:RGB_3528_TJ-S3528")
 				(field
 					(name "Datasheet")
 				)
@@ -1306,12 +1306,12 @@
 		(comp
 			(ref "D8")
 			(value "RGB CA 3528")
-			(footprint "LED_SMD:LED_Cree-PLCC4_3.2x2.8mm_CCW")
+			(footprint "exhaust:RGB_3528_TJ-S3528")
 			(fields
 				(field
 					(name "LCSC") "C601699")
 				(field
-					(name "Footprint") "LED_SMD:LED_Cree-PLCC4_3.2x2.8mm_CCW")
+					(name "Footprint") "exhaust:RGB_3528_TJ-S3528")
 				(field
 					(name "Datasheet")
 				)
@@ -1372,12 +1372,12 @@
 		(comp
 			(ref "D9")
 			(value "RGB CA 3528")
-			(footprint "LED_SMD:LED_Cree-PLCC4_3.2x2.8mm_CCW")
+			(footprint "exhaust:RGB_3528_TJ-S3528")
 			(fields
 				(field
 					(name "LCSC") "C601699")
 				(field
-					(name "Footprint") "LED_SMD:LED_Cree-PLCC4_3.2x2.8mm_CCW")
+					(name "Footprint") "exhaust:RGB_3528_TJ-S3528")
 				(field
 					(name "Datasheet")
 				)
@@ -1759,12 +1759,12 @@
 		(comp
 			(ref "J2")
 			(value "KF128L-3.5-2P")
-			(footprint "TerminalBlock_Phoenix:TerminalBlock_Phoenix_PT-1,5-2-3.5-H_1x02_P3.50mm_Horizontal")
+			(footprint "exhaust:TerminalBlock_KF128L-3.5-2P")
 			(fields
 				(field
 					(name "LCSC") "C474930")
 				(field
-					(name "Footprint") "TerminalBlock_Phoenix:TerminalBlock_Phoenix_PT-1,5-2-3.5-H_1x02_P3.50mm_Horizontal")
+					(name "Footprint") "exhaust:TerminalBlock_KF128L-3.5-2P")
 				(field
 					(name "Datasheet")
 				)
@@ -1819,12 +1819,12 @@
 		(comp
 			(ref "J3")
 			(value "KF128L-3.5-2P")
-			(footprint "TerminalBlock_Phoenix:TerminalBlock_Phoenix_PT-1,5-2-3.5-H_1x02_P3.50mm_Horizontal")
+			(footprint "exhaust:TerminalBlock_KF128L-3.5-2P")
 			(fields
 				(field
 					(name "LCSC") "C474930")
 				(field
-					(name "Footprint") "TerminalBlock_Phoenix:TerminalBlock_Phoenix_PT-1,5-2-3.5-H_1x02_P3.50mm_Horizontal")
+					(name "Footprint") "exhaust:TerminalBlock_KF128L-3.5-2P")
 				(field
 					(name "Datasheet")
 				)
@@ -1879,12 +1879,12 @@
 		(comp
 			(ref "J4")
 			(value "KF128L-3.5-2P")
-			(footprint "TerminalBlock_Phoenix:TerminalBlock_Phoenix_PT-1,5-2-3.5-H_1x02_P3.50mm_Horizontal")
+			(footprint "exhaust:TerminalBlock_KF128L-3.5-2P")
 			(fields
 				(field
 					(name "LCSC") "C474930")
 				(field
-					(name "Footprint") "TerminalBlock_Phoenix:TerminalBlock_Phoenix_PT-1,5-2-3.5-H_1x02_P3.50mm_Horizontal")
+					(name "Footprint") "exhaust:TerminalBlock_KF128L-3.5-2P")
 				(field
 					(name "Datasheet")
 				)
@@ -2107,12 +2107,12 @@
 		(comp
 			(ref "J7")
 			(value "KF128L-3.5-2P")
-			(footprint "TerminalBlock_Phoenix:TerminalBlock_Phoenix_PT-1,5-2-3.5-H_1x02_P3.50mm_Horizontal")
+			(footprint "exhaust:TerminalBlock_KF128L-3.5-2P")
 			(fields
 				(field
 					(name "LCSC") "C474930")
 				(field
-					(name "Footprint") "TerminalBlock_Phoenix:TerminalBlock_Phoenix_PT-1,5-2-3.5-H_1x02_P3.50mm_Horizontal")
+					(name "Footprint") "exhaust:TerminalBlock_KF128L-3.5-2P")
 				(field
 					(name "Datasheet")
 				)
@@ -2167,12 +2167,12 @@
 		(comp
 			(ref "L1")
 			(value "2.2u")
-			(footprint "Inductor_SMD:L_Bourns-SRN4018")
+			(footprint "exhaust:L_Murata_LQH44P")
 			(fields
 				(field
 					(name "LCSC") "C135262")
 				(field
-					(name "Footprint") "Inductor_SMD:L_Bourns-SRN4018")
+					(name "Footprint") "exhaust:L_Murata_LQH44P")
 				(field
 					(name "Datasheet")
 				)
@@ -5747,12 +5747,12 @@
 		(comp
 			(ref "U1")
 			(value "ESP32-S3-WROOM-1-N16R8")
-			(footprint "RF_Module:ESP32-S3-WROOM-1")
+			(footprint "exhaust:ESP32-S3-WROOM-1_NoEPADVias")
 			(fields
 				(field
 					(name "LCSC") "C2913202")
 				(field
-					(name "Footprint") "RF_Module:ESP32-S3-WROOM-1")
+					(name "Footprint") "exhaust:ESP32-S3-WROOM-1_NoEPADVias")
 				(field
 					(name "Datasheet")
 				)
@@ -6068,12 +6068,12 @@
 		(comp
 			(ref "U4")
 			(value "H11L1S-TA1-L")
-			(footprint "Package_DIP:SMDIP-6_W9.53mm")
+			(footprint "exhaust:SOP-6_H11L1S_LS10.2")
 			(fields
 				(field
 					(name "LCSC") "C7435535")
 				(field
-					(name "Footprint") "Package_DIP:SMDIP-6_W9.53mm")
+					(name "Footprint") "exhaust:SOP-6_H11L1S_LS10.2")
 				(field
 					(name "Datasheet")
 				)
@@ -6140,12 +6140,12 @@
 		(comp
 			(ref "U5")
 			(value "LTV-817S-TA1-C")
-			(footprint "Package_DIP:SMDIP-4_W9.53mm")
+			(footprint "exhaust:SOP-4_LTV-817S_LS10.3")
 			(fields
 				(field
 					(name "LCSC") "C109227")
 				(field
-					(name "Footprint") "Package_DIP:SMDIP-4_W9.53mm")
+					(name "Footprint") "exhaust:SOP-4_LTV-817S_LS10.3")
 				(field
 					(name "Datasheet")
 				)
@@ -6206,12 +6206,12 @@
 		(comp
 			(ref "U6")
 			(value "LTV-817S-TA1-C")
-			(footprint "Package_DIP:SMDIP-4_W9.53mm")
+			(footprint "exhaust:SOP-4_LTV-817S_LS10.3")
 			(fields
 				(field
 					(name "LCSC") "C109227")
 				(field
-					(name "Footprint") "Package_DIP:SMDIP-4_W9.53mm")
+					(name "Footprint") "exhaust:SOP-4_LTV-817S_LS10.3")
 				(field
 					(name "Datasheet")
 				)
@@ -6272,12 +6272,12 @@
 		(comp
 			(ref "U7")
 			(value "LTV-817S-TA1-C")
-			(footprint "Package_DIP:SMDIP-4_W9.53mm")
+			(footprint "exhaust:SOP-4_LTV-817S_LS10.3")
 			(fields
 				(field
 					(name "LCSC") "C109227")
 				(field
-					(name "Footprint") "Package_DIP:SMDIP-4_W9.53mm")
+					(name "Footprint") "exhaust:SOP-4_LTV-817S_LS10.3")
 				(field
 					(name "Datasheet")
 				)
@@ -6338,12 +6338,12 @@
 		(comp
 			(ref "U8")
 			(value "LTV-817S-TA1-C")
-			(footprint "Package_DIP:SMDIP-4_W9.53mm")
+			(footprint "exhaust:SOP-4_LTV-817S_LS10.3")
 			(fields
 				(field
 					(name "LCSC") "C109227")
 				(field
-					(name "Footprint") "Package_DIP:SMDIP-4_W9.53mm")
+					(name "Footprint") "exhaust:SOP-4_LTV-817S_LS10.3")
 				(field
 					(name "Datasheet")
 				)
@@ -7535,7 +7535,7 @@
 		(net
 			(code "1")
 			(name "+3V3")
-			(class "Default")
+			(class "POWER")
 			(node
 				(ref "C12")
 				(pin "1")
@@ -7678,7 +7678,7 @@
 		(net
 			(code "2")
 			(name "+5V")
-			(class "Default")
+			(class "POWER")
 			(node
 				(ref "C1")
 				(pin "1")
@@ -7784,7 +7784,7 @@
 		(net
 			(code "3")
 			(name "/+10V_F")
-			(class "Default")
+			(class "FAN")
 			(node
 				(ref "C8")
 				(pin "1")
@@ -7863,7 +7863,7 @@
 		(net
 			(code "6")
 			(name "/BUCK_LX")
-			(class "Default")
+			(class "POWER")
 			(node
 				(ref "C2")
 				(pin "2")
@@ -7917,7 +7917,7 @@
 		(net
 			(code "9")
 			(name "/DCI_A")
-			(class "Default")
+			(class "DCI")
 			(node
 				(ref "J4")
 				(pin "1")
@@ -7933,7 +7933,7 @@
 		(net
 			(code "10")
 			(name "/DCI_AC")
-			(class "Default")
+			(class "DCI")
 			(node
 				(ref "D3")
 				(pin "1")
@@ -7948,7 +7948,7 @@
 		(net
 			(code "11")
 			(name "/DCI_B")
-			(class "Default")
+			(class "DCI")
 			(node
 				(ref "D3")
 				(pin "2")
@@ -7964,7 +7964,7 @@
 		(net
 			(code "12")
 			(name "/DCI_N")
-			(class "Default")
+			(class "DCI")
 			(node
 				(ref "D3")
 				(pin "4")
@@ -7980,7 +7980,7 @@
 		(net
 			(code "13")
 			(name "/DCI_P")
-			(class "Default")
+			(class "DCI")
 			(node
 				(ref "D3")
 				(pin "3")
@@ -8208,7 +8208,7 @@
 		(net
 			(code "25")
 			(name "/FAN_SPD")
-			(class "Default")
+			(class "FAN")
 			(node
 				(ref "J7")
 				(pin "1")
@@ -8246,7 +8246,7 @@
 		(net
 			(code "27")
 			(name "/FAN_TACH_F")
-			(class "Default")
+			(class "FAN")
 			(node
 				(ref "J7")
 				(pin "2")
@@ -8262,7 +8262,7 @@
 		(net
 			(code "28")
 			(name "/GND_F")
-			(class "Default")
+			(class "FAN")
 			(node
 				(ref "C8")
 				(pin "2")
@@ -8776,7 +8776,7 @@
 		(net
 			(code "53")
 			(name "/OCC_A")
-			(class "Default")
+			(class "OCC")
 			(node
 				(ref "J3")
 				(pin "1")
@@ -8792,7 +8792,7 @@
 		(net
 			(code "54")
 			(name "/OCC_AC")
-			(class "Default")
+			(class "OCC")
 			(node
 				(ref "D2")
 				(pin "1")
@@ -8807,7 +8807,7 @@
 		(net
 			(code "55")
 			(name "/OCC_B")
-			(class "Default")
+			(class "OCC")
 			(node
 				(ref "D2")
 				(pin "2")
@@ -8849,7 +8849,7 @@
 		(net
 			(code "57")
 			(name "/OCC_N")
-			(class "Default")
+			(class "OCC")
 			(node
 				(ref "D2")
 				(pin "4")
@@ -8865,7 +8865,7 @@
 		(net
 			(code "58")
 			(name "/OCC_P")
-			(class "Default")
+			(class "OCC")
 			(node
 				(ref "D2")
 				(pin "3")
@@ -8881,7 +8881,7 @@
 		(net
 			(code "59")
 			(name "/PRES_LED_A")
-			(class "Default")
+			(class "FAN")
 			(node
 				(ref "R10")
 				(pin "2")
@@ -8896,7 +8896,7 @@
 		(net
 			(code "60")
 			(name "/Q_FAN_G")
-			(class "Default")
+			(class "FAN")
 			(node
 				(ref "Q1")
 				(pin "1")
@@ -8990,7 +8990,7 @@
 		(net
 			(code "64")
 			(name "/TACH_LED_A")
-			(class "Default")
+			(class "FAN")
 			(node
 				(ref "R8")
 				(pin "2")
@@ -9214,7 +9214,7 @@
 		(net
 			(code "74")
 			(name "GND")
-			(class "Default")
+			(class "POWER")
 			(node
 				(ref "C1")
 				(pin "2")

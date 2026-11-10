@@ -46,3 +46,6 @@ fp-info-cache
 
 # KiCad local history
 .history/
+
+# Downloaded tools (Freerouting jar)
+pcb/tools/bin/

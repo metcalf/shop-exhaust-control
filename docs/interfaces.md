@@ -98,12 +98,10 @@ Behavior:
 J-FAN sits on the fan side of the barrier, with ≥ 3 mm to any node-side copper. Its conductors carry nothing the fan's own cable doesn't already expose.
 
 ### 2.2 Occupancy input (FR-07)
-*Schematic (D-036) supersedes the parts below for §2.2 and §2.3: no input TVS (D-046), one 10 k 1206 (D-049) → MB10S bridge → LTV-817S-TA1-C (D-045), 47 k pull-up, 1 µF, one circuit for both inputs. Values and worst cases are in `pcb/design.md` §3.*
-
-24 VAC from the lighting transformer's secondary (the same terminals that drive the old fan relay coil, Q-16) → 2-pos terminal → 2 × 2.2 kΩ (1206, series) → AC-input opto (LTV-814/PC814-class) → phototransistor with 10 kΩ pull-up and 1 µF to GND (τ ≈ 10 ms bridges the zero crossings) → GPIO7. Input draw ≈ 5–6 mA rms. Same ≥ 3 mm barrier as §2.1. Firmware debounce C-20 (0.5 s), well inside AC-04's 2 s.
+24 VAC from the lighting transformer's secondary (the terminals that drove the old fan relay coil, Q-16) → J3 (2-pos KF128L) → one 10 kΩ 1206 (D-049) → MB10S bridge → LTV-817S-TA1-C LED (D-036, D-045). Output: 47 kΩ pull-up to 3.3 V and 1 µF to GND → GPIO7. No input TVS (D-046). Same ≥ 3 mm barrier as §2.1. Worst cases (12 VDC − 10 % to a lightly loaded 41 V pk secondary) are in `pcb/design.md` §3. Firmware debounce C-20 (0.5 s), well inside AC-04's 2 s.
 
 ### 2.3 Wired `DC_RUNNING` input (IR-01 backup, D-025)
-The same circuit as §2.2, with the series resistance sized so 12 V DC still lights the LED (≥ 2 mA) and 24 VAC (+10 %, ≈ 37 V peak) stays within its rating: 2 × 2.7 kΩ (1206) → AC-input opto (bidirectional LED, so either polarity or AC) → 10 kΩ pull-up and 1 µF → GPIO1. Same ≥ 3 mm barrier. Unconnected reads not asserted. J-DC and J-OCC accept the same inputs, so swapping their wires at install is harmless (wrong function only). Phase 3 checks the resistor values against the opto's CTR and LED ratings.
+The same circuit as §2.2 on J4 → GPIO1: 12–24 V AC or DC of either polarity (the bridge makes polarity irrelevant). Same ≥ 3 mm barrier. Unconnected reads not asserted. J3 and J4 are interchangeable, so swapping their wires at install is harmless (wrong function only).
 
 ## 3. Power (D-018)
 

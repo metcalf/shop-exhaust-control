@@ -36,6 +36,8 @@ Nothing else crosses: no Y capacitors, no shared pours, no resistors, no shield 
 
 Each domain gets its own copper island, with no pour across a barrier. Under each opto, add a routed slot in the barrier gap if layout needs extra creepage. Layout records how each spacing was checked (DRC rule plus a measured screenshot) here before G3.
 
+**How it's enforced (layout, 2026-11-09):** domains are netclasses (`FAN`, `OCC`, `DCI`, node = the rest) in `pcb/exhaust.kicad_pro`; `pcb/exhaust.kicad_dru` sets clearance **and** creepage constraints at the values above; keepout rule areas (no tracks, vias or pour) cover the barrier bands (`pcb/layout/place.py`). Placed board, before routing: 0 violations; smallest node↔field distance 6.16 mm (U4 row gap), smallest field↔field 2.18 mm. Mutation check: raising the rules makes exactly these rules fire (`pcb/LAYOUT.md` §4). Still to do before G3: DRC on the chosen routed board, and the measured screenshot.
+
 ## Status
 - Schematic: domains and crossings asserted by `pcb/gen/check.py` (`pcb/reports/netlist-check.txt`).
-- Layout: not started (D-029).
+- Layout: placement locked with the barrier rules and keepouts in place; DRC clean at placement (`pcb/LAYOUT.md`). Routed candidates pending.
