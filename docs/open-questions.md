@@ -8,6 +8,7 @@ Claude batches questions here. Each has an ID, why it matters, and the default C
 | ID | Question | Why it matters | Default if unanswered | Blocks | Answer |
 |----|----------|----------------|-----------------------|--------|--------|
 | Q-37 | Nightly no-ops: 2026-11-01 and 2026-11-05 both found only Q-33/Q-35 open and changed nothing. Want me to add the skip to this repo's `scripts/nightly.sh` now (skip when STATE.md has `Blocked-on: andrew` and nothing has been committed since the last nightly), rather than waiting for the DC repo? | Each blocked run costs a session start and usage for nothing. | No change: runs continue nightly and no-op until you answer Q-33/Q-35. | Nothing (tooling only) | |
+| Q-46 | D-057: SEN65 inside the one enclosure, inlet and outlet sealed to the wall, instead of D-019's separate open bay. OK to amend NFR-04 (sealed flow path instead of an open bay) and NFR-03 (module behind its own small gasketed hatch, so no lid removal)? | Sets the enclosure form; the mech model starts from it | Yes, with a small gasketed hatch for the module so NFR-03 holds | Mech | |
 
 ## Answered
 
