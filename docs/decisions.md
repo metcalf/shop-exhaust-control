@@ -73,7 +73,7 @@ Template:
 
 ## D-010: PCB/electrical toolchain built around Claude's weak spots
 - Date: 2026-10-24
-- Status: Proposed — needs Andrew (reversible; confirm before phase 3)
+- Status: Accepted (Andrew, 2026-11-09). KiCad 10 in place of 9 (D-035); no mains on the board (D-018), so the mains-zone items don't apply
 - Context: Claude is reasonable at schematic topology but error-prone at symbol/footprint pin mapping and readable sheet placement, and weak at layout (D-008). The toolchain should turn those into scripted, checkable steps.
 - Decision:
   - **Schematic:** native KiCad 9, generated with `kiutils` (Python) rather than hand-written S-expressions. Symbols, footprints and 3D models from `easyeda2kicad` by LCSC part number; LCSC fields via `kicad-jlcpcb-tools`.

@@ -81,3 +81,4 @@
 - 2026-11-09: Kept the fan-side opto barrier (Andrew; D-050). Non-isolated, ferrite and capacitive-coupling options logged as rejected (≈ $4 saving vs. touch-panel noise risk). No design change.
 - 2026-11-09: Schematic approved (Andrew; Q-33, D-029 checkpoint passed). Layout unblocked for the nightly run, with Q-33's defaults (route-agnostic, no EPAD vias, MJF).
 - 2026-11-09: Layout plan in STATE aligned with D-010: scripted placement, then a Quilter candidate (Andrew uploads) and a Freerouting candidate from the same locked placement.
+- 2026-11-09: D-010 (PCB/electrical toolchain) accepted (Andrew).
