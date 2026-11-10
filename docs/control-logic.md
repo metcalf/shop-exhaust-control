@@ -20,7 +20,7 @@ This is the contract for the pure C++ component `exhaust_logic` (no ESP-IDF head
 
 - **Time:** monotonic milliseconds, injected (`now`). No wall clock is needed; nothing depends on time of day.
 - **Calls:** `tick(inputs, now)` once per second; `command(cmd, now)` on each user action, which also recomputes outputs immediately, so panel actions reach the fan within one PWM update (AC-05/AC-06: ≤ 2 s).
-- **Inputs:** occupied (debounced by the I/O layer, C-20), `dc_ble` (from the BLE link layer, already including the P-24 timeout), `dc_wired` (the backup input, debounced by the I/O layer, C-31), the latest SEN65 frame plus the module's state (measuring since *t*, idle, unpowered) and device-status bits, tach frequency, fan-present.
+- **Inputs:** occupied (debounced by the I/O layer, C-20), `dc_ble` (from the BLE link layer, already including the P-24 timeout), the latest SEN65 frame plus the module's state (measuring since *t*, idle, unpowered) and device-status bits, tach frequency.
 - **Outputs:** fan duty 0–100 %, sensor request (`Measure`, `Idle`, `PowerCycle`, `Clean`), display model, indicator model, notices and faults, and the telemetry snapshot for HA.
 - **Separate pure units**, each tested on its own: `UiInput` (touch events → commands, with the configurable on-screen action map), `DcLinkParser` (BLE frame → `dc_running`, `docs/interfaces.md` §1.1), `HassMessages` (topics/discovery/state JSON).
 
@@ -69,7 +69,7 @@ if vacant:        demand = min(demand, P-22)                              (FR-19
 - The `pm` ramp starts at P-01 at P-04, so a vacant clear-down runs no slower than the occupied floor, and an occupied shop sees no step down when PmActive clears. On entry at P-03 the speed steps up to ≈ 33 % (initial values).
 - **Filtered PM2.5:** in continuous sampling, an EMA with time constant C-01 over valid 1 s readings. In sparse sampling, the mean of each sample window (C-23), held until the next window. A saturated reading (≥ 1,000 µg/m³, the specified range; FR-06) counts as 1,000 and marks the sample saturated.
 - **VocActive:** set when the VOC index > P-12 (on); cleared when < P-12 (off) for C-02. **VocValid** = module measuring for ≥ C-07 and not faulted. When not valid, VOC demand is 0 (AC-28). VocActive keeps the Sampler continuous (§5), so VOC isn't left unmeasured during a VOC event.
-- **DcBoostActive** (FR-09, IR-01): `dc_running = dc_ble OR dc_wired`; true while `dc_running`, and for P-11 after it falls. A BLE link timeout looks like a fall (the link layer applies P-24). An unconnected wired input reads false, so the OR needs no configuration (D-025).
+- **DcBoostActive** (FR-09, IR-01): `dc_running = dc_ble`; true while `dc_running`, and for P-11 after it falls. A BLE link timeout looks like a fall (the link layer applies P-24). The wired input (D-025) was dropped (D-054).
 - On a sensor fault, PmActive and VocActive are forced clear, so a fault can't leave a stale PM/VOC demand or raise **clear-down incomplete**; the fault itself is the notice.
 - DC boost is a floor in Auto only. Holds and scenes override it, and Quiet caps it.
 
@@ -104,7 +104,6 @@ States: **Off** (module Idle; vacant and fan off), **Protect** (Idle during Spra
 | `sensor_status` | Device-status error bits (fan, laser, gas, RH/T) set for P-18 | as above | bits clear for C-13 |
 | `sensor_range` | Invalid data only, for P-18: the module's "not available" code, physically impossible readings (PM1.0 > PM2.5 > PM10 ordering violated; mass high with number concentrations at zero), or a raw signal stuck at one code. A high PM value is **never** a fault: at or above the range limit it's saturated (FR-06, §4) | as above | C-13 of valid data |
 | `fan_tach` (FR-18) | Duty ≥ C-06 and tach < C-14 × `f_expected(duty)` for P-16, ignoring C-15 after any duty change | Display, indicator, HA. Command unchanged | Tach OK for C-15 |
-| `fan_port` | `FAN_PRESENT` lost for C-16 | As `fan_tach`. Message says the cable may be unplugged (fan then runs full) or the fan has lost mains | Present for C-16 |
 | clear-down incomplete (notice) | FR-19 vacant cut-off (§4) or vacant SprayRunOn exit with PM/VOC still above off-threshold | Display, HA | Next occupancy |
 | filter clean due (notice) | Filter exposure ≥ P-14 | Display, HA | Cleared from the panel menu |
 
@@ -154,7 +153,7 @@ Initial values for host tests; tuned at commissioning (phase 6) like `P-nn`.
 | C-13 | Sensor fault clear | 60 s valid data | Symmetric with P-18 |
 | C-14 | Tach fault ratio | 0.5 | "Far below expected" (FR-18) |
 | C-15 | Tach settle after duty change | 10 s | EC fan spin-up |
-| C-16 | Fan-present debounce | 5 s | |
+| C-16 | *(dropped with `FAN_PRESENT`, D-054)* | | |
 | C-17 | Airflow per % duty (filter exposure) | 4 CFM/% | 400 CFM free air at 100 %; replaced by FR-05 data |
 | C-18 | NVS save interval (counters) | 1 h | Flash wear |
 | C-19 | Module fan-clean interval | 168 h measuring | SEN6x has a manual clean command; weekly per sourcing notes |
@@ -168,7 +167,7 @@ Initial values for host tests; tuned at commissioning (phase 6) like `P-nn`.
 | C-28 | Decay fit R² minimum | 0.9 | |
 | C-29 | VOC algorithm state save interval | 1 h | Flash wear |
 | C-30 | Touch entry timeout | 10 s | |
-| C-31 | Wired `DC_RUNNING` input debounce | 0.5 s | As C-20; AC-06: ≤ 2 s |
+| C-31 | *(dropped with the wired `DC_IN`, D-054)* | | |
 
 C-08, C-09 and C-22 are unused; C-10 (Auto long-press) was dropped 2026-10-26 (Q-28 (a)). IDs are never reused.
 
@@ -187,7 +186,7 @@ Layout, matching hvac_control: `firmware/components/exhaust_logic/` (pure C++20)
 | AC-03 | Closed-loop exponential clear-down at two airflows, sweeping P-23: report on-time vs overrun (the trade-off curve); mean overrun ≤ P-23 at the initial value; fitted k within 20 % |
 | AC-04 | Occupancy follows input; module Idle when vacant and fan off |
 | AC-05 | Spray from every mode; sensors faulted, absent or offline; full within 2 s; run-on ≥ P-09 and until criteria; module Idle until `t_min − C-07`; Auto tap or a new hold/scene during Spray and SprayRunOn takes effect at once |
-| AC-06 | DC assert/de-assert/link timeout on each of `dc_ble` and `dc_wired`, and both; floor P-10 for P-11 after; PM above P-10 wins; holds override |
+| AC-06 | DC assert/de-assert/link timeout on `dc_ble`; floor P-10 for P-11 after; PM above P-10 wins; holds override |
 | AC-10 | VOC raw step → index > P-12 → ≥ P-13; release below off-level |
 | AC-18 (logic part) | Boot output 0; `restore` mid-hold, mid-Spray and mid-SprayRunOn resumes with the remaining time and keeps `t_min`; no snapshot or a bad CRC → Auto |
 | AC-20 | Sensor fault with PM and VOC high: occupied → P-01 floor; vacant → off; DC boost still applied (≤ P-22 vacant); within P-18 + 5 s; no clear-down incomplete notice |

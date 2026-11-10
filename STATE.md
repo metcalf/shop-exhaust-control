@@ -6,10 +6,9 @@
 Blocked-on: none
 
 ## Next actions (D-054; these replace the old layout actions below)
-1. Amend requirements per D-054: FR-18 (drop the fan-port fault), IR-01/AC-06 (BLE only, D-025 reverted), FR-01 and §3 panel hardware (Waveshare 480×640, GT911), NFR-04 (USB-C on the Waveshare edge). Rewrite `docs/interfaces.md` §2 from the eval doc's "Chosen" table, and `docs/architecture.md` (block diagram, power, mech concept).
-2. Carrier schematic in `pcb/carrier/`, reusing the `pcb/gen` flow. Basic and Economic parts only; Waveshare 2×12 socket, KF128 terminals and GH-6 hand-soldered (DNP at JLC). Indicator: SK6812SIDE-A row on the carrier's room-side edge (D-055, the one Extended part). Run ERC and netlist assertions; barrier per D-050 / `pcb/SAFETY.md`.
-3. Bench plan for Andrew: R24 lift, U6 removal, and the LTV-817 PWM duty at 5 kHz (needs a prototype carrier or a breadboard of the fan-side stage, which is worth doing now since it's 5 parts).
-4. Carrier layout (≈ 50 × 70 mm, Waveshare M2 pattern 40.9 × 59.7 mm), mech stack-up from the Waveshare STEP, then firmware (ST7701S RGB with bounce buffers, GT911, non-inverted PWM (as before), RMT LED).
+1. Carrier schematic in `pcb/carrier/`, reusing the `pcb/gen` flow. Basic and Economic parts only; Waveshare 2×12 socket, KF128 terminals and GH-6 hand-soldered (DNP at JLC). Indicator: SK6812SIDE-A row on the carrier's room-side edge (D-055, the one Extended part). Run ERC and netlist assertions; barrier per D-050 / `pcb/SAFETY.md`.
+2. Bench plan for Andrew: R24 lift, U6 removal, and the LTV-817 PWM duty at 5 kHz (needs a prototype carrier or a breadboard of the fan-side stage, which is worth doing now since it's 5 parts).
+3. Carrier layout (≈ 50 × 70 mm, Waveshare M2 pattern 40.9 × 59.7 mm), mech stack-up from the Waveshare STEP, then firmware (ST7701S RGB with bounce buffers, GT911, non-inverted PWM (as before), RMT LED).
 
 ## Superseded custom-board actions (kept for reference)
 1. **Andrew:** upload `pcb/exhaust-placed.kicad_pcb` (with its `.kicad_pro` and `.kicad_dru`) to Quilter, then drop the routed board in as `pcb/exhaust-quilter.kicad_pcb`. Answer Q-38 and Q-39 (`pcb/LAYOUT.md` §3 lists the assumptions A1–A8).
@@ -100,3 +99,4 @@ Blocked-on: none
 - 2026-11-10: Costed route B (Andrew): Waveshare board + minimal carrier PCB keeps every signal and the D-023 fail-off. No S3 module on our board means JLC Economic applies (every S3 module is "Standard Only", checked live). Electronics ≈ $65–100 per unit. D-054 proposed; Q-40 reframed, Q-44/Q-45 added.
 - 2026-11-10: Andrew chose route B, stripped down (D-054 accepted): LTV-817 for PWM, desolder the QMI8658, lift R24 for OCC. FAN_PRESENT and DC_IN dropped. The carrier has no Extended parts (JLC Economic, ≈ $9.71 in fees); one unit's electronics ≈ $58–87.
 - 2026-11-10: Indicator: on-board side-view SK6812SIDE-A on the carrier edge, not an off-board strip (Q-45, D-055). One Extended part, ≈ $3–4.50 per order. Display: stay on the 2.8B (480×640 RGB). No up-front stress test (Andrew): the UI is simple; tune PCLK, bounce buffers and partial refresh in firmware if drift shows up.
+- 2026-11-10: Docs amended for route B (D-054/D-055): requirements §1, §3, FR-18 (fan-port fault dropped), NFR-04/05, IR-01, AC-06/07; interfaces §1, §2 (J7 pin map read from the Waveshare schematic), §3 power, §5 mech; architecture block diagram, §3, §4, §5, §6, §7, §8 (≈ $215), §9; control-logic drops `dc_wired`, `fan_port`, C-16, C-31.

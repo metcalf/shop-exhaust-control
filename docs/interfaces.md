@@ -1,6 +1,6 @@
 # Interface Control Document
 
-**Status:** complete for G2 (drafted 2026-10-25, nightly). Andrew approves at G2. The **DC coupling** section (§1) is shared with the future dust collector project; changes to it need a decision entry, because both systems depend on it.
+**Status:** complete for G2 (drafted 2026-10-25, nightly). §2, §3 and §5 rewritten 2026-11-10 for route B (D-054, D-055). Andrew approves at G2. The **DC coupling** section (§1) is shared with the future dust collector project; changes to it need a decision entry, because both systems depend on it.
 
 Companion docs: `docs/architecture.md` (block diagram, power, cost), `docs/control-logic.md` (state machine). Pin numbers and part names here are architecture-level: phase 3 confirms them against datasheets (list in `docs/architecture.md` §9).
 
@@ -11,14 +11,14 @@ Companion docs: `docs/architecture.md` (block diagram, power, cost), `docs/contr
 | Signal name | `DC_RUNNING` |
 | Direction | DC controller → exhaust controller |
 | Meaning | Asserted while the DC motor is **commanded on**, including the DC's own run-on. Whether the motor is confirmed running (current sensing) is a separate flag (bit 3) that the exhaust side ignores in v1. |
-| Transport | BLE 4.x **legacy, non-connectable advertising** (`ADV_NONCONN_IND`) from the DC node (D-016). Backup: an opto-isolated wired input on the exhaust node (§2.3, D-025); either path asserts. No MQTT path. |
+| Transport | BLE 4.x **legacy, non-connectable advertising** (`ADV_NONCONN_IND`) from the DC node (D-016). No wired backup (D-025 reverted by D-054: no spare pin). No MQTT path. |
 | Advertising interval (DC side) | 100 ms for 5 s after any payload change, then 500 ms. The fast burst makes assertion latency independent of the scanner's duty (AC-22: ≤ 3 s). |
 | Scanning (exhaust side) | Passive scan, window 30 ms every 100 ms (30 %), duplicate filtering off, coexisting with Wi-Fi (D-016, D-021). |
 | Failure behavior | No valid advertisement for P-24 (10 s) is treated as "DC not running". FR-09 then holds the boost floor for P-11 more, so a short reception gap is invisible to the fan. Exhaust Auto still works on PM/VOC alone. |
 | Authentication | None in v1: a spoofed `DC_RUNNING` only boosts the exhaust. Any future command *to* the DC (message type 0x02) must carry the MAC field (bytes 13–20) from a shared key plus the sequence counter as a replay guard. Stopping the DC stays hardwired at the DC. |
 | Sender filter | Optional compile-time allow-list of DC node BLE addresses (empty = accept any valid frame). Set once the DC node exists. |
-| Interim source (before the DC controller exists) | None (Q-12). A bench test sender (any ESP32 running the same encoder) is used for AC-22; AC-06 uses the wired input. |
-| Wired backup (DC side) | If BLE proves unsatisfactory, the DC controller closes a contact (or drives an output) that energizes the exhaust node's `DC_IN` with 12–24 V AC or DC, either polarity, while `DC_RUNNING` is asserted (§2.3). Same meaning as bit 0. |
+| Interim source (before the DC controller exists) | None (Q-12). A bench test sender (any ESP32 running the same encoder) is used for AC-06 and AC-22. |
+| Wired backup (DC side) | *Dropped (D-054).* If BLE proves unreliable, the fallback is a v2 carrier or an MQTT path, decided then. |
 
 ### 1.1 Payload: manufacturer-specific data (AD type 0xFF)
 
@@ -43,83 +43,76 @@ Boost behavior (how long, what level, what happens after the DC stops) belongs t
 
 ## 2. Electrical I/O (exhaust node)
 
-GPIOs assume an ESP32-S3-WROOM-1-N16R8 (D-022): GPIO 0/3/45/46 (strapping), 19/20 (USB), 26–32 (flash), 35–37 (octal PSRAM) are not used; 43/44 stay as UART0 for logs. Assignments are provisional until the phase 3 schematic.
+Route B (D-054): a **Waveshare ESP32-S3-Touch-LCD-2.8B** (ESP32-S3R8, 16 MB flash, 480×640 ST7701S RGB panel, GT911 touch, USB-C) with our **carrier PCB** plugged onto its 2×12 2.54 mm header J7 and fixed on the same M2 pattern (40.9 × 59.7 mm). Sources: `docs/vendor/waveshare-2.8b/schematic.pdf`, `docs/eval-offtheshelf-board.md` ("Chosen"). Every other S3 pin is taken by the panel, PSRAM, flash or USB.
 
-| Signal | Dir | Type | Level | Connector | GPIO | Notes |
-|--------|-----|------|-------|-----------|------|-------|
-| `FAN_PWM` | Out | Opto LED drive (§2.1) | 3.3 V, ~5 mA | J-FAN (two 2-pos fixed screw terminals J2 + J7, 3.5 mm, fan side of the barrier; D-049) | 4 | LEDC 5 kHz, ≥ 10-bit. LED on = speed line released (high). 10 kΩ external pull-down keeps the LED off through reset/boot |
-| `FAN_TACH` | In | Opto phototransistor, 10 kΩ pull-up | 3.3 V | J-FAN | 5 | Edge timing via GPIO ISR (30–150 Hz); frequency only (pulses/rev unknown) |
-| `FAN_PRESENT` | In | Opto phototransistor, 10 kΩ pull-up | 3.3 V, low = fan side powered | J-FAN | 6 | Fan-side +10 V present. Lost when the fan cable is unplugged **or** the fan loses mains (§2.1) |
-| `OCC_IN` | In | AC-input opto, RC-filtered | 3.3 V, low = 24 VAC present | J-OCC (2-pos fixed screw terminal, 3.5 mm) | 7 | Bridge and opto (D-036), no input TVS (D-046). Firmware debounce C-20 |
-| `DC_IN` | In | AC-input opto, RC-filtered (§2.3) | 3.3 V, low = asserted | J-DC (2-pos fixed screw terminal, 3.5 mm) | 1 | Wired `DC_RUNNING` backup (D-025). Firmware debounce C-31 |
-| SEN65 I²C SDA / SCL | Bidir | I²C 100 kHz, 10 kΩ pull-ups | 3.3 V (sensor rail) | J-SEN (module's 6-pin cable; connector verified in phase 3) | 8 / 9 | Run < 10 cm (sensor bay directly below the board). Pull-ups to +3V3 (D-047) |
-| Display SPI SCLK / MOSI / CS / DC / RST | Out | SPI 40 MHz | 3.3 V | J6 (1×14 0.1" socket), module pins 7 / 6 / 3 / 5 / 4 | 12 / 11 / 13 / 14 / 21 | Elecrow DLS29028B / LCDwiki MSP2834: 2.8" 240×320 IPS, ILI9341V (D-048). MISO (pin 9) and SD_CS (pin 14) unconnected |
-| Display backlight | Out | PWM to the module's BSS138 gate | 3.3 V | J6 pin 8 | 47 | Module pull-up: floating or high = on, low = off. Dim when vacant; off after C-21 vacant |
-| Touch I²C SCL / SDA | Bidir | I²C 100 kHz, 10 kΩ to 3.3 V, 2N7002 shifter to the module's 5 V-pulled pins | 3.3 V at the GPIO, 5 V at J6 | J6 pins 10 / 12 | 15 / 16 | FT6336G, on its own bus (not the SEN65's) |
-| Touch reset / interrupt | Out / In | 10 kΩ pull-up | 3.3 V | J6 pins 11 / 13 | 17 / 18 | Interrupt goes low on touch |
-| Indicator R / G / B | Out | LEDC PWM to three low-side N-FETs (2N7002-class) | 5 V LED supply, 3.3 V gate | on board (plain RGB LEDs, one resistor per color per LED; count set in mech, ~4–8) | 48 / 41 / 42 | D-031. Shares the fan PWM's LEDC timer or its own, ~5 kHz. 100 kΩ gate pull-downs keep it dark through boot. Firmware caps total LED current at 300 mA |
-| USB: power in + flash/log | Bidir | ESP32-S3 native USB (USB-Serial-JTAG), 5 V VBUS | 5 V nominal, ≥ 4.4 V at the board under peak load | J-USB (USB-C receptacle, 16-pin, **external**, gasketed opening) | 19 / 20 | D-030. The only power input. 5.1 kΩ Rd on CC1/CC2; ESD array on D± and CC; TVS on VBUS, no series fuse (D-040) |
-| Spare | — | — | — | unconnected | 2, 10, 38, 39, 40 | Reserved |
+**Rework on each Waveshare board (Andrew):** lift R24 (0 Ω, BAT_ADC → GPIO4); remove U6 (QMI8658 IMU, I²C 0x6B, clashes with the SEN65). Both are on the bench plan.
 
-**S6 control port (UIS), measured by Andrew 2026-10-25 (Q-15):** black = GND, red = +10 V from the fan (low current), yellow = speed (fan pulls up via 2.2 kΩ; the controller pulls it low; 5 kHz PWM, high-time duty = speed; 20/46/100 % at levels 1/4/10), white = tach (50 % square, ~30/75/144 Hz at levels 1/4/10; stock controller pulls it up 10 kΩ to its 5 V). Unplugged = full speed. The fan end of the cable is USB-C (stock controller J1 is a USB-C receptacle, `docs/site/ac infinity controller pcb.jpg`), but the node doesn't use USB-C: Andrew hard-wires the four conductors into J-FAN by color (Q-25, D-026), so the USB-C contact map isn't needed. J-FAN is two 2-pos blocks end to end (D-049): J2 `GND (BLK) / +10V (RED)`, J7 `SPD (YEL) / TACH (WHT)`. Fan GND vs. mains (Q-22, Q-30): unplugged, open to L, N and earth on resistance and diode checks; plugged in, ~65 VAC open-circuit to N/earth, which looks like Y-capacitor coupling from an isolated supply. Q-31 confirmed it: ≈ 60 µA into 10 kΩ (SR-09, D-028).
+**J7 pins the carrier uses** (Waveshare numbering): 1, 2 `USB_5V`; 5, 6, 23, 24 GND; 11 GPIO0; 13 GPIO4; 17 SCL (GPIO7); 18 GPIO43 (U0TXD, 499 Ω series on the Waveshare board); 19 SDA (GPIO15); 20 GPIO44 (U0RXD); 21, 22 3V3. Not connected: 3 VCC, 4 BAT, 7/9 USB D−/D+, 8/10/12/14/16 PSRAM (GPIO33–37), 15 GPIO16 (touch INT). The console is USB-Serial-JTAG, so UART0 is free.
+
+| Signal | Dir | Type | Level | Connector | GPIO (J7 pin) | Notes |
+|--------|-----|------|-------|-----------|---------------|-------|
+| `FAN_PWM` | Out | Opto LED drive (§2.1) | 3.3 V, ≈ 5.4 mA | J-FAN (two 2-pos 3.5 mm screw terminals, fan side of the barrier; D-049) | 44 (20) | LEDC 5 kHz, ≥ 10-bit. LED on = speed line released. 10 kΩ pull-down keeps the LED dark through reset and boot (GPIO44 is an input then) |
+| `FAN_TACH` | In | Opto phototransistor, 22 kΩ pull-up | 3.3 V | J-FAN | 43 (18) | 30–150 Hz, PCNT or ISR. The ROM boot log drives GPIO43 through the Waveshare 499 Ω; into the opto collector that's ≤ 6.6 mA, harmless |
+| `OCC_IN` | In | AC-input opto, RC-filtered (§2.2) | 3.3 V, low = 24 VAC present | J-OCC (2-pos 3.5 mm screw terminal) | 4 (13), R24 lifted | Debounce C-20 |
+| Indicator data | Out | 2N7002 inverter → SK6812SIDE-A chain (D-055) | 3.3 V gate, 5 V data | on carrier | 0 (11) | RMT, `invert_out`. 10 kΩ gate pull-up to 3V3 holds GPIO0 high at reset (normal boot) and the chain's DIN low (idle). 1 kΩ drain pull-up to 5 V. 100 nF per LED. Firmware caps total LED current at 300 mA |
+| SEN65 I²C SDA / SCL | Bidir | I²C 100 kHz, shared with GT911 0x5D, TCA9554 0x20, PCF85063 0x51 | 3.3 V | J-SEN (SEN65's 6-pin GH 1.25 mm, hand-soldered) | 15 / 7 (19 / 17) | Pull-ups are on the Waveshare board (value to read from its schematic in the carrier step); DNP pads for extra pull-ups on the carrier. SEN65 0x6B is unique once U6 is removed. Cable < 10 cm |
+| Display, touch, RTC, expander | — | On the Waveshare board | — | — | — | ST7701S 16-bit RGB (bounce buffers, D-054), GT911, TCA9554 resets/CS. Not our hardware |
+| USB: power in + flash/log | Bidir | Native USB on the Waveshare board | 5 V | Waveshare USB-C on its board edge | 19 / 20 | D-030 path, now on the Waveshare board; reached through a gasketed wall opening (§5, NFR-04) |
+
+Dropped by D-054: `FAN_PRESENT` (FR-18 fan-port fault) and the wired `DC_IN` (D-025).
+
+**S6 control port (UIS), measured by Andrew 2026-10-25 (Q-15):** black = GND, red = +10 V from the fan (low current), yellow = speed (fan pulls up via 2.2 kΩ; the controller pulls it low; 5 kHz PWM, high-time duty = speed; 20/46/100 % at levels 1/4/10), white = tach (50 % square, ~30/75/144 Hz at levels 1/4/10; stock controller pulls it up 10 kΩ to its 5 V). Unplugged = full speed. Andrew hard-wires the four conductors into J-FAN by color (Q-25, D-026): J2 `GND (BLK) / +10V (RED)`, J7 `SPD (YEL) / TACH (WHT)` (carrier refdes reassigned in the carrier schematic). Fan GND vs. mains (Q-22, Q-30, Q-31): ≈ 60 µA capacitive coupling, SELV in practice (SR-09, D-028).
 
 ### 2.1 Fan interface: isolated, fail-off (SR-08, SR-09, FR-10, FR-18)
 
-Everything left of the barrier is powered by the fan's own +10 V and referenced to fan GND; nothing on it connects to node ground, the panel or USB.
+Everything left of the barrier is powered by the fan's own +10 V and referenced to fan GND; nothing on it connects to node ground, the panel or USB. D-023 topology with the H11L1 replaced by an LTV-817 (Q-44).
 
 ```
  FAN SIDE (GND_F, powered from fan red +10 V)          ║ barrier ║  NODE SIDE (GND, 3V3)
                                                         ║  ≥3 mm  ║
- red +10V = +10V_F (no regulator, D-044)                ║         ║
-                                                        ║         ║
- yellow ──┬── D  Q1 N-MOSFET (2N7002-class)             ║         ║
-          │   S ── GND_F                                ║         ║
-          │   G ──┬──[10k]── +10V_F (Q1 ON by default   ║         ║
-          │       │                 → yellow low → OFF) ║         ║
-          │       └── U1 out (Schmitt opto, open-coll., ║ U1 LED ─╫──[R≈420Ω]── GPIO4 FAN_PWM
-          │            H11L1-class, VCC = +10V_F)       ║         ║            └[10k]─ GND
-          │                                             ║         ║
-                                                        ║         ║
- white ───── U2 LED cathode;                            ║ U2 CE ──╫── GPIO5 FAN_TACH (10k → 3V3)
-              anode ──[10k]── +10V_F                    ║         ║
- +10V_F ──[10k]── U3 LED ── GND_F                       ║ U3 CE ──╫── GPIO6 FAN_PRESENT (10k → 3V3)
+ yellow ──── D  Q1 AO3400A                              ║         ║
+             S ── GND_F                                 ║         ║
+             G ──┬──[2.2k]── +10V_F (Q1 ON by default   ║         ║
+                 │                 → yellow low → OFF)  ║         ║
+                 └── U1 C (LTV-817), E ── GND_F         ║ U1 LED ─╫──[390Ω]── GPIO44 FAN_PWM
+                                                        ║         ║           └[10k]─ GND
+ white ───── U2 LED cathode;                            ║ U2 C ───╫── GPIO43 FAN_TACH (22k → 3V3)
+              anode ──[10k]── +10V_F                    ║ U2 E ── GND
 ```
 
-Behavior:
-- **Node unpowered, in reset or booting:** U1's LED is off → U1 output open → Q1 gate pulled to +10V_F → Q1 on → yellow held low → **fan off** (SR-08). This needs only fan power.
-- **Running:** LED on → U1 output low → Q1 off → the fan's own pull-up takes yellow high. Fan duty = LED-on fraction, so LEDC duty is the fan duty directly, with no inversion in firmware.
-- **100 %:** LED on continuously. **0 %:** LED off continuously.
-- **Tach:** white low (fan sinking) → U2 LED on → `FAN_TACH` low. Assumes an open-collector tach output that tolerates the fan's own 10 V (D-044). The 10 k and LED are its only pull-up. Stock pulls it to 5 V.
-- **Presence:** U3 is lit whenever the fan side has power. `FAN_PRESENT` high means the fan cable is unplugged (fan then runs **full speed** on its own) or the fan has lost mains; both raise a fault (FR-18 extension, `docs/control-logic.md` §6).
-- **Fan-side current from red +10 V:** ≈ 4.1 mA at datasheet maxima (`pcb/design.md` §2). Measured (Q-26): the stock controller draws ≈ 9.3 mA from red (13.7 mA in GND with the fan off includes the ≈ 4.5 mA through the fan's 2.2 kΩ speed pull-up, which our Q1 also sinks to GND_F rather than drawing from red). So the port demonstrably supplies ≈ 9 mA; keep the datasheet-maximum fan-side budget ≤ 9 mA in the schematic (G2 review S-2).
-- **Timing:** H11L1-class propagation is ~1–4 µs against a 200 µs PWM period (≤ 2 % of period); rise on yellow is set by the fan's 2.2 kΩ against cable capacitance (< 1 µs for 3 m). AC-18 measures duty at the fan, and any fixed offset is calibrated in firmware.
-- **Barrier:** opto parts UL 1577 ≥ 3.75 kV rms, with IEC 60747-5-5 (VDE 0884) versions where JLC stocks them. PCB creepage and clearance ≥ 3.0 mm across the barrier, which is above basic insulation for 150 V working voltage under IEC 62368-1 (pollution degree 2). The phase 3 DRC rule encodes it (D-010). The barrier stays although the evidence says the port is SELV (Q-22, Q-30, D-028), because it also breaks the ground loop through the fan cable and keeps the ~65 VAC capacitive float on fan GND off node ground.
+- **Node unpowered, in reset or booting:** U1 dark → Q1 gate pulled to +10V_F → yellow held low → **fan off** (SR-08). Needs only fan power.
+- **Running:** U1 lit → gate low → Q1 off → the fan's 2.2 kΩ takes yellow high. Fan duty = LED-on fraction; no inversion in firmware.
+- **Tach:** white low → U2 lit → `FAN_TACH` low.
+- **Fan-side current from red:** gate pull-up ≈ 4.5 mA (only while U1 is lit) + tach LED ≈ 0.9 mA ≈ 5.4 mA, inside the ≈ 9 mA the port supplies (Q-26).
+- **PWM drive margin:** I_F ≈ (3.3 − 1.2) / 390 ≈ 5.4 mA; CTR ≥ 200 % (C rank) → ≥ 10.8 mA sink against 4.5 mA needed (2.4×, 1.2× after 50 % aging). 270 Ω if the bench shows marginal saturation.
+- **Timing:** LTV-817 turn-off (storage) is tens of µs against a 200 µs period, so the high time stretches. Bench check: scope yellow at 10/50/90 % commanded; firmware maps commanded duty to tach, or the fan PWM frequency drops if the fan accepts it.
+- **Barrier:** LTV-817 UL 1577 5 kV rms. PCB creepage and clearance ≥ 3.0 mm across the barrier (D-050, `pcb/SAFETY.md`). Functional (ground loop, ~65 VAC float on fan GND), since the port is SELV in practice (D-028).
 
-J-FAN sits on the fan side of the barrier, with ≥ 3 mm to any node-side copper. Its conductors carry nothing the fan's own cable doesn't already expose.
+J-FAN sits on the fan side of the barrier, with ≥ 3 mm to any node-side copper.
 
 ### 2.2 Occupancy input (FR-07)
-24 VAC from the lighting transformer's secondary (the terminals that drove the old fan relay coil, Q-16) → J3 (2-pos KF128L) → one 10 kΩ 1206 (D-049) → MB10S bridge → LTV-817S-TA1-C LED (D-036, D-045). Output: 47 kΩ pull-up to 3.3 V and 1 µF to GND → GPIO7. No input TVS (D-046). Same ≥ 3 mm barrier as §2.1. Worst cases (12 VDC − 10 % to a lightly loaded 41 V pk secondary) are in `pcb/design.md` §3. Firmware debounce C-20 (0.5 s), well inside AC-04's 2 s.
+24 VAC from the lighting transformer's secondary (Q-16) → J-OCC (2-pos KF128L) → 10 kΩ 1206 (D-049) → MB10S → LTV-817 LED (D-036, D-045). Output: 47 kΩ pull-up to 3.3 V and 1 µF to GND → GPIO4. No input TVS (D-046). Same ≥ 3 mm barrier. Worst cases in `pcb/design.md` §3. Firmware debounce C-20 (0.5 s).
 
-### 2.3 Wired `DC_RUNNING` input (IR-01 backup, D-025)
-The same circuit as §2.2 on J4 → GPIO1: 12–24 V AC or DC of either polarity (the bridge makes polarity irrelevant). Same ≥ 3 mm barrier. Unconnected reads not asserted. J3 and J4 are interchangeable, so swapping their wires at install is harmless (wrong function only).
+### 2.3 Wired `DC_RUNNING` input
+*Dropped (D-054).* IR-01 is BLE only.
 
-## 3. Power (D-018)
+## 3. Power (D-018, D-030, D-054)
 
-- **Mains:** none in the custom enclosure or on the PCB (SR-01, Q-18 (a)). The fan and the node's adapter both plug into the always-on receptacle in the fan cabinet (IR-05, D-013). SR-01a is not triggered.
-- **Adapter (D-030):** UL-listed 5 V USB-C wall adapter, ≥ 2 A, LPS. USB-C cable ≤ 3 m (IR-04's ≤ 10 ft), with USB 2.0 data and 24 AWG or heavier power conductors (≈ 0.5 V round-trip drop at the 1.1 A worst-case peak on 24 AWG). For flashing or wired logs, swap the adapter for a PC on the same cable; remote logging over Wi-Fi is the normal path.
-- **On board:** J-USB → TVS (5 V standoff) → 5 V input rail, no series fuse, ≤ 10 µF total on the rail (D-040). (a) 5 V → 3.3 V sync buck, AP63203WU-7, for the ESP32, logic and sensor; the display module takes 5 V directly. (b) The SEN65 runs directly from 3.3 V with 10 µF + 100 nF at its connector, and no power switch (D-047). (c) The indicator runs from the 5 V input. No 12 V and no separate 5 V rail; no reverse-polarity FET (USB-C is keyed).
-- **Budget** (typical / peak):
+- **Mains:** none in the enclosure or on any of our boards (SR-01). The fan and the node's adapter both plug into the always-on receptacle in the fan cabinet (IR-05, D-013). SR-01a is not triggered.
+- **Adapter (D-030):** UL-listed 5 V USB-C wall adapter, ≥ 2 A, LPS, into the Waveshare board's USB-C. Cable ≤ 3 m, USB 2.0 data, 24 AWG or heavier power conductors. Flashing and wired logs: swap the adapter for a PC on the same cable.
+- **Waveshare board:** USB_5V → its own 3.3 V regulator (MP1605 per the schematic; verify rating at bring-up) for the ESP32, panel logic and the I²C devices. Battery charger unused (no cell fitted). Protection on USB_5V is whatever Waveshare fitted; ours adds none.
+- **Carrier:** takes `USB_5V` (J7 1–2) for the LEDs and `3V3` (J7 21–22) for the opto pull-ups and the SEN65 (10 µF + 100 nF at J-SEN). No regulator on the carrier.
+- **Budget** (estimates; measure at bring-up):
 
 | Load | Rail | Typical | Peak | Source |
 |------|------|---------|------|--------|
-| ESP32-S3 module, Wi-Fi + BLE scan | 3.3 V main | 110 mA | 360 mA (TX) | ESP32-S3 datasheet (verify) |
-| Display + touch module (own LDO) | 5 V input | 80 mA | 100 mA | MSP2834 spec: 0.4 W, backlight 80 mA |
-| Node-side opto drive, pull-ups | 3.3 V main | 5 mA | 12 mA | §2 |
-| SEN65 measuring | 3.3 V | 90 mA | 350 mA for 2 ms (110 mA max sustained) | SEN6x DS Table 12 |
-| Indicator | 5 V input | 60 mA | 300 mA (firmware cap) | One band color at a time, ~10–20 mA per LED |
-| **Total at 5 V input** (LDO case; a buck is ~25 % lower) | 5 V | **≈ 0.35 A (1.7 W)** | **≈ 1.1 A (5.5 W), ms-scale** | |
+| Waveshare board: ESP32-S3 Wi-Fi + BLE scan, panel + backlight | 5 V | ≈ 250 mA | ≈ 500 mA (TX) | Estimate; Waveshare doesn't publish it |
+| Carrier optos, pull-ups | 3.3 V | 6 mA | 12 mA | §2 |
+| SEN65 measuring | 3.3 V | 90 mA | 350 mA for 2 ms | SEN6x DS Table 12 |
+| Indicator (SK6812SIDE-A, ≈ 4–8) | 5 V | 60 mA | 300 mA (firmware cap) | One band color; quiescent ≈ 0.6 mA per LED |
+| **Total at 5 V** | 5 V | **≈ 0.4 A (2 W)** | **≈ 1.1 A**, ms-scale | |
 
-A ≥ 2 A adapter has ~2× peak margin. On a PC USB 2.0 port (500 mA) the typical load fits; firmware caps the indicator lower when it can't tell which source it's on (reading the CC advertisement via ADC is a phase 3 option). About 1.7 W dissipates in the sealed electronics compartment (a few kelvin of rise); the sensor bay is thermally separated (`docs/architecture.md` §5) and the SEN65 temperature offset is tuned at commissioning (FR-20).
+A ≥ 2 A adapter keeps ~2× margin. About 2 W dissipates in the sealed compartment, a few kelvin of rise; the SEN65 offset is tuned at commissioning (FR-20).
 - **Fan side:** powered by the fan's +10 V (§2.1), not by the node.
 
 ## 4. Home Assistant (FR-12, FR-13, IR-03)
@@ -145,8 +138,7 @@ MQTT with discovery, following the `HassMessages` (pure, host-tested topic/disco
 | `sensor.shop_exhaust_state_remaining` | sensor | min (`duration`) | — | FR-12 |
 | `sensor.shop_exhaust_demand_source` | sensor | text: `floor`, `pm`, `voc`, `dc`, `vacant_cap`, `off` | diagnostic | FR-12 (tuning) |
 | `binary_sensor.shop_exhaust_occupied` | binary_sensor | `occupancy` | — | FR-07, FR-12 |
-| `binary_sensor.shop_exhaust_dc_running` | binary_sensor | `running` (BLE or wired) | — | FR-09, FR-12 |
-| `binary_sensor.shop_exhaust_dc_wired` | binary_sensor | `running` (wired input alone) | diagnostic | IR-01, AC-06 |
+| `binary_sensor.shop_exhaust_dc_running` | binary_sensor | `running` (BLE) | — | FR-09, FR-12 |
 | `sensor.shop_exhaust_dc_link_rssi` | sensor | dBm | diagnostic | AC-22 |
 | `binary_sensor.shop_exhaust_fan_running` | binary_sensor | `running` (commanded > 0) | — | FR-12 |
 | `sensor.shop_exhaust_run_hours` | sensor | h, `total_increasing` | — | FR-12 |
@@ -155,7 +147,7 @@ MQTT with discovery, following the `HassMessages` (pure, host-tested topic/disco
 | `sensor.shop_exhaust_decay_rate` | sensor | 1/h (last fitted clear-down rate) | diagnostic | FR-05 |
 | `sensor.shop_exhaust_airflow_est` | sensor | CFM (decay rate × 3,050 ft³ ÷ 60) | diagnostic | FR-05 |
 | `binary_sensor.shop_exhaust_fault` | binary_sensor | `problem` (any fault) | — | FR-13 |
-| `sensor.shop_exhaust_fault_reason` | sensor | text: `none`, `sensor_no_data`, `sensor_status`, `sensor_range`, `fan_tach`, `fan_port` | — | FR-13 |
+| `sensor.shop_exhaust_fault_reason` | sensor | text: `none`, `sensor_no_data`, `sensor_status`, `sensor_range`, `fan_tach` | — | FR-13 |
 | `binary_sensor.shop_exhaust_cleardown_incomplete` | binary_sensor | `problem` | — | FR-19 |
 | `binary_sensor.shop_exhaust_filter_clean_due` | binary_sensor | `problem` | — | FR-13 |
 | `sensor.shop_exhaust_filter_exposure` | sensor | % of P-14 | diagnostic | FR-13 |
@@ -165,11 +157,11 @@ Precedence: the panel is the only command source in v1, so no rule is needed. If
 
 ## 5. Mechanical interfaces
 
-- **Location (D-033, replaces D-015's spot):** wall-mounted on the refrigerator side panel beside the hood (`docs/site/mounting location option - next to intake.jpg`). The panel face is ~18" laterally from the hood's edge and ~24" deep; the controller sits a few inches back from the panel's front edge, center ~60" above the floor (hood intake ~66"). The display faces across the kids' workbench toward the hood side; the light strip runs along the front's room-side edge (toward the panel's front edge, south down the shop) and wraps that corner; the sensor inlet is on the bay's corner-side end (north, toward the back wall ~1 ft away, sheltered), never facing down, with the outlet separated (NFR-09). ≤ 10 ft of cable to the fan cabinet (IR-04).
-- **Enclosure form (D-019):** one enclosure in two compartments. Upper: sealed electronics compartment, PCB vertical behind the front bezel (touch display), gasketed lid, no vents (NFR-04). Lower: sensor bay, open through a grille on its corner-side (north) end, with the SEN65 inlet behind it: open air in front, not facing down, outlet separated (NFR-09). The bay is below the electronics, as Sensirion recommends (sensor below heat sources).
+- **Location (D-033, replaces D-015's spot):** wall-mounted on the refrigerator side panel beside the hood (`docs/site/mounting location option - next to intake.jpg`). The panel face is ~18" laterally from the hood's edge and ~24" deep; the controller sits a few inches back from the panel's front edge, center ~60" above the floor (hood intake ~66"). The display faces across the kids' workbench toward the hood side; the indicator light runs along the front's room-side edge (toward the panel's front edge, south down the shop) and, if mech can reach it, wraps that corner; the sensor inlet is on the bay's corner-side end (north, toward the back wall ~1 ft away, sheltered), never facing down, with the outlet separated (NFR-09). ≤ 10 ft of cable to the fan cabinet (IR-04).
+- **Enclosure form (D-019):** one enclosure in two compartments. Upper: sealed electronics compartment, Waveshare board behind the front bezel with the carrier stacked behind it, gasketed lid, no vents (NFR-04). Lower: sensor bay, open through a grille on its corner-side (north) end, with the SEN65 inlet behind it: open air in front, not facing down, outlet separated (NFR-09). The bay is below the electronics, as Sensirion recommends (sensor below heat sources).
 - **Sensor bay:** the SEN65 sits in a cradle behind a tool-less cover (thumb screw or snap). Its cable plugs in at the module end and passes into the electronics compartment through a sealed grommet in the dividing wall (no air path, NFR-04). Removal: open the cover, unplug, lift out, < 5 min (NFR-03). Module orientation per Sensirion's mechanical guidelines (inlets/outlet not blocked, inlet and outlet separated, no airflow > 1 m/s across it).
-- **Indicator (D-031, D-033):** a short diffused light strip on the front, along the display's room-side vertical edge, wrapping the corner so it also reads down the shop, lit by plain RGB LEDs through a light pipe, visible down the shop's length (FR-15). LED count follows strip length and diffuser depth (pitch ≈ LED-to-diffuser gap).
-- **Cable entry:** top or back (panel-side) face, routed up the panel edge to the fan cabinet: J-FAN (4-conductor fan cable, hard-wired), J-OCC (2-conductor thermostat wire to the 24 VAC terminals), J-DC (2-conductor, only if the wired DC backup is used), J-USB (USB-C power and flash/log, D-030). The terminal cables pass through gasketed glands, are stripped inside and land on fixed screw terminals (D-032), each with a printed strain-relief clamp; wired once at install. J-USB is board-mounted behind a wall opening with a compressed foam gasket around the receptacle shell; the receptacle mouth itself is open (NFR-04 exception), facing the cabinet rather than the room.
+- **Indicator (D-055, D-033):** SK6812SIDE-A LEDs on the carrier's room-side edge emit sideways into a diffuser in the enclosure wall beside the display, readable down the shop (FR-15). The carrier edge reaches past the Waveshare outline to the wall; a corner wrap needs LEDs on a second edge. Count (≈ 4–8) follows diffuser length and depth (pitch ≈ LED-to-diffuser gap).
+- **Cable entry:** top or back (panel-side) face, routed up the panel edge to the fan cabinet: J-FAN (4-conductor fan cable, hard-wired), J-OCC (2-conductor thermostat wire to the 24 VAC terminals), and the USB-C cable to the Waveshare board (power and flash/log, D-030). The terminal cables pass through gasketed glands, are stripped inside and land on fixed screw terminals (D-032), each with a printed strain-relief clamp; wired once at install. The Waveshare USB-C sits on that board's edge behind a wall opening with a compressed foam gasket around the receptacle shell; the receptacle mouth itself is open (NFR-04 exception), facing the cabinet rather than the room.
 - **Mounting:** a printed cleat screws to the panel (wood screws, fastener length checked against the panel thickness) and the enclosure hooks onto it and locks with one screw.
-- **Positions:** display, LED and connector positions come from the `.kicad_pcb` in phase 3, never retyped (D-011).
-- **Display module (D-048, MSP2834 outline drawing, ±0.2):** PCB 50.00 × 86.00 × 1.60; 4 × Ø3.20 holes on 44.00 × 76.08, 3.00 from the edges. Glass 50.0 × 69.2, touch visible area 43.6 × 58.05. 5.90 ± 0.2 from PCB back to glass front; 14.28 including the pin header. On the 8.5 mm socket the glass front is ≈ 14.4 mm above the main board. The glass is exposed at the face, with a gasket around it and any bezel lip kept on its printed border (3.2 mm at the sides). Model from the PDF drawing, not this summary.
+- **Positions:** Waveshare outline, glass, holes and USB-C position come from its STEP and `docs/vendor/waveshare-2.8b/dimensions.pdf`; carrier LED and connector positions from the carrier `.kicad_pcb`. Never retyped (D-011).
+- **Display module (D-054):** Waveshare board 47.9 × 66.7 mm, glass 52.9 × 71.3 mm, 11.1 mm deep including the header; 4 × M2 threaded holes on 40.9 × 59.7 mm. Glass exposed at the face with a gasket around it. Model from the STEP, not this summary. (The D-048 MSP2834 module is superseded.)
