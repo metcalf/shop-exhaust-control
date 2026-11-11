@@ -9,16 +9,16 @@
 | Cover glass front (enclosure front face) | +1.1 | STEP |
 | Glass back at the rim / wall rim | 0.0 / −0.8 | STEP probe; 0.8 mm foam rim gasket |
 | Waveshare PCB back | −6.4 | STEP |
-| J8 socket face (low-profile SMD female, 5.1 mm) | −11.5 | STEP |
-| Lowest Waveshare part (camera) | −12.3 | STEP |
-| Male header body | −14.0 to −11.5 | fitted normally, seated on the socket face |
-| Carrier top / back | −14.0 / −15.6 | 1.7 mm below the camera, 1.6 mm PCB, 3.6 mm spacer |
-| J8 male posts: tip, engagement | −8.5, 3.0 mm | short-post header (ASSUME, Q-47); tips 2.1 mm short of the PCB |
-| Tabs and screw heads | −15.6 to −18.9 | 2.0 mm tab + 1.3 mm nylon pan head |
-| SEN65 front / back | −19.6 / −45.2 | 4.0 mm gap (≤ 1/4"), holds the 1/8" foam |
-| Back panel inner / outer | −45.6 / −47.2 | 0.4 mm clearance, 1.6 mm panel |
+| J8 socket face (low-profile SMD female, 5.1 mm) = lowest Waveshare part | −11.5 | STEP (camera module not shipped, excluded) |
+| Carrier top / back | −11.5 / −13.1 | flush on the socket face, loose pins soldered from the back (J1 DNP); 1.1 mm shim to the SMT standoffs |
+| J8 pins | 8.2 mm long, 1.5 mm past the carrier back | socket floor through the carrier |
+| Tabs and screw heads | −13.1 to −16.4 | 2.0 mm tab + 1.3 mm nylon pan head |
+| SEN65 front / back | −17.1 / −42.7 | 4.0 mm gap (≤ 1/4"), holds the 1/8" foam |
+| Back panel inner / outer | −43.1 / −44.7 | 0.4 mm clearance, 1.6 mm panel |
 
-**Outside:** 92.44 × 61.0 × 48.3 mm, about 272 cm³, which is the glass outline. Andrew's estimate was 47.7 mm; the 0.6 mm difference is the header body (2.5 mm) seated on the socket face. With a standard 11.5 mm header on longer spacers instead, it's 50.7 mm. The cleat adds a few mm.
+**Outside:** 92.44 × 61.0 × 45.8 mm, about 258 cm³, which is the glass outline. The cleat adds a few mm.
+
+**Open (Q-48):** with only 5.1 mm between the boards, two of the 4.0 mm LTV-817S optos hit Waveshare back-side parts (U5 by 0.2 mm, U2 with zero margin). The mech test catches this and currently fails.
 
 ## Layout (seen from the front)
 - **No bezel.** The cover glass is the front face, and its edges are exposed at the sides.
@@ -42,8 +42,8 @@
 
 ## Departures and caveats
 - **SEN65 depth is 25.6 mm, not 21.3.** The SEN6x has its inlets and outlet on the same face. Facing that face into the room through the right wall puts the 25.6 mm dimension front to back.
-- **Camera clearance.** The camera is 1.7 mm above the carrier top, so only low parts can go under it. The mech test checks heights.
-- **Header.** J8's male header is fitted normally and needs short posts (about 3 mm); see Q-47. Body-on-back would be 1.2 mm thinner, but Andrew rejected it because front-side solder fillets would block full insertion.
+- **Board-to-board space.** It's 5.1 mm, so every display-side carrier part is checked at its datasheet height against the Waveshare's actual solids (mesh vertices).
+- **USB-C pocket.** There's no room for a floor between the plug overmold and the carrier. The pocket walls land on the carrier's left edge, which is kept free of display-side parts (test), and a foam strip closes the pocket.
 - **Foam caveat.** Sensirion's mech guide says not to thermally insulate the module (§3). A strip on one face is fine. It's notched round the two right-hand tabs and screw heads.
 
 ## Defaults still in force (D-058)

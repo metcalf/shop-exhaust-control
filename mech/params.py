@@ -9,20 +9,20 @@ reads it from the STEP. Values below are design choices (CHOICE) or datasheet fi
 # --- Waveshare STEP -> frame E -------------------------------------------------------------------
 # Board rotated so the USB-C is on the left seen from the front (D-057): rotate -90 deg about z.
 WS_ROT_Z = -90.0
+# Parts in Waveshare's STEP that don't ship on the board (Andrew, 2026-11-10: the camera module shown at the
+# centre isn't included; its FPC connector, CAMER-CONNECTOR, stays and is shallower than J8).
+NOT_FITTED = ("CAMER",)
 
 # --- board stack ---------------------------------------------------------------------------------
-# Andrew (2026-11-10): male header fitted normally (body on the display side, soldered from the back); the body
-# seats on the J8 socket face, so carrier top = socket face - body. A standard 6 mm post would reach through
-# the 5.1 mm low-profile socket into the Waveshare PCB, hence a short-post header.
+# Andrew (2026-11-10): J1 unpopulated at PCBA. He pushes loose 2.54 mm pins into the Waveshare J8 socket,
+# seats the carrier flush on the socket face and solders from the back. Carrier top = J8 socket face.
 CARRIER_T = 1.6         # carrier PCB thickness
-MALE_HDR_BODY = 2.5     # 2.54 mm male header plastic body
-MALE_HDR_MATE = 3.0     # ASSUME (Q-47): posts trimmed to 3.0-4.3 mm above the body. HCTL PZ254-2-16-Z-8.5
-                        # (C2894977) has 6 mm posts, 3 mm tail, 2.5 mm body (JLC attributes), so as bought
-                        # it needs trimming or 6 mm spacers (+2.4 mm depth).
+J8_SEAT_GAP = 0.0       # carrier top to J8 socket face
+J8_PIN_PROTRUDE = 1.5   # loose pin past the carrier back after soldering (trimmed)
 # Display-side part heights (max, datasheets) by reference prefix; anything unlisted uses PART_H_DEFAULT
 PART_H = {"U": 4.0,     # LTV-817S SMD-4: 4.0 max
           "D4": 2.0, "D5": 2.0, "D6": 2.0, "D7": 2.0, "D8": 2.0, "D9": 2.0,   # SK6812SIDE-A
-          "Q": 1.2, "D": 1.35, "J1": 2.5}
+          "Q": 1.2, "D": 1.35}
 PART_H_DEFAULT = 1.4    # 0603/0805 R and C, worst case 0805 10 uF at 1.4
 
 # --- carrier outline (frame E) -------------------------------------------------------------------

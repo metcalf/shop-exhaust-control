@@ -20,18 +20,17 @@ def overlap(a, b, tol=0.0):
     return all(a[i] < b[i + 3] - tol and b[i] < a[i + 3] - tol for i in range(3))
 
 
-def test_header_engagement():
+def test_j8_loose_pins_and_flush_seat():
+    """J1 unpopulated; loose pins through J8 and the carrier, carrier flush on the socket face."""
     s = C.stackup()
-    assert 3.0 <= s["pin_insertion"] <= 5.1, s["pin_insertion"]   # contacts engage, inside the 5.1 mm socket
-    assert s["pin_tip_to_pcb"] >= 0.8, s["pin_tip_to_pcb"]          # tips don't bottom on the socket floor
-    assert s["spacer"] > 0, s["spacer"]
+    assert abs(s["carrier_top_z"] - s["header_face_z"]) < 1e-6
+    assert 0.0 <= s["spacer"] <= 2.0, s["spacer"]          # shim between carrier and SMT standoff
+    assert 7.0 <= s["j8_pin_len"] <= 9.0, s["j8_pin_len"]   # pulled from a standard header (11.5) and trimmed
 
 
 def test_carrier_gap_to_waveshare():
-    """Header body seated on the socket face sets the gap; the carrier still clears the lowest part (camera)."""
     s = C.stackup()
-    assert abs(s["header_face_z"] - s["carrier_top_z"] - P.MALE_HDR_BODY) < 1e-6
-    assert s["ws_to_carrier"] > 0.5, s["ws_to_carrier"]
+    assert s["ws_to_carrier"] >= -1e-6, s["ws_to_carrier"]   # nothing on the Waveshare reaches past J8
 
 
 def part_height(ref):
@@ -41,25 +40,27 @@ def part_height(ref):
 
 
 def test_carrier_parts_clear_waveshare_parts():
-    """Each placed display-side carrier part, at its datasheet height, clears every Waveshare part above it
-    (J8 excepted: it mates). Positions from the placed board (placed-parts.json)."""
+    """Each placed display-side carrier part, at its datasheet height (+0.2 mm), clears the Waveshare's actual
+    solids (mesh vertices, not assembly bounding boxes; J8 excepted: it mates). Positions from placed-parts.json."""
     import json, os
     path = os.path.join(os.path.dirname(C.PLACED), "reports", "placed-parts.json")
     if not os.path.exists(path):
         pytest.skip("carrier not placed yet (pcb/carrier/layout/run.sh)")
     s = C.stackup()
     placed = json.load(open(path))
-    ws = [(l, WS.bbox(sh)) for l, sh in WS.parts() if l != "HEADER-SMD-F-2_54-2X16PIN"]
-    clash = []
-    for ref, p in placed.items():
-        if p["side"] != "F" or ref == "J1" or ref.startswith("H"):
+    zones = [(ref, p["bbox_e"], s["carrier_top_z"] + part_height(ref) + 0.2) for ref, p in placed.items()
+             if p["side"] == "F" and ref != "J1" and not ref.startswith("H")]
+    clash = {}
+    for label, sh in WS.parts():
+        if label == "HEADER-SMD-F-2_54-2X16PIN":
             continue
-        x0, y0, x1, y1 = p["bbox_e"]
-        top = s["carrier_top_z"] + part_height(ref)
-        for label, b in ws:
-            if b[0] < x1 and x0 < b[3] and b[1] < y1 and y0 < b[4] and b[2] < top + 0.2:
-                clash.append((ref, label, round(b[2] - top, 2)))
-    assert not clash, clash
+        verts, _ = sh.tessellate(0.1)
+        for v in verts:
+            for ref, (x0, y0, x1, y1), top in zones:
+                if x0 < v.X < x1 and y0 < v.Y < y1 and v.Z < top:
+                    k = (ref, label)
+                    clash[k] = min(clash.get(k, 0.0), round(v.Z - (top - 0.2), 2))
+    assert not clash, f"carrier part, Waveshare part: overlap (mm, negative = into the part): {clash}"
 
 
 def test_camera_keepout_is_exported():
@@ -67,7 +68,7 @@ def test_camera_keepout_is_exported():
     C.main.__globals__["sys"].argv = ["x", "--no-views"]
     C.main()
     lay = json.load(open(os.path.join(C.OUT, "carrier_layout.json")))
-    assert lay["tall_part_keepout_front"], "camera keepout missing"
+    assert not any(l in P.NOT_FITTED for l, _ in WS.parts())   # camera module isn't on the shipped board
     assert abs(lay["carrier_top_z"] - C.stackup()["carrier_top_z"]) < 1e-6
 
 
@@ -212,3 +213,15 @@ def test_leds_and_sen_keep_flat_from_board():
     sen = s["sen"]
     on_back = [r for r, p in pos.items() if p[2] == "B" and sen[0] - 1.0 < p[0] and sen[1] < p[1] < sen[4]]
     assert not on_back, f"parts on the back behind the SEN65: {on_back}"
+
+
+def test_usb_pocket_edge_free_of_front_parts():
+    import json, os
+    path = os.path.join(os.path.dirname(C.PLACED), "reports", "placed-parts.json")
+    if not os.path.exists(path):
+        pytest.skip("carrier not placed yet")
+    x0, y0, x1, y1 = C.usb_pocket_xy(WS.features())
+    placed = json.load(open(path))
+    hits = [r for r, p in placed.items() if p["side"] == "F" and p["bbox_e"][0] < x1 and x0 < p["bbox_e"][2]
+            and p["bbox_e"][1] < y1 and y0 < p["bbox_e"][3]]
+    assert not hits, hits

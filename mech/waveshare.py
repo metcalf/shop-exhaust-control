@@ -8,7 +8,7 @@ import os
 
 from build123d import Axis, import_step
 
-from params import WS_ROT_Z
+from params import NOT_FITTED, WS_ROT_Z
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 STEP = os.path.join(HERE, "vendor", "ESP32-S3-Touch-LCD-3_5.stp")
@@ -33,6 +33,8 @@ def parts():
     for a in model().children:
         kids = list(getattr(a, "children", []) or [])
         for k in (kids or [a]):
+            if (getattr(k, "label", "") or "") in NOT_FITTED:
+                continue
             out.append((getattr(k, "label", "") or "", k.rotate(Axis.Z, WS_ROT_Z)))
     return out
 

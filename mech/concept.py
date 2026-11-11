@@ -64,14 +64,13 @@ def stackup():
     s["pcb_back_z"] = f["pcb_back_z"]
     s["header_face_z"] = f["header_face_z"]
     s["ws_lowest_z"] = f["lowest_back_parts"][0][1]
-    # Male header body seated on the J8 socket face; the M2 spacer fills what's left to the SMT standoffs.
-    s["carrier_top_z"] = f["header_face_z"] - P.MALE_HDR_BODY
+    # Loose pins in J8, carrier seated flush on the socket face (J1 unpopulated at PCBA). The M2 spacer
+    # (a shim) fills what's left to the SMT standoffs.
+    s["carrier_top_z"] = f["header_face_z"] - P.J8_SEAT_GAP
     s["carrier_back_z"] = s["carrier_top_z"] - P.CARRIER_T
     s["spacer"] = f["standoff_bottom_z"] - s["carrier_top_z"]
-    s["male_body_z"] = (s["carrier_top_z"], f["header_face_z"])
-    s["pin_tip_z"] = f["header_face_z"] + P.MALE_HDR_MATE
-    s["pin_insertion"] = s["pin_tip_z"] - f["header_face_z"]
-    s["pin_tip_to_pcb"] = f["pcb_back_z"] - s["pin_tip_z"]
+    s["j8_pin_len"] = f["pcb_back_z"] - s["carrier_back_z"] + P.J8_PIN_PROTRUDE   # socket floor to past the back
+    s["male_body_z"] = (s["carrier_back_z"] - P.J8_PIN_PROTRUDE, s["carrier_back_z"])   # pin tails behind
     s["ws_to_carrier"] = s["ws_lowest_z"] - s["carrier_top_z"]
     # No bezel: outline = cover glass outline; walls run up to the glass's black border under a foam rim gasket.
     s["glass_back_z"] = f["glass_back_z_rim"]
@@ -151,8 +150,14 @@ def build():
     ow, oh, _ = P.USB_OVERMOLD
     pk = (ow / 2 + P.USB_POCKET_CLR, oh / 2 + P.USB_POCKET_CLR_Z)
     pocket = box(o[0] - 0.1, uy - pk[0], uz - pk[1], u[0] - 0.5, uy + pk[0], uz + pk[1])
-    pocket_wall = box(o[0], uy - pk[0] - P.WALL, uz - pk[1] - P.USB_POCKET_FLOOR, u[0] - 0.5,
+    # Floor: down to the carrier top if there's no room for USB_POCKET_FLOOR; the carrier edge (kept free of
+    # display-side parts) and a foam strip then close the pocket underneath.
+    floor_z = max(uz - pk[1] - P.USB_POCKET_FLOOR, s["carrier_top_z"] + 0.05)
+    s["usb_pocket_floor_on_carrier"] = floor_z > uz - pk[1] - P.USB_POCKET_FLOOR
+    pocket_wall = box(o[0], uy - pk[0] - P.WALL, floor_z, u[0] - 0.5,
                       uy + pk[0] + P.WALL, uz + pk[1] + P.USB_POCKET_FLOOR)
+    if s["usb_pocket_floor_on_carrier"]:
+        pocket = box(o[0] - 0.1, uy - pk[0], floor_z - 0.1, u[0] - 0.5, uy + pk[0], uz + pk[1])
     shell = (shell + pocket_wall) - pocket
     sw, st, _ = P.USB_SHELL
     shell -= box(u[0] - 0.6, uy - sw / 2 - 0.5, uz - st / 2 - 0.5, u[0] + 0.1, uy + sw / 2 + 0.5, uz + st / 2 + 0.5)
@@ -183,7 +188,7 @@ def build():
     cx, cy = P.CARRIER_X, P.CARRIER_Y
     carrier = box(cx[0], cy[0], s["carrier_back_z"], cx[1], cy[1], s["carrier_top_z"])
     h = f["header"]
-    male = box(h[0], h[1], s["male_body_z"][0], h[3], h[4], s["male_body_z"][1])   # body, display side
+    male = box(h[0], h[1], s["male_body_z"][0], h[3], h[4], s["male_body_z"][1])   # pin tails, carrier back
     sen = box(*s["sen"])
     sx0, sy0, sz0, sx1, sy1, sz1 = s["sen"]
     foam = box(sx0, sy0 + 3.0, sz1, sx1, sy1 - 3.0, sz1 + P.FOAM_T)
@@ -207,12 +212,18 @@ def build():
     return f, s, ports, diff, parts, plug_bay
 
 
+def usb_pocket_xy(f):
+    u = f["usb"]
+    uy = (u[1] + u[4]) / 2
+    half = P.USB_OVERMOLD[0] / 2 + P.USB_POCKET_CLR + P.WALL
+    return [P.CARRIER_X[0], uy - half, u[0] - 0.5, uy + half]
+
+
 def layout_json(f, s, ports, diff):
     """Inputs for pcb/carrier/layout (frame E; the layout converts to KiCad coordinates)."""
     cx, cy = P.CARRIER_X, P.CARRIER_Y
     sen = s["sen"]
     span = (P.N_LED - 1) * P.LED_PITCH
-    cam = [b for l, b in ((l, WS.bbox(x)) for l, x in WS.parts()) if l == "CAMER"]
     return {
         "frame": "E: +x right, +y up, seen from the front; KiCad x = x_E - carrier_x0, y = carrier_y1 - y_E",
         "carrier_x": cx, "carrier_y": cy,
@@ -222,7 +233,8 @@ def layout_json(f, s, ports, diff):
         "j8_row_rev2_even_y": f["j8_row_outer_y"],   # Rev 2.0 even pins (VBAT, GND, GPIO21, ...) = outer row
         "led_edge_x": cx[1], "led_y": [-span / 2 + i * P.LED_PITCH for i in range(P.N_LED)],
         "keep_flat_back": [sen[0] - 1.0, sen[1] - 1.0, cx[1], sen[4] + 1.0],   # x0, y0, x1, y1 on the back side
-        "tall_part_keepout_front": [[b[0], b[1], b[3], b[4]] for b in cam],       # Waveshare camera (if fitted)
+        "usb_pocket_front": usb_pocket_xy(f),   # carrier edge under the USB pocket: no display-side parts
+        "tall_part_keepout_front": [],   # camera module not shipped (params.NOT_FITTED); heights checked per part
         "carrier_top_z": s["carrier_top_z"],
         "terminal_slots_y": {n: y for n, y, _, _ in cable_slots()},
         "sen65_connector_face": "-x (module face opposite the ports), into the bay left of the module; short cable to J5",
@@ -268,7 +280,7 @@ def main():
         for p in export_views(parts, s):
             print("view", p)
     print("outer size (x, y, z) mm:", s["outer_size"], " volume", st["volume_cm3"], "cm3")
-    print("pin insertion", round(s["pin_insertion"], 2), "tip-to-PCB", round(s["pin_tip_to_pcb"], 2))
+    print("carrier top", round(s["carrier_top_z"], 2), "spacer", round(s["spacer"], 2), "J8 pin length", round(s["j8_pin_len"], 2), "USB pocket floor on carrier", s.get("usb_pocket_floor_on_carrier"))
 
 
 if __name__ == "__main__":

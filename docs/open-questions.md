@@ -7,13 +7,14 @@ Claude batches questions here. Each has an ID, why it matters, and the default C
 
 | ID | Question | Why it matters | Default if unanswered | Blocks | Answer |
 |----|----------|----------------|-----------------------|--------|--------|
-| Q-47 | J8 male header posts: (a) standard 2×16, posts trimmed to about 3.5 mm after soldering; (b) a short-post part (e.g. Samtec TSW, post length per order code, not yet checked); or (c) standard header on 6 mm spacers? HCTL PZ254-2-16-Z-8.5 (C2894977) is ruled out: JLC lists 6 mm mating, 3 mm tail, 2.5 mm body (8.5 = body + post). | With the body seated on the 5.1 mm low-profile socket, a 6 mm post would hit the Waveshare PCB. Posts of 3.0–4.3 mm fit. | (a): C2894977, posts trimmed with a 3.5 mm shim; depth 48.3 mm. (c) is 50.7 mm. | Carrier BOM (G4), final depth | |
+| Q-48 | Carrier flush on J8 leaves 5.1 mm between the boards. Two LTV-817S (4.0 mm tall) hit Waveshare back-side parts (U5 by 0.2 mm, U2 with 0 margin). Choose: (a) a low-profile SOP-4 opto (about 2 mm) and re-place the barrier band; (b) nudge the LTV-817S into gaps, leaving tenths of a mm against the Waveshare's own parts; (c) a 0.5 mm gap under the carrier. | The carrier can't be routed until the opto band is fixed. | (a), once a JLC-stocked SOP-4 with equivalent CTR is confirmed. | Carrier routing | |
 | Q-37 | Nightly no-ops: 2026-11-01 and 2026-11-05 both found only Q-33/Q-35 open and changed nothing. Want me to add the skip to this repo's `scripts/nightly.sh` now (skip when STATE.md has `Blocked-on: andrew` and nothing has been committed since the last nightly), rather than waiting for the DC repo? | Each blocked run costs a session start and usage for nothing. | No change: runs continue nightly and no-op until you answer Q-33/Q-35. | Nothing (tooling only) | |
 
 ## Answered
 
 | ID | Question | Answer | Answered | Applied to |
 |----|----------|--------|----------|------------|
+| Q-47 | J8 male header post length | J1 DNP: loose pins in J8, carrier seated flush and soldered in place | 2026-11-10 | D-059 |
 | Q-46 | SEN65 inside the one enclosure (D-057); amend NFR-04 and NFR-03? | NFR-04 change approved. No hatch: NFR-03 relaxed, open the main enclosure for everything. | 2026-11-10 | D-057 accepted, D-019 superseded; NFR-03, NFR-04, AC-14, AC-15; interfaces §5 |
 | Q-45 | Route B indicator: off-board strip, on-board addressable, or single-colour Basic? | On-board SK6812SIDE-A (side-view, C5378721, Economic-eligible). | 2026-11-10 | D-055; eval doc "Chosen"; STATE |
 | Q-38 / Q-39 | Freerouting jar; custom-board placement | Moot: the custom board is superseded by D-054 | 2026-11-10 | — |

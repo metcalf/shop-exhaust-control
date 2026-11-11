@@ -532,17 +532,20 @@ Template:
   - **Walls and ribs:** walls 1.6 mm. Back panel has 1.2 × 4 mm ribs inside, left of the SEN65 bay.
   - **Retention:** four tabs behind the carrier at the Waveshare holes. One nylon M2 screw per hole, driven from the back, passes through the tab, the carrier and the spacer into the SMT standoff. That pulls the glass onto the rim gasket.
   - **Service:** take off the back panel, then the SEN65, then the four screws; the display and carrier go out the front.
-  - **Header:** the J8 male header is fitted normally: body on the display side, soldered from the back. Andrew rejected body-on-back, because soldering from the front leaves fillets that block full insertion, and the saving isn't worth it. The body seats on the socket face, so the carrier top is at −14.0.
-    - Posts must be short, about 3 mm. A standard 6 mm post would reach through the 5.1 mm socket into the Waveshare PCB.
-    - Engagement is 3.0 mm, and the tips stop 2.1 mm short of the PCB.
-    - Spacer is 3.6 mm.
-    - HCTL PZ254-2-16-Z-8.5 (C2894977) is a standard part: 6 mm post, 3 mm tail, 2.5 mm body (JLC attributes). Default is to fit it and trim the posts to about 3.5 mm (3.0–4.3 fits). Q-47 is open for a short-post part or 6 mm spacers.
+  - **J8 joint (Andrew, 2026-11-10, final):** J1 is left unpopulated at PCBA. Andrew pushes loose 2.54 mm pins into the Waveshare J8 socket, seats the carrier flush on the socket face, and solders from the back.
+    - Carrier top is at z −11.5, the socket face.
+    - Pins are about 8.2 mm long (taken from a standard header and trimmed).
+    - The gap to the SMT standoffs is 1.1 mm, filled with a nylon shim.
+    - Earlier options (body-on-back, short posts, trimmed posts, 6 mm spacers) are dropped. Q-47 is closed.
+  - **Camera:** the camera module in Waveshare's STEP isn't shipped (Andrew). It's excluded (`params.NOT_FITTED`). Its FPC connector stays, and it's shallower than J8.
+  - **Board-to-board space:** only 5.1 mm between the boards. The mech test checks every display-side carrier part, at its datasheet height, against the Waveshare's actual solids.
+    - **Open:** two of the five LTV-817S (4.0 mm tall) hit Waveshare parts: U5 by 0.2 mm, U2 with zero margin.
+  - **USB-C pocket:** there's no room for a floor between the plug and the carrier. The pocket walls land on the carrier's left edge, which is kept free of display-side parts (mech test), with a foam strip to close it.
   - **SEN65 connector:** it's on the face opposite the ports (mech guide Fig. 1), so it faces into the bay left of the module. A short cable runs to J5. The 0.4 mm clearance to the back panel works.
 - Alternatives:
-  - Header body on the carrier back: 1.2 mm thinner, rejected (solder fillets).
-  - Standard 11.5 mm header on longer spacers: the fallback if no short-post part is confirmed, at +2.4 mm depth.
+  - Header variants, all superseded by the loose-pin flush seat: body on the carrier back (solder fillets), short or trimmed posts, 6 mm spacers.
   - 2.0 mm walls.
   - A smaller carrier: no fab-cost gain under JLC's 100 × 100 mm tier, and the LEDs and terminals would move off the walls.
 - Consequences:
-  - **Size:** 92.44 × 61.0 × 48.3 mm, about 272 cm³ (was 97.4 × 66.0 × 53.7, about 345). Carrier 88.24 × 56.8 mm.
+  - **Size:** 92.44 × 61.0 × 45.8 mm, about 258 cm³ (was 97.4 × 66.0 × 53.7, about 345). Carrier 88.24 × 56.8 mm.
   - **Glass edge:** the glass edge is exposed at the sides.

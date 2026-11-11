@@ -39,8 +39,10 @@
   - The indicator driver (Q3, R16–R18, C7) is by the first LED.
   - Test pads are on the back, centre-bottom.
 - **Back face behind the SEN65** (x ≥ 69): a rule area forbids footprints on B.Cu. The only things there are J1's THT stubs (trim flush) and the right-hand nylon screw heads.
-- **Camera:** the outline is drawn on User.Drawings. The camera is 1.7 mm above the carrier top (D-059), so only low parts go under it. The mech test checks part heights.
-- **J1:** fitted normally, body on the display side. Short-post header, about 3 mm posts (Q-47).
+- **Camera:** the outline is drawn on User.Drawings. The camera module isn't shipped (D-059). The mech test checks every part height against the Waveshare's actual solids.
+- **J1:** DNP. Andrew fits loose pins through J8 and the carrier, seated flush on the socket face (D-059).
+- **USB pocket edge:** the carrier left edge under the USB-C pocket is kept free of display-side parts (`usb_pocket_front` in the mech handoff).
+- **Opto heights (Q-48):** U2 and U5 (LTV-817S, 4.0 mm) clash with Waveshare back-side parts in the 5.1 mm board-to-board space.
 
 ## For Andrew's review (ASSUME)
 - **Holes in field zones:** the two left mounting holes sit in the fan (top) and DC (bottom) islands. They need nylon M2 screws and spacers, because the Waveshare SMT standoffs are probably on its GND.

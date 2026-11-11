@@ -3,24 +3,56 @@ platform darwin -- Python 3.12.11, pytest-9.2.0, pluggy-1.7.0 -- /Users/andrew/c
 cachedir: .pytest_cache
 rootdir: /Users/andrew/code/shop-exhaust-control/mech
 plugins: platformdirs-4.14.5
-collecting ... collected 17 items
+collecting ... collected 18 items
 
-tests/test_concept.py::test_header_engagement PASSED                     [  5%]
+tests/test_concept.py::test_j8_loose_pins_and_flush_seat PASSED          [  5%]
 tests/test_concept.py::test_carrier_gap_to_waveshare PASSED              [ 11%]
-tests/test_concept.py::test_carrier_parts_clear_waveshare_parts PASSED   [ 17%]
-tests/test_concept.py::test_camera_keepout_is_exported PASSED            [ 23%]
-tests/test_concept.py::test_sen65_gap_and_foam PASSED                    [ 29%]
-tests/test_concept.py::test_sen65_inside_and_ports_on_right_wall PASSED  [ 35%]
-tests/test_concept.py::test_sen65_apertures PASSED                       [ 41%]
-tests/test_concept.py::test_led_slot_separate_from_sen65_ports PASSED    [ 47%]
-tests/test_concept.py::test_usb_plug_clears_display PASSED               [ 52%]
-tests/test_concept.py::test_walls_and_size PASSED                        [ 58%]
-tests/test_concept.py::test_waveshare_fits_inside_walls PASSED           [ 64%]
-tests/test_concept.py::test_carrier_holes_and_header_inside_outline PASSED [ 70%]
-tests/test_concept.py::test_parts_dont_collide PASSED                    [ 76%]
-tests/test_concept.py::test_sen65_plug_bay_clear PASSED                  [ 82%]
-tests/test_concept.py::test_tabs_take_screws_from_the_back PASSED        [ 88%]
-tests/test_concept.py::test_terminals_line_up_with_cable_slots PASSED    [ 94%]
-tests/test_concept.py::test_leds_and_sen_keep_flat_from_board PASSED     [100%]
+tests/test_concept.py::test_carrier_parts_clear_waveshare_parts FAILED   [ 16%]
+tests/test_concept.py::test_camera_keepout_is_exported PASSED            [ 22%]
+tests/test_concept.py::test_sen65_gap_and_foam PASSED                    [ 27%]
+tests/test_concept.py::test_sen65_inside_and_ports_on_right_wall PASSED  [ 33%]
+tests/test_concept.py::test_sen65_apertures PASSED                       [ 38%]
+tests/test_concept.py::test_led_slot_separate_from_sen65_ports PASSED    [ 44%]
+tests/test_concept.py::test_usb_plug_clears_display PASSED               [ 50%]
+tests/test_concept.py::test_walls_and_size PASSED                        [ 55%]
+tests/test_concept.py::test_waveshare_fits_inside_walls PASSED           [ 61%]
+tests/test_concept.py::test_carrier_holes_and_header_inside_outline PASSED [ 66%]
+tests/test_concept.py::test_parts_dont_collide PASSED                    [ 72%]
+tests/test_concept.py::test_sen65_plug_bay_clear PASSED                  [ 77%]
+tests/test_concept.py::test_tabs_take_screws_from_the_back PASSED        [ 83%]
+tests/test_concept.py::test_terminals_line_up_with_cable_slots PASSED    [ 88%]
+tests/test_concept.py::test_leds_and_sen_keep_flat_from_board PASSED     [ 94%]
+tests/test_concept.py::test_usb_pocket_edge_free_of_front_parts PASSED   [100%]
 
-======================== 17 passed in 100.82s (0:01:40) ========================
+=================================== FAILURES ===================================
+___________________ test_carrier_parts_clear_waveshare_parts ___________________
+
+    def test_carrier_parts_clear_waveshare_parts():
+        """Each placed display-side carrier part, at its datasheet height (+0.2 mm), clears the Waveshare's actual
+        solids (mesh vertices, not assembly bounding boxes; J8 excepted: it mates). Positions from placed-parts.json."""
+        import json, os
+        path = os.path.join(os.path.dirname(C.PLACED), "reports", "placed-parts.json")
+        if not os.path.exists(path):
+            pytest.skip("carrier not placed yet (pcb/carrier/layout/run.sh)")
+        s = C.stackup()
+        placed = json.load(open(path))
+        zones = [(ref, p["bbox_e"], s["carrier_top_z"] + part_height(ref) + 0.2) for ref, p in placed.items()
+                 if p["side"] == "F" and ref != "J1" and not ref.startswith("H")]
+        clash = {}
+        for label, sh in WS.parts():
+            if label == "HEADER-SMD-F-2_54-2X16PIN":
+                continue
+            verts, _ = sh.tessellate(0.1)
+            for v in verts:
+                for ref, (x0, y0, x1, y1), top in zones:
+                    if x0 < v.X < x1 and y0 < v.Y < y1 and v.Z < top:
+                        k = (ref, label)
+                        clash[k] = min(clash.get(k, 0.0), round(v.Z - (top - 0.2), 2))
+>       assert not clash, f"carrier part, Waveshare part: overlap (mm, negative = into the part): {clash}"
+E       AssertionError: carrier part, Waveshare part: overlap (mm, negative = into the part): {('U5', 'ESP32-S3-TOUCH-LCD-3_5-PCBA_ASM'): -0.2, ('U2', 'ESP32-S3-TOUCH-LCD-3_5-PCBA_ASM'): 0.0}
+E       assert not {('U5', 'ESP32-S3-TOUCH-LCD-3_5-PCBA_ASM'): -0.2, ('U2', 'ESP32-S3-TOUCH-LCD-3_5-PCBA_ASM'): 0.0}
+
+tests/test_concept.py:63: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_concept.py::test_carrier_parts_clear_waveshare_parts - Asse...
+=================== 1 failed, 17 passed in 184.33s (0:03:04) ===================
