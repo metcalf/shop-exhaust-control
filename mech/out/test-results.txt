@@ -1,2 +1,26 @@
-.............                                                            [100%]
-13 passed in 100.43s (0:01:40)
+============================= test session starts ==============================
+platform darwin -- Python 3.12.11, pytest-9.2.0, pluggy-1.7.0 -- /Users/andrew/code/shop-exhaust-control/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /Users/andrew/code/shop-exhaust-control/mech
+plugins: platformdirs-4.14.5
+collecting ... collected 17 items
+
+tests/test_concept.py::test_header_engagement PASSED                     [  5%]
+tests/test_concept.py::test_carrier_gap_to_waveshare PASSED              [ 11%]
+tests/test_concept.py::test_carrier_parts_clear_waveshare_parts PASSED   [ 17%]
+tests/test_concept.py::test_camera_keepout_is_exported PASSED            [ 23%]
+tests/test_concept.py::test_sen65_gap_and_foam PASSED                    [ 29%]
+tests/test_concept.py::test_sen65_inside_and_ports_on_right_wall PASSED  [ 35%]
+tests/test_concept.py::test_sen65_apertures PASSED                       [ 41%]
+tests/test_concept.py::test_led_slot_separate_from_sen65_ports PASSED    [ 47%]
+tests/test_concept.py::test_usb_plug_clears_display PASSED               [ 52%]
+tests/test_concept.py::test_walls_and_size PASSED                        [ 58%]
+tests/test_concept.py::test_waveshare_fits_inside_walls PASSED           [ 64%]
+tests/test_concept.py::test_carrier_holes_and_header_inside_outline PASSED [ 70%]
+tests/test_concept.py::test_parts_dont_collide PASSED                    [ 76%]
+tests/test_concept.py::test_sen65_plug_bay_clear PASSED                  [ 82%]
+tests/test_concept.py::test_tabs_take_screws_from_the_back PASSED        [ 88%]
+tests/test_concept.py::test_terminals_line_up_with_cable_slots PASSED    [ 94%]
+tests/test_concept.py::test_leds_and_sen_keep_flat_from_board PASSED     [100%]
+
+======================== 17 passed in 124.95s (0:02:04) ========================

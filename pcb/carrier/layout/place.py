@@ -55,6 +55,9 @@ BARRIER_X0, BARRIER_X1 = 18.5, 23.5
 FIELD_GAPS = [(27.75, 29.25), (40.75, 42.25)]   # fan|OCC and OCC|DC (>= 1.5 mm functional)
 
 HOLES = [k(x, y) for x, y in M["holes"]]
+# Anchors so groups move with what they serve when the outline changes (D-058 rev 2)
+J1X = J1_POS[0]                       # PWRON one-shot sits by J8 pin 23
+KF = k(M["keep_flat_back"][0], 0)[0]  # left edge of the SEN65 keep-flat zone
 LED_X = W - 1.44 - 0.2        # SK6812SIDE-A body reaches +1.44 from its origin toward the light face
 LED_Y = sorted(k(0, y)[1] for y in M["led_y"])
 
@@ -95,28 +98,28 @@ POS = {
     "R13": (30.5, 45.75, 0, "F"),
     "C4": (30.5, 48.25, 0, "F"),
     # --- PWRON one-shot (DNP) near J8 pin 23 ---
-    "Q2": (54.5, 11.5, 0, "F"),
-    "C1": (50.5, 11.5, 90, "F"),
-    "R1": (50.5, 15.0, 90, "F"),
-    "R2": (52.5, 15.0, 90, "F"),
-    "D1": (55.0, 15.0, 0, "F"),
+    "Q2": (J1X + 27.86, 11.5, 0, "F"),
+    "C1": (J1X + 23.86, 11.5, 90, "F"),
+    "R1": (J1X + 23.86, 15.0, 90, "F"),
+    "R2": (J1X + 25.86, 15.0, 90, "F"),
+    "D1": (J1X + 28.36, 15.0, 0, "F"),
     # --- SEN65: connector on the back, left of the keep-flat zone; decoupling on the front ---
-    "J5": (62.0, 18.5, None, "B"),  # rotation chosen below so the plug entry faces the SEN65 (+x)
-    "C5": (59.5, 11.5, 90, "F"),
-    "C6": (61.5, 11.5, 90, "F"),
-    "R14": (64.5, 11.5, 90, "F"),    # DNP pull-up pads
-    "R15": (66.5, 11.5, 90, "F"),
+    "J5": (KF - 7.1, 18.5, None, "B"),  # rotation chosen below so the plug entry faces the SEN65 (+x)
+    "C5": (KF - 9.6, 11.5, 90, "F"),
+    "C6": (KF - 7.6, 11.5, 90, "F"),
+    "R14": (KF - 4.6, 11.5, 90, "F"),    # DNP pull-up pads
+    "R15": (KF - 2.6, 11.5, 90, "F"),
     # --- indicator driver near the first LED ---
-    "R16": (79.0, 9.0, 0, "F"),
-    "Q3": (82.5, 11.0, 0, "F"),
-    "R17": (82.5, 14.5, 0, "F"),
-    "R18": (86.0, 9.0, 90, "F"),
-    "C7": (83.5, 20.0, 90, "F"),
+    "R16": (W - 12.44, 9.0, 0, "F"),
+    "Q3": (W - 8.94, 11.0, 0, "F"),
+    "R17": (W - 8.94, 14.5, 0, "F"),
+    "R18": (W - 5.44, 9.0, 90, "F"),
+    "C7": (W - 7.94, 20.0, 90, "F"),
 }
 # LEDs down the right edge, light face toward the wall (+x); D4 first in the chain, at the top.
 for i, y in enumerate(LED_Y):
     POS[f"D{4 + i}"] = (LED_X, y, 90, "F")
-    POS[f"C{8 + i}"] = (86.5, y, 90, "F")
+    POS[f"C{8 + i}"] = (W - 4.94, y, 90, "F")
 for i, (x, y) in enumerate(HOLES):
     POS[f"H{i + 1}"] = (x, y, 0, "F")
 # Test pads on the back, clear of the SEN65 keep-flat zone and the terminals
@@ -291,11 +294,11 @@ def build(net_path, out_path):
     (bx0, by1), (bx1, by0) = k(x0, y0), k(x1, y1)
     add_rule_area(board, rect(bx0, max(by0, 0.0), min(bx1, W), min(by1, H)), "SEN65 keep-flat (B)", ("B.Cu",),
                   no_fp=True)
-    # Waveshare camera (if fitted): only parts <= 1 mm tall under it on F (drawn for review)
+    # Waveshare camera: carrier top is 0.5 mm below it, so no F parts under it (mech test checks)
     for cx0, cy0, cx1, cy1 in M["tall_part_keepout_front"]:
         (ax, ay), (bx, byy) = k(cx0, cy1), k(cx1, cy0)
         add_rect(board, ax, ay, bx, byy, "User.Drawings", 0.1)
-        add_text(board, "Waveshare camera above: low parts only", (ax + bx) / 2, (ay + byy) / 2, "User.Drawings", 0.8)
+        add_text(board, "Waveshare camera 0.5 mm above: no parts", (ax + bx) / 2, (ay + byy) / 2, "User.Drawings", 0.8)
 
     add_rect(board, 0, 0, W, H, "Edge.Cuts", 0.1)
     # Reference outlines for review (User.Drawings, not fabricated)
@@ -308,11 +311,27 @@ def build(net_path, out_path):
     for (ref, pad), txt in labels.items():
         px, py = pad_mm(board, ref, pad)
         add_text(board, txt, px + 6.0, py, "B.SilkS", 0.8)
-    add_text(board, "SEN65", 62.0, 18.5, "B.SilkS", 0.8)
+    add_text(board, "SEN65", KF - 7.1, 18.5, "B.SilkS", 0.8)
     add_text(board, "FIELD | NODE  >= 3 mm", (BARRIER_X0 + BARRIER_X1) / 2, H - 1.5, "F.SilkS", 0.8)
 
     pcbnew.SaveBoard(out_path, board)
+    export_parts(board, os.path.join(os.path.dirname(out_path), "reports", "placed-parts.json"))
     return board
+
+
+def export_parts(board, path):
+    """Footprint extents in frame E for the mech clearance checks (D-011: positions from KiCad)."""
+    out = {}
+    for fp in board.GetFootprints():
+        bb = fp.GetBoundingBox(False)
+        x0, x1 = pcbnew.ToMM(bb.GetLeft()) - X0, pcbnew.ToMM(bb.GetRight()) - X0
+        y0, y1 = pcbnew.ToMM(bb.GetTop()) - Y0, pcbnew.ToMM(bb.GetBottom()) - Y0
+        out[fp.GetReference()] = {
+            "side": "B" if fp.IsFlipped() else "F",
+            "footprint": str(fp.GetFPID().GetLibItemName()),
+            "bbox_e": [x0 + CX0, CY1 - y1, x1 + CX0, CY1 - y0],
+        }
+    json.dump(out, open(path, "w"), indent=1, sort_keys=True)
 
 
 if __name__ == "__main__":

@@ -512,7 +512,7 @@ Template:
 
 ## D-058: Concept enclosure and carrier placement defaults
 - Date: 2026-11-10
-- Status: Accepted as defaults (Andrew, 2026-11-10: "run it tonight with those defaults"); each can still change
+- Status: Accepted as defaults (Andrew, 2026-11-10: "run it tonight with those defaults"); bezel, spacer, size and SEN65-connector items superseded by D-059
 - Context: first concept enclosure (`mech/concept.py`, `docs/mech-concept.md`) and first carrier placement (`pcb/carrier/LAYOUT.md`) for D-056/D-057.
 - Decision:
   - Bezel and rear shell split behind the LCD (z −8). Service by lifting the unit off the cleat and removing the rear shell.
@@ -522,3 +522,23 @@ Template:
   - SEN65 stands on end, ports through the right wall, inlets at the bottom. 4.0 mm gap to the carrier. Connector on the rear face, cable looped to J5.
 - Alternatives considered: SEN65 beside the Waveshare board (≈ 121 × 66 × 33 mm, 25 % less volume, but wider and next to the LEDs); a 6.35 mm gap (deeper for no gain); terminals on the front side (they'd hit the Waveshare parts).
 - Consequences: enclosure ≈ 97.4 × 66.0 × 53.7 mm. The SEN65 depth is 25.6 mm rather than 21.3, because its inlets and outlet share one face. Nylon hardware is required at the field-zone holes (`pcb/SAFETY.md`).
+
+## D-059: No bezel, 1.6 mm walls with ribs, carrier as close as the Waveshare allows
+- Date: 2026-11-10
+- Status: Accepted (Andrew, 2026-11-10: no bezel, glass is the face; 1.6 mm SLS nylon walls with ribs; thinner stack; carrier "as close together as possible"). Supersedes the bezel, spacer and connector items of D-058.
+- Context: Andrew's review of the D-058 concept. He has used 1.6 mm SLS nylon without problems; it flexes, so ribs come before thickness.
+- Decision:
+  - **Outline:** the cover glass is the front face. The enclosure outline is the glass outline, 92.44 × 61.0 mm. A four-wall shell carries the glass's black border on a 0.8 mm foam rim gasket. Back panel is 1.6 mm and screwed on.
+  - **Walls and ribs:** walls 1.6 mm. Back panel has 1.2 × 4 mm ribs inside, left of the SEN65 bay.
+  - **Retention:** four tabs behind the carrier at the Waveshare holes. One nylon M2 screw per hole, driven from the back, passes through the tab, the carrier and the spacer into the SMT standoff. That pulls the glass onto the rim gasket.
+  - **Service:** take off the back panel, then the SEN65, then the four screws; the display and carrier go out the front.
+  - **Header:** the J8 male header is fitted with its body on the carrier's back, with standard 6 mm posts. The carrier top sits 0.5 mm below the lowest Waveshare part (the camera, z −12.3).
+    - Engagement is 3.1 mm. The tips stop 2.0 mm short of the Waveshare PCB.
+    - Spacer is 2.4 mm.
+    - No carrier parts go under the camera.
+  - **SEN65 connector:** it's on the face opposite the ports (mech guide Fig. 1), so it faces into the bay left of the module. A short cable runs to J5. The 0.4 mm clearance to the back panel works.
+- Alternatives: a carrier cutout under the camera would allow about 0.8 mm closer (limited by J8 engagement) but costs board area mid-routing; a short-post header with its body on top costs 1.2 mm and isn't a stock part; 2.0 mm walls.
+- Consequences:
+  - **Size:** 92.44 × 61.0 × 47.1 mm, about 266 cm³ (was 97.4 × 66.0 × 53.7, about 345). Carrier 88.24 × 56.8 mm.
+  - **Glass edge:** the glass edge is exposed at the sides.
+  - **Header assembly:** the J8 header is hand-fitted from the back and soldered on the display side; its tail stubs are trimmed to 1 mm.

@@ -1,4 +1,4 @@
-# Carrier layout (D-010, D-056, D-058)
+# Carrier layout (D-010, D-056, D-058, D-059)
 
 **Pipeline:** `pcb/carrier/layout/run.sh`
 1. Schematic checks.
@@ -9,7 +9,9 @@
 
 **Status (2026-11-10):** placed, not routed.
 - **DRC:** 0 errors apart from the 125 unconnected pads (unrouted). 66 warnings: silk overlaps and silk over copper. 0 footprint errors.
-- **Board:** 91.4 × 57.0 mm, 2-layer. Sized by the enclosure: the terminals reach the left wall and the LEDs the right wall.
+- **Board:** 88.24 × 56.8 mm, 2-layer (D-059). Sized by the enclosure, which is now the glass outline: the terminals reach the left wall and the LEDs the right wall.
+- **Anchors:** groups are tied to what they serve, so an outline change moves them with it. The right-edge groups follow W, the PWRON one-shot follows J1, and J5 and the SEN65 decoupling follow the keep-flat edge.
+- **Mech export:** part extents go to `reports/placed-parts.json`. The mech tests use it to check each display-side part, at its datasheet height, against the Waveshare parts above it.
 
 ## What the script asserts
 - **J8 match:** J1 pins 1, 2, 3, 23, 31 and 32 land on the Waveshare J8 positions read from the STEP, within 0.01 mm.
@@ -37,10 +39,11 @@
   - The indicator driver (Q3, R16–R18, C7) is by the first LED.
   - Test pads are on the back, centre-bottom.
 - **Back face behind the SEN65** (x ≥ 69): a rule area forbids footprints on B.Cu. The only things there are J1's THT stubs (trim flush) and the right-hand nylon screw heads.
-- **Camera keepout:** the Waveshare camera outline (if fitted) is drawn on User.Drawings. Only low parts go under it, and none are tall today.
+- **Camera:** the outline is drawn on User.Drawings. The carrier top is 0.5 mm below the camera (D-059), so no display-side parts go under it. The mech test checks this.
+- **J1:** body on the carrier back, standard 6 mm posts through to the display side (D-059). Hand-fitted, with the tails trimmed to 1 mm.
 
 ## For Andrew's review (ASSUME)
 - **Holes in field zones:** the two left mounting holes sit in the fan (top) and DC (bottom) islands. They need nylon M2 screws and spacers, because the Waveshare SMT standoffs are probably on its GND.
-- **J5 cable:** the SEN65 connector faces the rear wall, so the GH cable loops round the module (about 8–10 cm). Check that a standard JST GH 6-pin cable of that length is on hand.
+- **J5 cable:** the SEN65 connector faces −x into the bay beside the module (D-059), so a short GH 6-pin cable (about 5 cm) reaches J5.
 - **Silk:** cleanup waits until after routing.
 - **Routing:** not done. Quilter, Freerouting or Andrew. If Freerouting, the Q-38 jar-permission issue applies again.

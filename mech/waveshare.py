@@ -72,8 +72,18 @@ def features():
     span = 15 * 2.54
     x_pin1 = cx - span / 2 if usb_left else cx + span / 2
     y_rows = sorted([(hdr[1] + hdr[4]) / 2 - 1.27, (hdr[1] + hdr[4]) / 2 + 1.27])
+    # The cover glass is the enclosure's front face (no bezel): find its back face over the wall rim by
+    # slab-probing the touch-panel solid inside its edge on all four sides.
+    from build123d import Box, Pos
+    touch = find("3_5INCH-320X480-TOUCH")[0]
+    zs = []
+    for x, y, dx, dy in ((lens[0] + 0.8, 0, 1.0, 10), (lens[3] - 0.8, 0, 1.0, 10),
+                         (0, lens[1] + 0.8, 10, 1.0), (0, lens[4] - 0.8, 10, 1.0)):
+        r = touch & (Pos(x, y, (lens[2] + lens[5]) / 2) * Box(dx, dy, lens[5] - lens[2] + 1))
+        zs.append(r.bounding_box().min.Z)
     return {
-        "lens": lens, "lcd": lcd, "pcba": pcba, "header": hdr, "usb": usb,
+        "lens": lens,
+        "glass_back_z_rim": max(zs), "lcd": lcd, "pcba": pcba, "header": hdr, "usb": usb,
         "holes": holes,
         "standoff_bottom_z": min(b[2] for b in standoffs),
         "pcb_back_z": hdr[5],             # the header sits on the PCB's back face

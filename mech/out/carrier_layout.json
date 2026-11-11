@@ -1,12 +1,12 @@
 {
  "frame": "E: +x right, +y up, seen from the front; KiCad x = x_E - carrier_x0, y = carrier_y1 - y_E",
  "carrier_x": [
-  -45.7,
-  45.7
+  -44.12,
+  44.12
  ],
  "carrier_y": [
-  -28.5,
-  28.5
+  -28.4,
+  28.4
  ],
  "holes": [
   [
@@ -30,7 +30,7 @@
  "j8_pitch_dir": 1,
  "j8_row_rev2_odd_y": 21.71964946,
  "j8_row_rev2_even_y": 24.25964946,
- "led_edge_x": 45.7,
+ "led_edge_x": 44.12,
  "led_y": [
   -22.5,
   -13.5,
@@ -40,9 +40,9 @@
   22.5
  ],
  "keep_flat_back": [
-  23.419999999999998,
+  21.319999999999997,
   -28.6,
-  45.7,
+  44.12,
   28.6
  ],
  "tall_part_keepout_front": [
@@ -53,17 +53,17 @@
    6.300000000000004
   ]
  ],
- "max_front_part_height": 9.5,
+ "carrier_top_z": -12.800000099999998,
  "terminal_slots_y": {
-  "fan": 14.0,
-  "occ": -5.0,
-  "dc": -18.0
+  "fan": 13.899999999999999,
+  "occ": -5.100000000000001,
+  "dc": -18.1
  },
- "sen65_connector_face": "rear (toward the back wall); cable loops round the module's left face to J5",
+ "sen65_connector_face": "-x (module face opposite the ports), into the bay left of the module; short cable to J5",
  "j5_zone_back": [
-  10.419999999999998,
+  8.319999999999997,
   10.0,
-  22.419999999999998,
-  27.5
+  20.319999999999997,
+  27.4
  ]
 }

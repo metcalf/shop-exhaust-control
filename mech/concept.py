@@ -63,21 +63,28 @@ def stackup():
     s["lens"] = lens
     s["pcb_back_z"] = f["pcb_back_z"]
     s["header_face_z"] = f["header_face_z"]
-    s["carrier_top_z"] = f["standoff_bottom_z"] - P.SPACER
+    s["ws_lowest_z"] = f["lowest_back_parts"][0][1]
+    # Carrier top WS_CLR below the lowest Waveshare part; header body on the carrier back, so the posts
+    # protrude MATE - CARRIER_T above the carrier top. The M2 spacer fills the gap to the SMT standoffs.
+    s["carrier_top_z"] = s["ws_lowest_z"] - P.WS_CLR
     s["carrier_back_z"] = s["carrier_top_z"] - P.CARRIER_T
-    s["male_body_top_z"] = s["carrier_top_z"] + P.MALE_HDR_BODY
-    s["pin_tip_z"] = s["male_body_top_z"] + P.MALE_HDR_MATE
+    s["spacer"] = f["standoff_bottom_z"] - s["carrier_top_z"]
+    s["male_body_z"] = (s["carrier_back_z"] - P.MALE_HDR_BODY - P.MALE_HDR_STUB, s["carrier_back_z"])
+    s["pin_tip_z"] = s["carrier_back_z"] + P.MALE_HDR_MATE
     s["pin_insertion"] = s["pin_tip_z"] - f["header_face_z"]
     s["pin_tip_to_pcb"] = f["pcb_back_z"] - s["pin_tip_z"]
+    s["ws_to_carrier"] = s["ws_lowest_z"] - s["carrier_top_z"]
+    # No bezel: outline = cover glass outline; walls run up to the glass's black border under a foam rim gasket.
+    s["glass_back_z"] = f["glass_back_z_rim"]
+    s["rim_z"] = s["glass_back_z"] - P.RIM_GASKET
+    s["inner_x"] = (lens[0] + P.WALL, lens[3] - P.WALL)
+    s["inner_y"] = (lens[1] + P.WALL, lens[4] - P.WALL)
     # SEN65 standing on end: ports (L x W face) against the right wall, H along x, L along y, W along z.
-    s["inner_x"] = (lens[0] - P.CLR, lens[3] + P.CLR)
-    s["inner_y"] = (lens[1] - P.CLR, lens[4] + P.CLR)
     sx1 = s["inner_x"][1] - P.SEN_PORT_GASKET
     sz1 = s["carrier_back_z"] - P.SEN_GAP
     s["sen"] = (sx1 - P.SEN_H, -P.SEN_L / 2, sz1 - P.SEN_W, sx1, P.SEN_L / 2, sz1)
-    s["inner_z"] = (s["sen"][2] - P.CLR, lens[5] + P.LENS_GASKET)
-    s["outer"] = (s["inner_x"][0] - P.WALL, s["inner_y"][0] - P.WALL, s["inner_z"][0] - P.WALL,
-                  s["inner_x"][1] + P.WALL, s["inner_y"][1] + P.WALL, s["inner_z"][1] + P.BEZEL_LIP)
+    s["inner_z"] = (s["sen"][2] - P.SEN_BACK_CLR, s["rim_z"])
+    s["outer"] = (lens[0], lens[1], s["inner_z"][0] - P.BACK_PANEL, lens[3], lens[4], lens[5])
     s["outer_size"] = tuple(round(s["outer"][i + 3] - s["outer"][i], 2) for i in range(3))
     return s
 
@@ -102,26 +109,52 @@ def sen_ports(s):
     return {"inlet_slot": inlet, "outlet_circle": (oy, oz, od)}
 
 
+def tabs(s):
+    """Retention tabs behind the carrier at the four holes, each tied to the nearer top/bottom wall.
+    One screw per hole from the back: tab -> carrier -> spacer -> Waveshare SMT standoff, which pulls
+    the glass onto the rim gasket."""
+    f = WS.features()
+    iy = s["inner_y"]
+    z1 = s["carrier_back_z"]
+    out = []
+    for x, y in f["holes"]:
+        y0, y1 = (y - P.TAB_W / 2, iy[1]) if y > 0 else (iy[0], y + P.TAB_W / 2)
+        out.append((x - P.TAB_W / 2, y0, z1 - P.TAB_T, x + P.TAB_W / 2, y1, z1))
+    return out
+
+
+def ribs(s):
+    """Back-panel ribs, inside, left of the SEN65 and its plug bay."""
+    ix, iy, iz = s["inner_x"], s["inner_y"], s["inner_z"]
+    xr = s["sen"][0] - P.SEN_PLUG_BAY
+    z0, z1 = iz[0], iz[0] + P.RIB_H
+    out = [(ix[0], -P.RIB_T / 2, z0, xr, P.RIB_T / 2, z1)]                    # one along x
+    x = ix[0] + P.RIB_PITCH
+    while x < xr - 2:
+        out.append((x - P.RIB_T / 2, iy[0], z0, x + P.RIB_T / 2, iy[1], z1))  # across y
+        x += P.RIB_PITCH
+    return out
+
+
 def build():
     f = WS.features()
     s = stackup()
     ix, iy, iz = s["inner_x"], s["inner_y"], s["inner_z"]
     o = s["outer"]
-    shell = box(*o) - box(ix[0], iy[0], iz[0], ix[1], iy[1], iz[1])
-    # front window: lens view area + 1 mm, centred (Waveshare drawing: borders symmetric)
-    va_w, va_h = 73.44 + 2.0, 48.96 + 2.0      # Waveshare dimension drawing (view area)
-    shell -= box(-va_w / 2, -va_h / 2, iz[1] - 0.1, va_w / 2, va_h / 2, o[5] + 0.1)
+    # shell: four walls from the back panel to the rim (open front: the glass is the face)
+    shell = box(o[0], o[1], iz[0], o[3], o[4], s["rim_z"]) - box(ix[0], iy[0], iz[0] - 1, ix[1], iy[1], s["rim_z"] + 1)
+    for t in tabs(s):
+        shell += box(*t)
 
     # USB-C pocket, left wall: open to the outside, mouth at the receptacle face.
     u = f["usb"]
     uy, uz = (u[1] + u[4]) / 2, (u[2] + u[5]) / 2
     ow, oh, _ = P.USB_OVERMOLD
-    pk = (ow / 2 + P.USB_POCKET_CLR, oh / 2 + P.USB_POCKET_CLR)
+    pk = (ow / 2 + P.USB_POCKET_CLR, oh / 2 + P.USB_POCKET_CLR_Z)
     pocket = box(o[0] - 0.1, uy - pk[0], uz - pk[1], u[0] - 0.5, uy + pk[0], uz + pk[1])
-    pocket_wall = box(o[0], uy - pk[0] - P.WALL, uz - pk[1] - P.WALL, u[0] - 0.5,
-                      uy + pk[0] + P.WALL, uz + pk[1] + P.WALL)
+    pocket_wall = box(o[0], uy - pk[0] - P.WALL, uz - pk[1] - P.USB_POCKET_FLOOR, u[0] - 0.5,
+                      uy + pk[0] + P.WALL, uz + pk[1] + P.USB_POCKET_FLOOR)
     shell = (shell + pocket_wall) - pocket
-    # mouth through the pocket's back wall into the receptacle (shell outline + 0.5)
     sw, st, _ = P.USB_SHELL
     shell -= box(u[0] - 0.6, uy - sw / 2 - 0.5, uz - st / 2 - 0.5, u[0] + 0.1, uy + sw / 2 + 0.5, uz + st / 2 + 0.5)
 
@@ -143,31 +176,36 @@ def build():
     oy, oz, od = ports["outlet_circle"]
     shell -= Pos(ix[1] + P.WALL / 2, oy, oz) * Rot(0, 90, 0) * Cylinder(od / 2, P.WALL + 0.4)
 
-    # split into bezel (front) and rear shell
-    big = 500
-    bezel = shell & box(-big, -big, P.SPLIT_Z, big, big, big)
-    rear = shell & box(-big, -big, -big, big, big, P.SPLIT_Z)
+    back = box(o[0], o[1], o[2], o[3], o[4], iz[0])
+    for r in ribs(s):
+        back += box(*r)
 
     # carrier and friends
     cx, cy = P.CARRIER_X, P.CARRIER_Y
     carrier = box(cx[0], cy[0], s["carrier_back_z"], cx[1], cy[1], s["carrier_top_z"])
     h = f["header"]
-    male = box(h[0], h[1], s["carrier_top_z"], h[3], h[4], s["male_body_top_z"])
+    male = box(h[0], h[1], s["male_body_z"][0], h[3], h[4], s["male_body_z"][1])   # body + stub, carrier back
     sen = box(*s["sen"])
     sx0, sy0, sz0, sx1, sy1, sz1 = s["sen"]
     foam = box(sx0, sy0 + 3.0, sz1, sx1, sy1 - 3.0, sz1 + P.FOAM_T)
+    for t in tabs(s):   # foam notched round the tabs and screw heads
+        foam -= box(t[0] - 0.5, t[1] - 0.5, t[2] - P.SCREW_HEAD - 0.3, t[3] + 0.5, t[4] + 0.5, t[5])
     leds = [box(cx[1] - 1.6, y - 2.0, s["carrier_top_z"], cx[1], y + 2.0, s["carrier_top_z"] + P.LED_H)
             for y in [-span / 2 + i * P.LED_PITCH for i in range(P.N_LED)]]
-    spacers = [Pos(x, y, (f["standoff_bottom_z"] + s["carrier_top_z"]) / 2) * Cylinder(2.0, P.SPACER)
+    spacers = [Pos(x, y, (f["standoff_bottom_z"] + s["carrier_top_z"]) / 2) * Cylinder(2.0, s["spacer"])
                for x, y in f["holes"]]
+    heads = [Pos(x, y, s["carrier_back_z"] - P.TAB_T - P.SCREW_HEAD / 2) * Cylinder(1.9, P.SCREW_HEAD)
+             for x, y in f["holes"]]
     terminals = []  # KF128L-3.5-2P bodies on the carrier back, wire entry facing left (approximate block)
     for name, yc, hgt, _ in cable_slots():
         n = 2 if name == "fan" else 1
         terminals.append(box(cx[0], yc - 3.5 * n, s["carrier_back_z"] - 10.0, cx[0] + 8.0, yc + 3.5 * n,
                              s["carrier_back_z"]))
-    parts = {"bezel": bezel, "rear": rear, "carrier": carrier, "male_header": male, "sen65": sen, "foam": foam,
-             "leds": Compound(leds), "spacers": Compound(spacers), "terminals": Compound(terminals)}
-    return f, s, ports, diff, parts
+    plug_bay = box(sx0 - P.SEN_PLUG_BAY, sy0, sz0, sx0, sy1, sz1)   # GH plug + cable bend, kept clear
+    parts = {"shell": shell, "back": back, "carrier": carrier, "male_header": male, "sen65": sen, "foam": foam,
+             "leds": Compound(leds), "spacers": Compound(spacers), "screw_heads": Compound(heads),
+             "terminals": Compound(terminals)}
+    return f, s, ports, diff, parts, plug_bay
 
 
 def layout_json(f, s, ports, diff):
@@ -186,9 +224,9 @@ def layout_json(f, s, ports, diff):
         "led_edge_x": cx[1], "led_y": [-span / 2 + i * P.LED_PITCH for i in range(P.N_LED)],
         "keep_flat_back": [sen[0] - 1.0, sen[1] - 1.0, cx[1], sen[4] + 1.0],   # x0, y0, x1, y1 on the back side
         "tall_part_keepout_front": [[b[0], b[1], b[3], b[4]] for b in cam],       # Waveshare camera (if fitted)
-        "max_front_part_height": round(s["pcb_back_z"] - s["carrier_top_z"] - 0.5, 2),
+        "carrier_top_z": s["carrier_top_z"],
         "terminal_slots_y": {n: y for n, y, _, _ in cable_slots()},
-        "sen65_connector_face": "rear (toward the back wall); cable loops round the module's left face to J5",
+        "sen65_connector_face": "-x (module face opposite the ports), into the bay left of the module; short cable to J5",
         "j5_zone_back": [sen[0] - 14.0, 10.0, sen[0] - 2.0, cy[1] - 1.0],
     }
 
@@ -218,7 +256,7 @@ def export_views(parts, s):
 
 def main():
     os.makedirs(OUT, exist_ok=True)
-    f, s, ports, diff, parts = build()
+    f, s, ports, diff, parts, _ = build()
     export_step(Compound(list(parts.values())), os.path.join(OUT, "concept.step"))
     st = {k: (list(v) if isinstance(v, tuple) else v) for k, v in s.items()}
     st["ports"] = ports

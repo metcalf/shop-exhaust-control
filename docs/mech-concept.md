@@ -1,56 +1,59 @@
-# Mechanical concept: Waveshare 3.5 + carrier + SEN65 (D-056, D-057, D-058)
+# Mechanical concept: Waveshare 3.5 + carrier + SEN65 (D-056, D-057, D-058, D-059)
 
-**Status:** concept, 2026-11-10. Model: `mech/concept.py`. Outputs: `mech/out/`. Geometry checks: `mech/tests/`, 13 passing, with the output in `mech/out/test-results.txt`. Waveshare geometry is read from its STEP (`mech/fetch_vendor.sh`) and never retyped. Terminal, LED and keep-flat positions come from the placed carrier board (`pcb/carrier/carrier-placed.kicad_pcb`).
+**Status:** concept rev 2, 2026-11-10, after Andrew's review: no bezel, 1.6 mm walls with ribs, thinner stack. Model: `mech/concept.py`. Outputs: `mech/out/`. Geometry checks: `mech/tests/`, results in `mech/out/test-results.txt`. Waveshare geometry is read from its STEP (`mech/fetch_vendor.sh`) and never retyped. Terminal, LED, keep-flat and part positions come from the placed carrier board (`pcb/carrier/carrier-placed.kicad_pcb`, `pcb/carrier/reports/placed-parts.json`).
 
-## Frame and stack-up (frame E: +x right, +y up, +z out of the front; origin at the lens centre)
+## Frame and stack-up (frame E: +x right, +y up, +z out of the front; origin at the glass centre)
 
 | Item | z (mm) | Source |
 |------|--------|--------|
-| Bezel front | +3.6 | lens +1.1, 1.0 gasket, 1.5 lip |
+| Cover glass front (enclosure front face) | +1.1 | STEP |
+| Glass back at the rim / wall rim | 0.0 / −0.8 | STEP probe; 0.8 mm foam rim gasket |
 | Waveshare PCB back | −6.4 | STEP |
-| J8 face (low-profile SMD female, 5.1 mm) | −11.5 | STEP |
-| SMT standoffs end | −10.4 | STEP |
-| Carrier top / back | −16.4 / −18.0 | M2 × 6 nylon spacer, 1.6 mm PCB |
-| Male header: body top, pin tip | −13.9, −7.9 | 3.6 mm insertion, 1.5 mm short of the socket floor |
-| SEN65 front / back | −22.0 / −47.6 | 4.0 mm gap (≤ 1/4", holds the 1/8" foam) |
-| Rear wall outside | −50.1 | 0.5 clearance + 2.0 wall |
+| J8 socket face (low-profile SMD female, 5.1 mm) | −11.5 | STEP |
+| Lowest Waveshare part (camera) | −12.3 | STEP |
+| Carrier top / back | −12.8 / −14.4 | 0.5 mm below the camera, 1.6 mm PCB |
+| J8 male posts: tip, engagement | −8.4, 3.1 mm | standard 6 mm posts, body on the carrier back; tips 2.0 mm short of the PCB |
+| Male header body and trimmed stub | −14.4 to −17.9 | behind the carrier, clear of the SEN65 |
+| Tabs and screw heads | −14.4 to −17.7 | 2.0 mm tab + 1.3 mm nylon pan head |
+| SEN65 front / back | −18.4 / −44.0 | 4.0 mm gap (≤ 1/4"), holds the 1/8" foam |
+| Back panel inner / outer | −44.4 / −46.0 | 0.4 mm clearance, 1.6 mm panel |
 
-**Outside:** 97.4 × 66.0 × 53.7 mm, about 345 cm³. The cleat adds a few mm.
+**Outside:** 92.44 × 61.0 × 47.1 mm, about 266 cm³, which is the glass outline. Andrew's estimate was 47.7 mm. The 0.6 mm saving is the Waveshare's 12.3 mm below the glass back, plus the 0.5 mm gap to the camera instead of 1.5 mm. The cleat adds a few mm.
 
 ## Layout (seen from the front)
-- **Orientation:** landscape. The board is mounted rotated so its USB-C is on the left. J8 runs along the top. The PWR, RESET and BOOT side buttons are on the bottom edge and are not reachable from outside, which isn't needed: flashing uses native USB, and power-on is the AXP2101 plus the DNP one-shot.
+- **No bezel.** The cover glass is the front face, and its edges are exposed at the sides.
+  - **Shell:** four 1.6 mm walls. The glass's black border (9.5 mm wide) sits on the wall rim through a 0.8 mm closed-cell foam gasket.
+  - **Fit:** the LCD module clears the inner walls by 0.7 mm on the left, its tightest side.
+- **Retention:** four tabs off the top and bottom walls, behind the carrier at the Waveshare holes. One nylon M2 screw per hole goes in from the back, through the tab, the carrier and a 2.4 mm spacer, into the SMT standoff. Tightening pulls the glass onto the rim gasket.
+- **Service:**
+  1. Remove the back panel to reach the SEN65.
+  2. Remove the module, then the four screws.
+  3. The display and carrier come out through the front.
 - **Left wall:**
-  - The USB-C pocket steps in to the receptacle mouth. A standard plug (12 × 6.5 mm overmold) clears the display solids (slab-probed in the tests).
-  - Three strain-relief slots for the fan, OCC and DC cables, centred on the placed terminals, at terminal height behind the carrier.
+  - **USB-C:** a stepped pocket runs in to the receptacle mouth, 6.2 mm inside the outline. A standard plug clears the display solids (slab-probed in the tests).
+  - **Cable entry:** strain-relief slots for the fan, OCC and DC cables, centred on the placed terminals.
 - **Right wall, front to back:**
-  - **LED diffuser slot** (51 × 6 mm) at the board-to-board gap. The 6 LEDs are on the carrier's display side and shine through the gap.
-  - **SEN65:** stands on end with its port face (55.2 × 25.6) against the wall through a 1 mm gasket.
-    - Inlets at the bottom, slot 9 × 20 mm (≥ 56 mm²). The outlet is above, a Ø 20.5 mm circle (≥ 148 mm²).
-    - A 21 mm gasket rib separates them.
-    - This is lateral placement, allowed by the mech guide (Fig. 5).
-    - The diffuser slot ends 3.6 mm in front of the SEN65 zone.
-- **SEN65 behind the carrier, right side.**
-  - The 1/8" closed-cell foam strip goes on its carrier-facing face. Notch the foam around the two right-hand M2 nylon screw heads.
-  - Its connector is on an L × H face. I put it on the rear face because a GH plug won't fit in the 4 mm gap. The cable loops round the module's left face to J5 on the carrier's back, which sits left of the keep-flat zone with its entry facing +x.
+  - **LED diffuser slot** (51 × 6 mm) in the board-to-board gap. It ends 3.6 mm in front of the SEN65.
+  - **SEN65 ports:** the module stands on end, port face to the wall through a 1 mm gasket. Inlet slot at the bottom, outlet circle above, with a 21 mm gasket rib between them.
+- **SEN65 connector:** it sits on the face opposite the ports (mech guide Fig. 1 "Rear View"; datasheet: "adjacent to the air outlet"). It faces −x into a 12 mm bay kept clear beside the module, and a short GH cable runs to J5 on the carrier back. The previous concept had this wrong: it put the connector on the rear face and looped the cable round the module.
+- **Ribs:** 1.2 × 4 mm on the back panel's inside, at a 15 mm pitch plus one along x. They stop short of the SEN65 bay, because the module is 0.4 mm off the panel.
+  - **Walls:** the walls get no ribs yet. With the glass in front and the back panel screwed on, the box is closed on both faces.
+  - **Back panel exterior:** this is the place to add more if the print flexes. The cleat interface can double as the ribs.
 
-## Departures from Andrew's direction, and why
-- **SEN65 depth is 25.6 mm, not 21.3.** The SEN6x has its inlets and outlet on the same 55.2 × 25.6 face (mech guide Fig. 1). Facing that face into the room through the right wall means the 25.6 dimension runs front to back.
-- **Smaller alternative, not taken:** put the SEN65 beside the Waveshare board instead of behind it. That's about 121 × 66 × 33 mm (≈ 265 cm³, 25 % less volume, 20 mm thinner, 24 mm wider). It moves the module next to the LED edge.
-- **Gap is 4.0 mm, not 6.35.** That's inside Andrew's "at most 1/4"" and still holds the 1/8" foam.
-- **Foam caveat:** Sensirion's mech guide says not to thermally insulate the module (§3). A strip on one face is a radiant shield, not insulation, but don't wrap the module.
+## Departures and caveats
+- **SEN65 depth is 25.6 mm, not 21.3.** The SEN6x has its inlets and outlet on the same face. Facing that face into the room through the right wall puts the 25.6 mm dimension front to back.
+- **Camera clearance.** The camera sets the carrier position, so no carrier parts go under it (mech test). A carrier cutout there would allow about 0.8 mm more, limited by J8 engagement; not worth the routing area.
+- **Header assembly.** J8's male header goes in from the back with its body on the carrier back, soldered on the display side, tails trimmed to 1 mm. This is a hand-fit step.
+- **Foam caveat.** Sensirion's mech guide says not to thermally insulate the module (§3). A strip on one face is fine. It's notched round the two right-hand tabs and screw heads.
 
-## Defaults used tonight (D-058, change any of them)
-1. **Opening:** front bezel and rear shell split at z = −8.0, screwed from the back. To service the module, lift the unit off the cleat (one locking screw) and remove the rear shell.
-2. **Cables:** clamp-and-foam strain reliefs on the left wall. Straight USB-C plug into the stepped pocket.
-3. **Indicator:** 6 LEDs at 9 mm pitch along the right edge only, no corner wrap.
-4. **Carrier mounting:** nylon M2 × 6 spacers and nylon M2 screws into the Waveshare SMT standoffs, at all four holes. The two left holes sit in field zones (SAFETY note). The carrier outline is 91.4 × 57.0 mm.
+## Defaults still in force (D-058)
+- **Cables:** clamp-and-foam strain reliefs, and a straight USB-C plug.
+- **LEDs:** 6 at 9 mm pitch on the right edge.
+- **Hardware:** nylon M2 at all four holes. The left holes are in field zones (`pcb/SAFETY.md`).
 
 ## Open items
-- **Cleat and lock-screw geometry.** Not modelled yet.
-- **Sealing:**
-  - Bezel/rear-shell seam gasket.
-  - Lens gasket compression.
-  - Gaskets for the cable reliefs and the USB pocket.
-- **SEN65 retention:** a cradle that holds the module against the port gasket. The model has the box only.
-- **Thermal check:** measure the module's over-temperature against the guide's < 5 K target with the LEDs at their 150 mA cap. Bench item.
-- **Diffuser:** material and part, either a printed light pipe or a separate diffusing insert.
+- **Back panel fastening:** screw bosses and the cleat and lock-screw geometry.
+- **Sealing:** rim gasket compression, gaskets for the cable reliefs and USB pocket, and the back panel seam.
+- **SEN65 cradle:** holds the module against the port gasket.
+- **Thermal check:** module over-temperature against the < 5 K target, with the LEDs at their 150 mA cap. Bench item.
+- **Diffuser:** material and part.
