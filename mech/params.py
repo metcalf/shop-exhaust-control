@@ -16,9 +16,9 @@ WS_ROT_Z = -90.0
 # the 5.1 mm low-profile socket into the Waveshare PCB, hence a short-post header.
 CARRIER_T = 1.6         # carrier PCB thickness
 MALE_HDR_BODY = 2.5     # 2.54 mm male header plastic body
-MALE_HDR_MATE = 3.0     # ASSUME: short-post 2x16 (8.5 mm total = 3 tail + 2.5 body + 3 post), candidate
-                        # HCTL PZ254-2-16-Z-8.5 (LCSC C2894977), post length unconfirmed. Fallback: standard
-                        # 11.5 mm header on 2.4 mm-longer spacers (+2.4 mm depth).
+MALE_HDR_MATE = 3.0     # ASSUME (Q-47): posts trimmed to 3.0-4.3 mm above the body. HCTL PZ254-2-16-Z-8.5
+                        # (C2894977) has 6 mm posts, 3 mm tail, 2.5 mm body (JLC attributes), so as bought
+                        # it needs trimming or 6 mm spacers (+2.4 mm depth).
 # Display-side part heights (max, datasheets) by reference prefix; anything unlisted uses PART_H_DEFAULT
 PART_H = {"U": 4.0,     # LTV-817S SMD-4: 4.0 max
           "D4": 2.0, "D5": 2.0, "D6": 2.0, "D7": 2.0, "D8": 2.0, "D9": 2.0,   # SK6812SIDE-A

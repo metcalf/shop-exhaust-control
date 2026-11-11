@@ -7,7 +7,7 @@ Claude batches questions here. Each has an ID, why it matters, and the default C
 
 | ID | Question | Why it matters | Default if unanswered | Blocks | Answer |
 |----|----------|----------------|-----------------------|--------|--------|
-| Q-47 | J8 male header: confirm a stocked short-post 2×16 (about 3 mm posts, 2.5 mm body). Candidate HCTL PZ254-2-16-Z-8.5, LCSC C2894977, if "8.5" is total length. | With the body seated on the 5.1 mm low-profile socket, a standard 6 mm post would hit the Waveshare PCB. | Short-post part, depth 48.3 mm. If none is confirmed: standard 11.5 mm header on 6 mm spacers, depth 50.7 mm. | Carrier BOM (G4), final depth | |
+| Q-47 | J8 male header posts: (a) standard 2×16, posts trimmed to about 3.5 mm after soldering; (b) a short-post part (e.g. Samtec TSW, post length per order code, not yet checked); or (c) standard header on 6 mm spacers? HCTL PZ254-2-16-Z-8.5 (C2894977) is ruled out: JLC lists 6 mm mating, 3 mm tail, 2.5 mm body (8.5 = body + post). | With the body seated on the 5.1 mm low-profile socket, a 6 mm post would hit the Waveshare PCB. Posts of 3.0–4.3 mm fit. | (a): C2894977, posts trimmed with a 3.5 mm shim; depth 48.3 mm. (c) is 50.7 mm. | Carrier BOM (G4), final depth | |
 | Q-37 | Nightly no-ops: 2026-11-01 and 2026-11-05 both found only Q-33/Q-35 open and changed nothing. Want me to add the skip to this repo's `scripts/nightly.sh` now (skip when STATE.md has `Blocked-on: andrew` and nothing has been committed since the last nightly), rather than waiting for the DC repo? | Each blocked run costs a session start and usage for nothing. | No change: runs continue nightly and no-op until you answer Q-33/Q-35. | Nothing (tooling only) | |
 
 ## Answered

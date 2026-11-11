@@ -536,7 +536,7 @@ Template:
     - Posts must be short, about 3 mm. A standard 6 mm post would reach through the 5.1 mm socket into the Waveshare PCB.
     - Engagement is 3.0 mm, and the tips stop 2.1 mm short of the PCB.
     - Spacer is 3.6 mm.
-    - Candidate part: HCTL PZ254-2-16-Z-8.5 (LCSC C2894977). Its post length is unconfirmed (Q-47).
+    - HCTL PZ254-2-16-Z-8.5 (C2894977) is a standard part: 6 mm post, 3 mm tail, 2.5 mm body (JLC attributes). Default is to fit it and trim the posts to about 3.5 mm (3.0–4.3 fits). Q-47 is open for a short-post part or 6 mm spacers.
   - **SEN65 connector:** it's on the face opposite the ports (mech guide Fig. 1), so it faces into the bay left of the module. A short cable runs to J5. The 0.4 mm clearance to the back panel works.
 - Alternatives:
   - Header body on the carrier back: 1.2 mm thinner, rejected (solder fillets).
