@@ -28,11 +28,10 @@ def test_header_engagement():
 
 
 def test_carrier_gap_to_waveshare():
-    """Andrew: as close as possible. The gap is WS_CLR to the lowest Waveshare part, and no closer than the
-    header allows (posts reach the socket)."""
+    """Header body seated on the socket face sets the gap; the carrier still clears the lowest part (camera)."""
     s = C.stackup()
-    assert abs(s["ws_to_carrier"] - P.WS_CLR) < 1e-6, s["ws_to_carrier"]
-    assert s["carrier_top_z"] < s["header_face_z"]
+    assert abs(s["header_face_z"] - s["carrier_top_z"] - P.MALE_HDR_BODY) < 1e-6
+    assert s["ws_to_carrier"] > 0.5, s["ws_to_carrier"]
 
 
 def part_height(ref):

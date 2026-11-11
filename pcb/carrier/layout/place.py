@@ -294,11 +294,11 @@ def build(net_path, out_path):
     (bx0, by1), (bx1, by0) = k(x0, y0), k(x1, y1)
     add_rule_area(board, rect(bx0, max(by0, 0.0), min(bx1, W), min(by1, H)), "SEN65 keep-flat (B)", ("B.Cu",),
                   no_fp=True)
-    # Waveshare camera: carrier top is 0.5 mm below it, so no F parts under it (mech test checks)
+    # Waveshare camera 1.7 mm above the carrier top: low parts only (mech test checks heights)
     for cx0, cy0, cx1, cy1 in M["tall_part_keepout_front"]:
         (ax, ay), (bx, byy) = k(cx0, cy1), k(cx1, cy0)
         add_rect(board, ax, ay, bx, byy, "User.Drawings", 0.1)
-        add_text(board, "Waveshare camera 0.5 mm above: no parts", (ax + bx) / 2, (ay + byy) / 2, "User.Drawings", 0.8)
+        add_text(board, "Waveshare camera 1.7 mm above: low parts only", (ax + bx) / 2, (ay + byy) / 2, "User.Drawings", 0.8)
 
     add_rect(board, 0, 0, W, H, "Edge.Cuts", 0.1)
     # Reference outlines for review (User.Drawings, not fabricated)

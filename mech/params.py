@@ -11,18 +11,18 @@ reads it from the STEP. Values below are design choices (CHOICE) or datasheet fi
 WS_ROT_Z = -90.0
 
 # --- board stack ---------------------------------------------------------------------------------
-# Andrew (2026-11-10): carrier as close behind the Waveshare as possible. The male header is fitted with its
-# plastic body on the carrier's BACK (pins pushed through from behind, soldered on the display side), so the
-# socket face no longer sets the spacing: the lowest Waveshare part does (the camera, z -12.3).
+# Andrew (2026-11-10): male header fitted normally (body on the display side, soldered from the back); the body
+# seats on the J8 socket face, so carrier top = socket face - body. A standard 6 mm post would reach through
+# the 5.1 mm low-profile socket into the Waveshare PCB, hence a short-post header.
 CARRIER_T = 1.6         # carrier PCB thickness
-MALE_HDR_BODY = 2.5     # 2.54 mm male header plastic body, on the carrier back
-MALE_HDR_MATE = 6.0     # standard post length on the body's mating side (protrudes MATE - CARRIER_T)
-MALE_HDR_STUB = 1.0     # tail trimmed to this behind the body
-WS_CLR = 0.5            # CHOICE: lowest Waveshare part (camera) to carrier top; no carrier parts under it
+MALE_HDR_BODY = 2.5     # 2.54 mm male header plastic body
+MALE_HDR_MATE = 3.0     # ASSUME: short-post 2x16 (8.5 mm total = 3 tail + 2.5 body + 3 post), candidate
+                        # HCTL PZ254-2-16-Z-8.5 (LCSC C2894977), post length unconfirmed. Fallback: standard
+                        # 11.5 mm header on 2.4 mm-longer spacers (+2.4 mm depth).
 # Display-side part heights (max, datasheets) by reference prefix; anything unlisted uses PART_H_DEFAULT
 PART_H = {"U": 4.0,     # LTV-817S SMD-4: 4.0 max
           "D4": 2.0, "D5": 2.0, "D6": 2.0, "D7": 2.0, "D8": 2.0, "D9": 2.0,   # SK6812SIDE-A
-          "Q": 1.2, "D": 1.35}
+          "Q": 1.2, "D": 1.35, "J1": 2.5}
 PART_H_DEFAULT = 1.4    # 0603/0805 R and C, worst case 0805 10 uF at 1.4
 
 # --- carrier outline (frame E) -------------------------------------------------------------------

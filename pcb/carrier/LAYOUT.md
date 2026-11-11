@@ -39,8 +39,8 @@
   - The indicator driver (Q3, R16–R18, C7) is by the first LED.
   - Test pads are on the back, centre-bottom.
 - **Back face behind the SEN65** (x ≥ 69): a rule area forbids footprints on B.Cu. The only things there are J1's THT stubs (trim flush) and the right-hand nylon screw heads.
-- **Camera:** the outline is drawn on User.Drawings. The carrier top is 0.5 mm below the camera (D-059), so no display-side parts go under it. The mech test checks this.
-- **J1:** body on the carrier back, standard 6 mm posts through to the display side (D-059). Hand-fitted, with the tails trimmed to 1 mm.
+- **Camera:** the outline is drawn on User.Drawings. The camera is 1.7 mm above the carrier top (D-059), so only low parts go under it. The mech test checks part heights.
+- **J1:** fitted normally, body on the display side. Short-post header, about 3 mm posts (Q-47).
 
 ## For Andrew's review (ASSUME)
 - **Holes in field zones:** the two left mounting holes sit in the fan (top) and DC (bottom) islands. They need nylon M2 screws and spacers, because the Waveshare SMT standoffs are probably on its GND.

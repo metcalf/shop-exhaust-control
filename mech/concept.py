@@ -64,13 +64,12 @@ def stackup():
     s["pcb_back_z"] = f["pcb_back_z"]
     s["header_face_z"] = f["header_face_z"]
     s["ws_lowest_z"] = f["lowest_back_parts"][0][1]
-    # Carrier top WS_CLR below the lowest Waveshare part; header body on the carrier back, so the posts
-    # protrude MATE - CARRIER_T above the carrier top. The M2 spacer fills the gap to the SMT standoffs.
-    s["carrier_top_z"] = s["ws_lowest_z"] - P.WS_CLR
+    # Male header body seated on the J8 socket face; the M2 spacer fills what's left to the SMT standoffs.
+    s["carrier_top_z"] = f["header_face_z"] - P.MALE_HDR_BODY
     s["carrier_back_z"] = s["carrier_top_z"] - P.CARRIER_T
     s["spacer"] = f["standoff_bottom_z"] - s["carrier_top_z"]
-    s["male_body_z"] = (s["carrier_back_z"] - P.MALE_HDR_BODY - P.MALE_HDR_STUB, s["carrier_back_z"])
-    s["pin_tip_z"] = s["carrier_back_z"] + P.MALE_HDR_MATE
+    s["male_body_z"] = (s["carrier_top_z"], f["header_face_z"])
+    s["pin_tip_z"] = f["header_face_z"] + P.MALE_HDR_MATE
     s["pin_insertion"] = s["pin_tip_z"] - f["header_face_z"]
     s["pin_tip_to_pcb"] = f["pcb_back_z"] - s["pin_tip_z"]
     s["ws_to_carrier"] = s["ws_lowest_z"] - s["carrier_top_z"]
@@ -184,7 +183,7 @@ def build():
     cx, cy = P.CARRIER_X, P.CARRIER_Y
     carrier = box(cx[0], cy[0], s["carrier_back_z"], cx[1], cy[1], s["carrier_top_z"])
     h = f["header"]
-    male = box(h[0], h[1], s["male_body_z"][0], h[3], h[4], s["male_body_z"][1])   # body + stub, carrier back
+    male = box(h[0], h[1], s["male_body_z"][0], h[3], h[4], s["male_body_z"][1])   # body, display side
     sen = box(*s["sen"])
     sx0, sy0, sz0, sx1, sy1, sz1 = s["sen"]
     foam = box(sx0, sy0 + 3.0, sz1, sx1, sy1 - 3.0, sz1 + P.FOAM_T)

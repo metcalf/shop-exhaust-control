@@ -11,14 +11,14 @@
 | Waveshare PCB back | −6.4 | STEP |
 | J8 socket face (low-profile SMD female, 5.1 mm) | −11.5 | STEP |
 | Lowest Waveshare part (camera) | −12.3 | STEP |
-| Carrier top / back | −12.8 / −14.4 | 0.5 mm below the camera, 1.6 mm PCB |
-| J8 male posts: tip, engagement | −8.4, 3.1 mm | standard 6 mm posts, body on the carrier back; tips 2.0 mm short of the PCB |
-| Male header body and trimmed stub | −14.4 to −17.9 | behind the carrier, clear of the SEN65 |
-| Tabs and screw heads | −14.4 to −17.7 | 2.0 mm tab + 1.3 mm nylon pan head |
-| SEN65 front / back | −18.4 / −44.0 | 4.0 mm gap (≤ 1/4"), holds the 1/8" foam |
-| Back panel inner / outer | −44.4 / −46.0 | 0.4 mm clearance, 1.6 mm panel |
+| Male header body | −14.0 to −11.5 | fitted normally, seated on the socket face |
+| Carrier top / back | −14.0 / −15.6 | 1.7 mm below the camera, 1.6 mm PCB, 3.6 mm spacer |
+| J8 male posts: tip, engagement | −8.5, 3.0 mm | short-post header (ASSUME, Q-47); tips 2.1 mm short of the PCB |
+| Tabs and screw heads | −15.6 to −18.9 | 2.0 mm tab + 1.3 mm nylon pan head |
+| SEN65 front / back | −19.6 / −45.2 | 4.0 mm gap (≤ 1/4"), holds the 1/8" foam |
+| Back panel inner / outer | −45.6 / −47.2 | 0.4 mm clearance, 1.6 mm panel |
 
-**Outside:** 92.44 × 61.0 × 47.1 mm, about 266 cm³, which is the glass outline. Andrew's estimate was 47.7 mm. The 0.6 mm saving is the Waveshare's 12.3 mm below the glass back, plus the 0.5 mm gap to the camera instead of 1.5 mm. The cleat adds a few mm.
+**Outside:** 92.44 × 61.0 × 48.3 mm, about 272 cm³, which is the glass outline. Andrew's estimate was 47.7 mm; the 0.6 mm difference is the header body (2.5 mm) seated on the socket face. With a standard 11.5 mm header on longer spacers instead, it's 50.7 mm. The cleat adds a few mm.
 
 ## Layout (seen from the front)
 - **No bezel.** The cover glass is the front face, and its edges are exposed at the sides.
@@ -42,8 +42,8 @@
 
 ## Departures and caveats
 - **SEN65 depth is 25.6 mm, not 21.3.** The SEN6x has its inlets and outlet on the same face. Facing that face into the room through the right wall puts the 25.6 mm dimension front to back.
-- **Camera clearance.** The camera sets the carrier position, so no carrier parts go under it (mech test). A carrier cutout there would allow about 0.8 mm more, limited by J8 engagement; not worth the routing area.
-- **Header assembly.** J8's male header goes in from the back with its body on the carrier back, soldered on the display side, tails trimmed to 1 mm. This is a hand-fit step.
+- **Camera clearance.** The camera is 1.7 mm above the carrier top, so only low parts can go under it. The mech test checks heights.
+- **Header.** J8's male header is fitted normally and needs short posts (about 3 mm); see Q-47. Body-on-back would be 1.2 mm thinner, but Andrew rejected it because front-side solder fillets would block full insertion.
 - **Foam caveat.** Sensirion's mech guide says not to thermally insulate the module (§3). A strip on one face is fine. It's notched round the two right-hand tabs and screw heads.
 
 ## Defaults still in force (D-058)

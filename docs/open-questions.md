@@ -7,6 +7,7 @@ Claude batches questions here. Each has an ID, why it matters, and the default C
 
 | ID | Question | Why it matters | Default if unanswered | Blocks | Answer |
 |----|----------|----------------|-----------------------|--------|--------|
+| Q-47 | J8 male header: confirm a stocked short-post 2×16 (about 3 mm posts, 2.5 mm body). Candidate HCTL PZ254-2-16-Z-8.5, LCSC C2894977, if "8.5" is total length. | With the body seated on the 5.1 mm low-profile socket, a standard 6 mm post would hit the Waveshare PCB. | Short-post part, depth 48.3 mm. If none is confirmed: standard 11.5 mm header on 6 mm spacers, depth 50.7 mm. | Carrier BOM (G4), final depth | |
 | Q-37 | Nightly no-ops: 2026-11-01 and 2026-11-05 both found only Q-33/Q-35 open and changed nothing. Want me to add the skip to this repo's `scripts/nightly.sh` now (skip when STATE.md has `Blocked-on: andrew` and nothing has been committed since the last nightly), rather than waiting for the DC repo? | Each blocked run costs a session start and usage for nothing. | No change: runs continue nightly and no-op until you answer Q-33/Q-35. | Nothing (tooling only) | |
 
 ## Answered

@@ -525,20 +525,24 @@ Template:
 
 ## D-059: No bezel, 1.6 mm walls with ribs, carrier as close as the Waveshare allows
 - Date: 2026-11-10
-- Status: Accepted (Andrew, 2026-11-10: no bezel, glass is the face; 1.6 mm SLS nylon walls with ribs; thinner stack; carrier "as close together as possible"). Supersedes the bezel, spacer and connector items of D-058.
+- Status: Accepted (Andrew, 2026-11-10: no bezel, glass is the face; 1.6 mm SLS nylon walls with ribs; thinner stack; carrier close behind the Waveshare, header fitted normally). Supersedes the bezel, spacer and connector items of D-058.
 - Context: Andrew's review of the D-058 concept. He has used 1.6 mm SLS nylon without problems; it flexes, so ribs come before thickness.
 - Decision:
   - **Outline:** the cover glass is the front face. The enclosure outline is the glass outline, 92.44 × 61.0 mm. A four-wall shell carries the glass's black border on a 0.8 mm foam rim gasket. Back panel is 1.6 mm and screwed on.
   - **Walls and ribs:** walls 1.6 mm. Back panel has 1.2 × 4 mm ribs inside, left of the SEN65 bay.
   - **Retention:** four tabs behind the carrier at the Waveshare holes. One nylon M2 screw per hole, driven from the back, passes through the tab, the carrier and the spacer into the SMT standoff. That pulls the glass onto the rim gasket.
   - **Service:** take off the back panel, then the SEN65, then the four screws; the display and carrier go out the front.
-  - **Header:** the J8 male header is fitted with its body on the carrier's back, with standard 6 mm posts. The carrier top sits 0.5 mm below the lowest Waveshare part (the camera, z −12.3).
-    - Engagement is 3.1 mm. The tips stop 2.0 mm short of the Waveshare PCB.
-    - Spacer is 2.4 mm.
-    - No carrier parts go under the camera.
+  - **Header:** the J8 male header is fitted normally: body on the display side, soldered from the back. Andrew rejected body-on-back, because soldering from the front leaves fillets that block full insertion, and the saving isn't worth it. The body seats on the socket face, so the carrier top is at −14.0.
+    - Posts must be short, about 3 mm. A standard 6 mm post would reach through the 5.1 mm socket into the Waveshare PCB.
+    - Engagement is 3.0 mm, and the tips stop 2.1 mm short of the PCB.
+    - Spacer is 3.6 mm.
+    - Candidate part: HCTL PZ254-2-16-Z-8.5 (LCSC C2894977). Its post length is unconfirmed (Q-47).
   - **SEN65 connector:** it's on the face opposite the ports (mech guide Fig. 1), so it faces into the bay left of the module. A short cable runs to J5. The 0.4 mm clearance to the back panel works.
-- Alternatives: a carrier cutout under the camera would allow about 0.8 mm closer (limited by J8 engagement) but costs board area mid-routing; a short-post header with its body on top costs 1.2 mm and isn't a stock part; 2.0 mm walls.
+- Alternatives:
+  - Header body on the carrier back: 1.2 mm thinner, rejected (solder fillets).
+  - Standard 11.5 mm header on longer spacers: the fallback if no short-post part is confirmed, at +2.4 mm depth.
+  - 2.0 mm walls.
+  - A smaller carrier: no fab-cost gain under JLC's 100 × 100 mm tier, and the LEDs and terminals would move off the walls.
 - Consequences:
-  - **Size:** 92.44 × 61.0 × 47.1 mm, about 266 cm³ (was 97.4 × 66.0 × 53.7, about 345). Carrier 88.24 × 56.8 mm.
+  - **Size:** 92.44 × 61.0 × 48.3 mm, about 272 cm³ (was 97.4 × 66.0 × 53.7, about 345). Carrier 88.24 × 56.8 mm.
   - **Glass edge:** the glass edge is exposed at the sides.
-  - **Header assembly:** the J8 header is hand-fitted from the back and soldered on the display side; its tail stubs are trimmed to 1 mm.

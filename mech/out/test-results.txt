@@ -23,4 +23,4 @@ tests/test_concept.py::test_tabs_take_screws_from_the_back PASSED        [ 88%]
 tests/test_concept.py::test_terminals_line_up_with_cable_slots PASSED    [ 94%]
 tests/test_concept.py::test_leds_and_sen_keep_flat_from_board PASSED     [100%]
 
-======================== 17 passed in 124.95s (0:02:04) ========================
+======================== 17 passed in 100.82s (0:01:40) ========================
