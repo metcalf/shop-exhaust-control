@@ -509,3 +509,16 @@ Template:
   - **NFR-03:** relaxed: the module is reached by opening the enclosure (Andrew: a hatch is unnecessary complexity). AC-14 and AC-15 amended to match.
   - **FR-20 / NFR-09:** the ≈ 2 W of electronics heat in the same box raises the module's T/RH readings. PM is unaffected; the VOC index is only mildly affected. The commissioning offset (FR-20) covers T/RH; keep the module at the far right, away from the Waveshare PMIC and LEDs, and check AC-17.
 - Amendment (Andrew, 2026-11-10): minimize enclosure size. The SEN65 lies flat behind the carrier with ≤ 1/4" (6.35 mm) between the carrier's back face and the module, with a 1/8" closed-cell foam strip (PE or EPDM, acrylic adhesive; no open-cell PU or solvent adhesives near the VOC sensor) on the module face toward the PCB, clear of the inlet and outlet. The carrier's back face stays flat: all SMT is on the display side (JLC Economic is one-sided anyway); THT stubs are trimmed flush, and the screw terminals are at the left edge, away from the module. Rough depth: ≈ 45–50 mm, to confirm from the STEP and the SEN6x drawing.
+
+## D-058: Concept enclosure and carrier placement defaults
+- Date: 2026-11-10
+- Status: Accepted as defaults (Andrew, 2026-11-10: "run it tonight with those defaults"); each can still change
+- Context: first concept enclosure (`mech/concept.py`, `docs/mech-concept.md`) and first carrier placement (`pcb/carrier/LAYOUT.md`) for D-056/D-057.
+- Decision:
+  - Bezel and rear shell split behind the LCD (z −8). Service by lifting the unit off the cleat and removing the rear shell.
+  - Clamp-and-foam strain reliefs on the left wall, centred on the placed terminals. Straight USB-C plug into a stepped pocket.
+  - 6 LEDs at 9 mm pitch on the right edge only.
+  - Carrier on nylon M2 × 6 spacers and nylon M2 screws into the Waveshare SMT standoffs, giving 3.6 mm of J8 pin engagement. Carrier 91.4 × 57.0 mm.
+  - SEN65 stands on end, ports through the right wall, inlets at the bottom. 4.0 mm gap to the carrier. Connector on the rear face, cable looped to J5.
+- Alternatives considered: SEN65 beside the Waveshare board (≈ 121 × 66 × 33 mm, 25 % less volume, but wider and next to the LEDs); a 6.35 mm gap (deeper for no gain); terminals on the front side (they'd hit the Waveshare parts).
+- Consequences: enclosure ≈ 97.4 × 66.0 × 53.7 mm. The SEN65 depth is 25.6 mm rather than 21.3, because its inlets and outlet share one face. Nylon hardware is required at the field-zone holes (`pcb/SAFETY.md`).

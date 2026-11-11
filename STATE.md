@@ -5,11 +5,11 @@
 **Waiting on:** nothing blocking.
 Blocked-on: none
 
-## Next actions (D-056: Waveshare 3.5 + carrier)
-1. **Andrew:** review the carrier schematic (`pcb/carrier/carrier.kicad_sch`, notes in `pcb/carrier/DESIGN.md`). ERC 0, netlist assertions pass and are mutation-checked.
-2. **Andrew, when the boards arrive:** `docs/bench-plan-routeB.md` (stock demo and I²C scan, AXP2101 power-on with no cell, breadboarded LTV-817/AO3400A fan stage). Write the results into that file. Step 2 decides whether the PWRON one-shot gets fitted.
-3. Carrier layout: outline from the Waveshare STEP (J8 orientation; the zip is in Waveshare's wiki, not committed), barrier rules and keepouts copied from the main board, LED edge at the enclosure wall.
-4. Mech stack-up: landscape panel, all cables out the left side, SEN65 behind the panel on the right with its flow path sealed to the wall, no hatch (D-057), stepped wall at the USB-C (D-056). Confirm the USB-C side from the STEP (the drawing suggests the board mounts rotated 180°), then firmware (ST7796 SPI, FT6336, AXP2101 init: input limit ≥ 1.5 A, REG22[1] off; RMT LED; FanPort with presence).
+## Next actions (D-056/D-058: Waveshare 3.5 + carrier)
+1. **Andrew:** review the concept (`docs/mech-concept.md`, renders in `mech/out/`) and the carrier placement (`pcb/carrier/LAYOUT.md`, renders in `pcb/carrier/reports/placed-*.png`). Decide on SEN65 behind vs. beside the board (depth 53.7 mm vs. ≈ 33 mm). Also review the carrier schematic if not done.
+2. **Andrew, when the boards arrive:** `docs/bench-plan-routeB.md`.
+3. Route the carrier: Quilter, Freerouting (Q-38 jar permission applies), or by hand. Then silk cleanup, DRC, Gerbers/BOM/CPL, and the barrier screenshot in `pcb/SAFETY.md`.
+4. Mech detail: cleat and lock screw, seam/lens/relief gaskets, SEN65 cradle, diffuser, rear-shell fasteners. Then firmware (ST7796 SPI, FT6336, AXP2101 init, RMT LED, FanPort with presence).
 
 ## Previous route-B actions (2.8B, superseded by D-056)
 - Carrier schematic for the 2.8B is in `pcb/carrier/` (ERC 0, assertions pass); it becomes the starting point for step 3.
@@ -110,3 +110,4 @@ Blocked-on: none
 - 2026-11-10: Mech direction from Andrew: landscape panel, wiring out the left, SEN65 behind the panel on the right facing the room, possibly no separate bay. Logged as D-057 (proposed); Q-46 asks to amend NFR-03/NFR-04.
 - 2026-11-10: D-057 accepted (Andrew, Q-46): NFR-04 amended (SEN65 flow path sealed to the wall, inside the one enclosure); NFR-03 relaxed, no hatch (open the enclosure for everything); AC-14/AC-15 amended; D-019 superseded.
 - 2026-11-10: Compact stack-up (Andrew): LEDs on the carrier's display side, right edge; SEN65 flat behind the carrier ≤ 1/4" away with 1/8" closed-cell foam; LED cap 150 mA; SEN6x offset slots by LED state (D-055/D-057 amendments).
+- 2026-11-10 (evening): Concept mech and first carrier placement (D-058). `mech/`: build123d model driven by the Waveshare STEP (fetched, gitignored), 13 geometry tests passing. Enclosure 97.4 × 66.0 × 53.7 mm; the SEN65 stands on end because its inlets and outlet share one face. USB-C plug clearance confirmed against the display solids. J8 pin 1 at the USB end, from Waveshare's pinout image. Carrier placed (91.4 × 57 mm): J1 asserted onto J8; LED, J5 and terminal orientations derived from footprint geometry; barrier keepouts; DRC 0 errors before routing. build123d 0.13 and pytest added to .venv.
