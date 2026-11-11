@@ -200,11 +200,18 @@ def build():
                for x, y in f["holes"]]
     heads = [Pos(x, y, s["carrier_back_z"] - P.TAB_T - P.SCREW_HEAD / 2) * Cylinder(1.9, P.SCREW_HEAD)
              for x, y in f["holes"]]
-    terminals = []  # KF128L-3.5-2P bodies on the carrier back, wire entry facing left (approximate block)
-    for name, yc, hgt, _ in cable_slots():
-        n = 2 if name == "fan" else 1
-        terminals.append(box(cx[0], yc - 3.5 * n, s["carrier_back_z"] - 10.0, cx[0] + 8.0, yc + 3.5 * n,
-                             s["carrier_back_z"]))
+    terminals = []  # KF128L-3.5-2P bodies on the carrier back, wire entry facing left (footprint extents)
+    pos = carrier_positions()
+    if all(r in pos for r in ("J2", "J7", "J3", "J4")):
+        for r in ("J2", "J7", "J3", "J4"):
+            x, y, _ = pos[r]
+            terminals.append(box(x - 3.95, y - 3.8, s["carrier_back_z"] - 10.0, x + 3.75, y + 3.8,
+                                 s["carrier_back_z"]))
+    else:
+        for name, yc, hgt, _ in cable_slots():
+            n = 2 if name == "fan" else 1
+            terminals.append(box(cx[0], yc - 3.5 * n, s["carrier_back_z"] - 10.0, cx[0] + 8.0, yc + 3.5 * n,
+                                 s["carrier_back_z"]))
     plug_bay = box(sx0 - P.SEN_PLUG_BAY, sy0, sz0, sx0, sy1, sz1)   # GH plug + cable bend, kept clear
     parts = {"shell": shell, "back": back, "carrier": carrier, "male_header": male, "sen65": sen, "foam": foam,
              "leds": Compound(leds), "spacers": Compound(spacers), "screw_heads": Compound(heads),

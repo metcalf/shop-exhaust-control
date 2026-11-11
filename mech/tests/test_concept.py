@@ -1,7 +1,7 @@
 """Geometry checks for the concept stack-up (D-011, D-056, D-057). Run: .venv/bin/python -m pytest mech/tests
 
-Waveshare solids are only probed with small slabs or compared by bounding box: full booleans against
-the vendor STEP run out of memory.
+Waveshare solids are only probed with small slabs or compared by per-solid bounding box: full booleans
+against the vendor STEP run out of memory.
 """
 import pytest
 from build123d import Box, Pos
@@ -40,27 +40,41 @@ def part_height(ref):
 
 
 def test_carrier_parts_clear_waveshare_parts():
-    """Each placed display-side carrier part, at its datasheet height (+0.2 mm), clears the Waveshare's actual
-    solids (mesh vertices, not assembly bounding boxes; J8 excepted: it mates). Positions from placed-parts.json."""
+    """Each placed display-side carrier part, at its datasheet height, clears every Waveshare solid behind
+    the PCB by >= 0.2 mm (per-solid boxes, J8 excepted: it mates). Footprint extents (pads and courtyard)
+    are taken at full part height, which is conservative for gull-wing leads. Positions: placed-parts.json."""
     import json, os
     path = os.path.join(os.path.dirname(C.PLACED), "reports", "placed-parts.json")
     if not os.path.exists(path):
         pytest.skip("carrier not placed yet (pcb/carrier/layout/run.sh)")
     s = C.stackup()
     placed = json.load(open(path))
-    zones = [(ref, p["bbox_e"], s["carrier_top_z"] + part_height(ref) + 0.2) for ref, p in placed.items()
-             if p["side"] == "F" and ref != "J1" and not ref.startswith("H")]
     clash = {}
-    for label, sh in WS.parts():
-        if label == "HEADER-SMD-F-2_54-2X16PIN":
+    for ref, p in placed.items():
+        if p["side"] != "F" or ref == "J1" or ref.startswith("H"):
             continue
-        verts, _ = sh.tessellate(0.1)
-        for v in verts:
-            for ref, (x0, y0, x1, y1), top in zones:
-                if x0 < v.X < x1 and y0 < v.Y < y1 and v.Z < top:
-                    k = (ref, label)
-                    clash[k] = min(clash.get(k, 0.0), round(v.Z - (top - 0.2), 2))
-    assert not clash, f"carrier part, Waveshare part: overlap (mm, negative = into the part): {clash}"
+        x0, y0, x1, y1 = p["bbox_e"]
+        top = s["carrier_top_z"] + part_height(ref)
+        for label, b in WS.back_obstacles():
+            if label == "HEADER-SMD-F-2_54-2X16PIN":
+                continue
+            if b[0] < x1 and x0 < b[3] and b[1] < y1 and y0 < b[4]:
+                gap = round(b[2] - top, 3)
+                if gap < 0.2 - 1e-6:
+                    clash[ref] = min(clash.get(ref, 9.0), gap)
+    assert not clash, f"carrier part: gap to the Waveshare part above (mm, need >= 0.2): {clash}"
+
+
+def test_carrier_parts_clear_j8_socket():
+    """J8 itself is the mating part, so nothing else on the carrier may sit under its body."""
+    import json, os
+    path = os.path.join(os.path.dirname(C.PLACED), "reports", "placed-parts.json")
+    if not os.path.exists(path):
+        pytest.skip("carrier not placed yet")
+    h = WS.features()["header"]
+    hits = [r for r, p in json.load(open(path)).items() if p["side"] == "F" and r != "J1"
+            and p["bbox_e"][0] < h[3] and h[0] < p["bbox_e"][2] and p["bbox_e"][1] < h[4] and h[1] < p["bbox_e"][3]]
+    assert not hits, hits
 
 
 def test_camera_keepout_is_exported():
@@ -165,7 +179,7 @@ def test_parts_dont_collide(built):
              ("sen65", "back"), ("foam", "carrier"), ("foam", "shell"), ("terminals", "sen65"),
              ("terminals", "shell"), ("terminals", "back"), ("spacers", "sen65"), ("screw_heads", "sen65"),
              ("male_header", "sen65"), ("male_header", "foam"),
-             ("screw_heads", "foam"), ("male_header", "shell"), ("leds", "shell")]
+             ("screw_heads", "foam"), ("male_header", "shell"), ("leds", "shell"), ("terminals", "screw_heads")]
     for a, b in pairs:
         r = parts[a] & parts[b]
         v = 0.0 if r is None else r.volume
@@ -198,9 +212,25 @@ def test_terminals_line_up_with_cable_slots():
     assert abs(slots["fan"] - (pos["J2"][1] + pos["J7"][1]) / 2) < 0.01
     assert abs(slots["occ"] - pos["J3"][1]) < 0.01 and abs(slots["dc"] - pos["J4"][1]) < 0.01
     for r in ("J2", "J7", "J3", "J4"):
-        assert pos[r][2] == "B" and pos[r][0] < P.CARRIER_X[0] + 8.0, r   # back side, at the left edge
+        assert pos[r][2] == "B", r
     ys = sorted(slots.values())
     assert all(b - a >= 9.0 for a, b in zip(ys, ys[1:])), ys           # room for a clamp per cable
+
+
+def test_terminals_inboard_with_wire_room():
+    """Andrew: terminals inboard facing the left wall, the back's left strip clear to dress the wires.
+    Only the screw heads at the left holes sit in that strip."""
+    import json, os
+    path = os.path.join(os.path.dirname(C.PLACED), "reports", "placed-parts.json")
+    if not os.path.exists(path):
+        pytest.skip("carrier not placed yet")
+    placed = json.load(open(path))
+    s = C.stackup()
+    entry = min(placed[r]["bbox_e"][0] for r in ("J2", "J7", "J3", "J4"))
+    room = entry - s["inner_x"][0]
+    assert room >= 7.0, f"only {room:.1f} mm from the left wall to the terminal entries"
+    left = [r for r, p in placed.items() if p["side"] == "B" and p["bbox_e"][0] < entry - 0.5]
+    assert not left, f"parts on the back left of the terminals: {left}"
 
 
 def test_leds_and_sen_keep_flat_from_board():

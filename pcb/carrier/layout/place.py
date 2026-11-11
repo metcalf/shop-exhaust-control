@@ -52,7 +52,23 @@ def j8_pin_xy(n):
 # --- barrier geometry (pcb/SAFETY.md, D-050) -------------------------------------------------------
 OPTO_X = 21.0                 # opto centre; field pads at x - 5, node pads at x + 5 (LTV-817S, LS10.3)
 BARRIER_X0, BARRIER_X1 = 18.5, 23.5
-FIELD_GAPS = [(27.75, 29.25), (40.75, 42.25)]   # fan|OCC and OCC|DC (>= 1.5 mm functional)
+# Optos in the one column the Waveshare back leaves clear for a 4.0 mm part (Q-48 option b): frame E
+# y -8.4 (1.0 mm part below) to +19.69 (J8 socket). 5.6 mm pitch keeps courtyards apart and the field
+# pads of adjacent groups 1.56 mm apart (>= 1.5 functional). Checked by mech/tests (part heights).
+OPTO_Y0, OPTO_PITCH = 11.55, 5.6
+OPTO_Y = [OPTO_Y0 + i * OPTO_PITCH for i in range(5)]
+# Terminals inboard, wire entry facing the left wall (Andrew: room to dress the wires). Pin column x is
+# as far right as the OCC|DC gap allows: J3 pads | 1.5 mm gap | U5 field pads.
+TERM_X = 11.0
+# Field-field gaps (>= 1.5 mm functional). fan|OCC runs straight; OCC|DC leaves the opto gap, drops down
+# between J3 and U5, and runs out to the left edge between the OCC and DC parts.
+_FO = (OPTO_Y[2] + 2.05, OPTO_Y[3] - 2.05)
+_OD = (OPTO_Y[3] + 2.05, OPTO_Y[4] - 2.05)
+FIELD_GAPS = [
+    [(0.0, _FO[0]), (BARRIER_X0, _FO[0]), (BARRIER_X0, _FO[1]), (0.0, _FO[1])],
+    [(BARRIER_X0, _OD[0]), (12.4, _OD[0]), (12.4, 40.0), (0.0, 40.0), (0.0, 41.5), (13.9, 41.5),
+     (13.9, _OD[1]), (BARRIER_X0, _OD[1])],
+]
 
 HOLES = [k(x, y) for x, y in M["holes"]]
 # Anchors so groups move with what they serve when the outline changes (D-058 rev 2)
@@ -65,38 +81,39 @@ LED_Y = sorted(k(0, y)[1] for y in M["led_y"])
 POS = {
     # Waveshare J8 (male header on the display side)
     "J1": (J1_POS[0], J1_POS[1], 90, "F"),
-    # --- field: terminals on the back, wire entry toward the left wall (ASSUME: KF128L entry side) ---
-    "J2": (4.5, 10.75, "entry-left", "B"),    # fan GND (BLK) / +10V (RED)
-    "J7": (4.5, 18.25, "entry-left", "B"),    # fan SPD (YEL) / TACH (WHT)
-    "J3": (4.5, 33.5, "entry-left", "B"),     # OCC 24 VAC
-    "J4": (4.5, 46.5, "entry-left", "B"),     # DC backup
+    # --- field: terminals on the back, inboard, wire entry toward the left wall (ASSUME: KF128L entry side) ---
+    "J2": (TERM_X, 10.75, "entry-left", "B"),    # fan GND (BLK) / +10V (RED)
+    "J7": (TERM_X, 18.25, "entry-left", "B"),    # fan SPD (YEL) / TACH (WHT)
+    "J3": (TERM_X, 29.6, "entry-left", "B"),     # OCC 24 VAC: pads clear the fan|OCC gap
+    "J4": (TERM_X, 46.0, "entry-left", "B"),     # DC backup: below the OCC|DC gap, clear of the H1 screw head
+    # field parts on the front, left of the terminal pins (USB pocket edge x < 3.6 kept clear)
     # fan island
-    "R5": (11.5, 9.0, 90, "F"),      # Q_FAN_G pull-up 2.2k
-    "Q1": (11.5, 13.5, 0, "F"),
-    "C2": (11.5, 18.0, 90, "F"),
-    "R6": (11.5, 21.5, 90, "F"),     # tach LED 10k
-    "R8": (11.5, 25.0, 90, "F"),     # presence LED 10k
+    "R5": (6.5, 8.6, 90, "F"),       # Q_FAN_G pull-up 2.2k
+    "Q1": (6.0, 12.6, 0, "F"),
+    "C2": (6.5, 16.6, 90, "F"),
+    "R8": (4.0, 16.6, 90, "F"),      # presence LED 10k
+    "R6": (6.5, 20.4, 90, "F"),      # tach LED 10k
     # OCC island
-    "D2": (10.5, 33.5, 90, "F"),
-    "R10": (9.5, 39.25, 0, "F"),
+    "R10": (7.0, 29.6, 90, "F"),
+    "D2": (7.9, 36.9, 0, "F"),
     # DC island
-    "D3": (10.5, 46.5, 90, "F"),
-    "R12": (14.5, 52.25, 0, "F"),
+    "D3": (5.0, 45.0, 0, "F"),
+    "R12": (15.5, 45.0, 0, "F"),
     # --- barrier optos ---
-    "U1": (OPTO_X, 11.0, 90, "F"),   # LED on the node side (PWM)
-    "U2": (OPTO_X, 18.0, 270, "F"),
-    "U3": (OPTO_X, 25.0, 270, "F"),
-    "U4": (OPTO_X, 34.0, 270, "F"),
-    "U5": (OPTO_X, 47.0, 270, "F"),
+    "U1": (OPTO_X, OPTO_Y[0], 90, "F"),   # LED on the node side (PWM)
+    "U2": (OPTO_X, OPTO_Y[1], 270, "F"),
+    "U3": (OPTO_X, OPTO_Y[2], 270, "F"),
+    "U4": (OPTO_X, OPTO_Y[3], 270, "F"),
+    "U5": (OPTO_X, OPTO_Y[4], 270, "F"),
     # --- node: opto partners ---
-    "R3": (30.5, 12.25, 0, "F"),     # 390 into U1's LED
-    "R4": (30.5, 14.5, 0, "F"),      # FAN_PWM pull-down
-    "R7": (30.5, 18.0, 0, "F"),      # FAN_TACH 22k
-    "R9": (30.5, 25.0, 0, "F"),      # FAN_PRESENT 22k
-    "R11": (30.5, 32.75, 0, "F"),
-    "C3": (30.5, 35.25, 0, "F"),
-    "R13": (30.5, 45.75, 0, "F"),
-    "C4": (30.5, 48.25, 0, "F"),
+    "R3": (30.5, OPTO_Y[0] - 0.6, 0, "F"),   # 390 into U1's LED
+    "R4": (30.5, OPTO_Y[0] + 2.0, 0, "F"),   # FAN_PWM pull-down
+    "R7": (30.5, OPTO_Y[1], 0, "F"),         # FAN_TACH 22k
+    "R9": (30.5, OPTO_Y[2], 0, "F"),         # FAN_PRESENT 22k
+    "R11": (30.5, OPTO_Y[3] - 0.8, 0, "F"),
+    "C3": (30.5, OPTO_Y[3] + 1.8, 0, "F"),
+    "R13": (30.5, OPTO_Y[4] - 0.8, 0, "F"),
+    "C4": (30.5, OPTO_Y[4] + 1.8, 0, "F"),
     # --- PWRON one-shot (DNP) near J8 pin 23 ---
     "Q2": (J1X + 27.86, 11.5, 0, "F"),
     "C1": (J1X + 23.86, 11.5, 90, "F"),
@@ -287,8 +304,8 @@ def build(net_path, out_path):
 
     # Barrier keepouts: no tracks, vias or pour across the band; field-field gaps
     add_rule_area(board, rect(BARRIER_X0, 0.0, BARRIER_X1, H), "barrier: field-node")
-    for y0, y1 in FIELD_GAPS:
-        add_rule_area(board, rect(0.0, y0, BARRIER_X0, y1), f"gap: field-field {y0}")
+    for i, pts in enumerate(FIELD_GAPS):
+        add_rule_area(board, pts, f"gap: field-field {('fan|OCC', 'OCC|DC')[i]}")
     # Back face behind the SEN65 stays flat: no parts on B (Andrew, D-057)
     x0, y0, x1, y1 = M["keep_flat_back"]
     (bx0, by1), (bx1, by0) = k(x0, y0), k(x1, y1)

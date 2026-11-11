@@ -1,4 +1,4 @@
-# Carrier layout (D-010, D-056, D-058, D-059)
+# Carrier layout (D-010, D-056, D-058, D-059, D-060)
 
 **Pipeline:** `pcb/carrier/layout/run.sh`
 1. Schematic checks.
@@ -7,8 +7,8 @@
 4. DRC with the barrier rules (`carrier.kicad_dru`, copied from the main board).
 5. Renders in `pcb/carrier/reports/`.
 
-**Status (2026-11-10):** placed, not routed.
-- **DRC:** 0 errors apart from the 125 unconnected pads (unrouted). 66 warnings: silk overlaps and silk over copper. 0 footprint errors.
+**Status (2026-11-11):** placed, not routed.
+- **DRC:** 0 errors apart from the 125 unconnected pads (unrouted). 70 warnings: silk overlaps and silk over copper. 0 footprint errors.
 - **Board:** 88.24 × 56.8 mm, 2-layer (D-059). Sized by the enclosure, which is now the glass outline: the terminals reach the left wall and the LEDs the right wall.
 - **Anchors:** groups are tied to what they serve, so an outline change moves them with it. The right-edge groups follow W, the PWRON one-shot follows J1, and J5 and the SEN65 decoupling follow the keep-flat edge.
 - **Mech export:** part extents go to `reports/placed-parts.json`. The mech tests use it to check each display-side part, at its datasheet height, against the Waveshare parts above it.
@@ -24,14 +24,16 @@
 ## Placement
 - **Barrier:**
   - The five LTV-817S sit on x = 21.0, with field pads at x ≈ 16 and node pads at x ≈ 26. Pad to pad is 7.0 mm.
+  - They're packed at a 5.6 mm pitch from y 11.55, in the one column the Waveshare back leaves clear for a 4.0 mm part (D-060). Margins to the Waveshare are 0.2 to 0.76 mm, checked by mech tests.
   - A 5 mm keepout band (x 18.5–23.5) blocks tracks, vias and pour.
-  - Field-to-field gaps (fan|OCC, OCC|DC) are 1.5 mm keepouts.
+  - Field-to-field gaps (fan|OCC, OCC|DC) are 1.5 mm keepouts. fan|OCC is straight. OCC|DC is Z-shaped: it runs from the opto gap down between J3 and U5, then out to the left edge between the OCC and DC parts.
   - U1 is turned the other way from the rest: its LED is on the node side.
 - **Field islands (left):**
   - Fan: J2 and J7, R5, Q1, C2, R6, R8.
   - OCC: J3, D2, R10.
   - DC: J4, D3, R12.
-  - Terminals are on the back (THT). Their bodies end 8.2 mm from the left edge.
+  - Terminals are on the back (THT) and inboard: pins at x 11, wire entries facing the left wall, 7.6 mm in from the inner wall (Andrew, D-060). Nothing else is on the back left of them except the two screw heads.
+  - Field parts are on the front, left of the terminal pins and clear of the USB pocket edge (x < 3.6).
 - **Node:**
   - Opto partners R3, R4, R7, R9, R11, C3, R13 and C4 sit next to each opto.
   - The PWRON one-shot (DNP) is by J8 pin 23.
@@ -42,7 +44,7 @@
 - **Camera:** the outline is drawn on User.Drawings. The camera module isn't shipped (D-059). The mech test checks every part height against the Waveshare's actual solids.
 - **J1:** DNP. Andrew fits loose pins through J8 and the carrier, seated flush on the socket face (D-059).
 - **USB pocket edge:** the carrier left edge under the USB-C pocket is kept free of display-side parts (`usb_pocket_front` in the mech handoff).
-- **Opto heights (Q-48):** U2 and U5 (LTV-817S, 4.0 mm) clash with Waveshare back-side parts in the 5.1 mm board-to-board space.
+- **Opto heights:** Q-48 answered (b), re-placed per D-060. The tightest margin is 0.2 mm (U2/U3, against a 0.9 mm Waveshare part).
 
 ## For Andrew's review (ASSUME)
 - **Holes in field zones:** the two left mounting holes sit in the fan (top) and DC (bottom) islands. They need nylon M2 screws and spacers, because the Waveshare SMT standoffs are probably on its GND.

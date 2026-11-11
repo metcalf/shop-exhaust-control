@@ -539,7 +539,7 @@ Template:
     - Earlier options (body-on-back, short posts, trimmed posts, 6 mm spacers) are dropped. Q-47 is closed.
   - **Camera:** the camera module in Waveshare's STEP isn't shipped (Andrew). It's excluded (`params.NOT_FITTED`). Its FPC connector stays, and it's shallower than J8.
   - **Board-to-board space:** only 5.1 mm between the boards. The mech test checks every display-side carrier part, at its datasheet height, against the Waveshare's actual solids.
-    - **Open:** two of the five LTV-817S (4.0 mm tall) hit Waveshare parts: U5 by 0.2 mm, U2 with zero margin.
+    - Two of the five LTV-817S (4.0 mm tall) hit Waveshare parts at their first positions. Resolved by re-placing them (D-060).
   - **USB-C pocket:** there's no room for a floor between the plug and the carrier. The pocket walls land on the carrier's left edge, which is kept free of display-side parts (mech test), with a foam strip to close it.
   - **SEN65 connector:** it's on the face opposite the ports (mech guide Fig. 1), so it faces into the bay left of the module. A short cable runs to J5. The 0.4 mm clearance to the back panel works.
 - Alternatives:
@@ -549,3 +549,27 @@ Template:
 - Consequences:
   - **Size:** 92.44 × 61.0 × 45.8 mm, about 258 cm³ (was 97.4 × 66.0 × 53.7, about 345). Carrier 88.24 × 56.8 mm.
   - **Glass edge:** the glass edge is exposed at the sides.
+
+## D-060: Optos packed into the Waveshare's clear column; terminals inboard
+- Date: 2026-11-11
+- Status: Accepted (Andrew, 2026-11-11: Q-48 option (b), shuffle the LTV-817S into gaps; terminals inboard facing left with room on the left to dress the wires).
+- Context: with the carrier flush on J8 (D-059), 5.1 mm separates the boards. A 4.0 mm opto needs every Waveshare part above it to be no more than 0.9 mm tall, keeping a 0.2 mm margin. A map of the Waveshare back from the STEP's per-solid boxes shows one clear column for a 13 mm wide opto footprint: frame E x −29.6 to −16.6 (the existing barrier band), y −8.4 to +19.69.
+  - **Right of it:** the 2.2 mm LCD FPC connector and the touch FPC tail block a move.
+  - **Below it:** three 1.0 mm parts and the switches block a move.
+- Decision:
+  - **Optos:** all five at OPTO_X 21 (board coordinates), packed at a 5.6 mm pitch from y 11.55. That fits the 28.1 mm window with 0.18 mm to spare at each end.
+    - Courtyards stay apart.
+    - Field pads of adjacent groups are 1.56 mm apart, at least the 1.5 mm functional gap.
+    - Margin to the part above each opto at its 4.0 mm maximum height: U1 0.76, U2 0.20, U3 0.20 (courtyard edge only), U4 0.40, U5 0.26 mm.
+  - **Terminals:** all four KF128L move inboard. Pins are at board x 11 (was 4.5) and the wire entries face the left wall, 7.6 mm in from the inner wall (was about 1 mm). Nothing sits on the back between the wall and the terminals except the two left screw heads.
+    - The pin column can't go further right: J3's pads, the 1.5 mm OCC|DC gap and U5's field pads have to fit side by side.
+  - **Field parts:** on the front, left of the terminal pins and clear of the USB pocket edge.
+  - **Field-field gaps:** fan|OCC is straight. OCC|DC is Z-shaped: from the opto gap it drops between J3 and U5, then runs out to the left edge between the OCC and DC parts.
+  - **Clearance test:** now uses per-solid bounding boxes (exact for small parts, and it catches flat faces that a mesh-vertex check misses). The glass and LCD solids are cut to the slab behind the PCB, so only their FPC tails count. A new test asserts the wire room and the empty back-left strip.
+- Alternatives:
+  - (a) A low-profile SOP-4 opto: margin of more than 2 mm, but needs a new part sourced and its CTR checked.
+  - (c) A 0.5 mm gap under the carrier: loses the flush seat.
+  - Moving the column right or down: blocked by the Waveshare parts above.
+- Consequences:
+  - **Tight margins:** 0.2 mm at U2/U3 against a 0.9 mm Waveshare part. That's at the LTV-817S maximum height and the vendor STEP's modelled heights, so a Waveshare revision could eat it. The mech test is the guard. If the rev changes or a fit check is tight, fall back to (a).
+  - **Slots:** cable slots stay centred on the terminals: fan 14.5, OCC 29.6, DC 46.0 (board y).

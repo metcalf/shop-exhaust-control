@@ -18,7 +18,7 @@
 
 **Outside:** 92.44 × 61.0 × 45.8 mm, about 258 cm³, which is the glass outline. The cleat adds a few mm.
 
-**Open (Q-48):** with only 5.1 mm between the boards, two of the 4.0 mm LTV-817S optos hit Waveshare back-side parts (U5 by 0.2 mm, U2 with zero margin). The mech test catches this and currently fails.
+**Board-to-board:** only 5.1 mm between the boards. The 4.0 mm LTV-817S optos are packed into the one column the Waveshare back leaves clear (D-060). Margins are 0.2 to 0.76 mm, checked by the mech test against per-solid boxes.
 
 ## Layout (seen from the front)
 - **No bezel.** The cover glass is the front face, and its edges are exposed at the sides.
@@ -31,7 +31,7 @@
   3. The display and carrier come out through the front.
 - **Left wall:**
   - **USB-C:** a stepped pocket runs in to the receptacle mouth, 6.2 mm inside the outline. A standard plug clears the display solids (slab-probed in the tests).
-  - **Cable entry:** strain-relief slots for the fan, OCC and DC cables, centred on the placed terminals.
+  - **Cable entry:** strain-relief slots for the fan, OCC and DC cables, centred on the placed terminals. The terminals sit inboard with their entries 7.6 mm in from the wall, leaving room to dress the wires (D-060).
 - **Right wall, front to back:**
   - **LED diffuser slot** (51 × 6 mm) in the board-to-board gap. It ends 3.6 mm in front of the SEN65.
   - **SEN65 ports:** the module stands on end, port face to the wall through a 1 mm gasket. Inlet slot at the bottom, outlet circle above, with a 21 mm gasket rib between them.
@@ -42,7 +42,7 @@
 
 ## Departures and caveats
 - **SEN65 depth is 25.6 mm, not 21.3.** The SEN6x has its inlets and outlet on the same face. Facing that face into the room through the right wall puts the 25.6 mm dimension front to back.
-- **Board-to-board space.** It's 5.1 mm, so every display-side carrier part is checked at its datasheet height against the Waveshare's actual solids (mesh vertices).
+- **Board-to-board space.** It's 5.1 mm, so every display-side carrier part is checked at its datasheet height against each Waveshare solid's box. The glass and LCD solids count only for their FPC tails behind the PCB.
 - **USB-C pocket.** There's no room for a floor between the plug overmold and the carrier. The pocket walls land on the carrier's left edge, which is kept free of display-side parts (test), and a foam strip closes the pocket.
 - **Foam caveat.** Sensirion's mech guide says not to thermally insulate the module (§3). A strip on one face is fine. It's notched round the two right-hand tabs and screw heads.
 

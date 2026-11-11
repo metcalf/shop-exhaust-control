@@ -55,8 +55,8 @@
  "carrier_top_z": -11.50000000000031,
  "terminal_slots_y": {
   "fan": 13.899999999999999,
-  "occ": -5.100000000000001,
-  "dc": -18.1
+  "occ": -1.1999999999999957,
+  "dc": -17.6
  },
  "sen65_connector_face": "-x (module face opposite the ports), into the bay left of the module; short cable to J5",
  "j5_zone_back": [

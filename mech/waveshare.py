@@ -99,3 +99,28 @@ def features():
 if __name__ == "__main__":
     f = features()
     print(json.dumps({k: v for k, v in f.items()}, indent=1, default=lambda o: round(o, 3)))
+
+
+@functools.lru_cache(maxsize=1)
+def back_obstacles(below_z=-6.45, big=30.0):
+    """[(label, bbox)] for every solid reaching behind the PCB back (z < below_z), frame E.
+
+    Per-solid bounding boxes are exact for the small back-side parts and catch flat faces that a
+    mesh-vertex check misses. Solids larger than `big` mm (cover glass, LCD module) only reach behind
+    the PCB with their FPC tails, so those are cut to the slab behind the PCB first (one solid at a
+    time: a boolean against the whole assembly runs out of memory).
+    """
+    from build123d import Box, Pos
+    slab = Pos(0, 0, below_z - 3.05) * Box(120, 90, 6.1)
+    out = []
+    for label, sh in parts():
+        for so in sh.solids():
+            b = bbox(so)
+            if b[2] >= below_z:
+                continue
+            if b[3] - b[0] > big or b[4] - b[1] > big:
+                cut = so & slab
+                out += [(label + ":tail", bbox(q)) for q in (cut.solids() if cut else [])]
+            else:
+                out.append((label, b))
+    return out
