@@ -4,7 +4,7 @@ Carrier for the Waveshare ESP32-S3-Touch-LCD-3.5. It plugs into the board's 2×1
 
 - **Source:** `pcb/carrier/gen/build.py` until layout starts.
 - **Checks:** `pcb/carrier/gen/run.sh` runs the footprint build, ERC, netlist assertions, SVG and raw BOM, writing to `pcb/carrier/reports/`.
-- **Related docs:** signals and pins in `docs/interfaces.md` §2–§3; isolation in `pcb/SAFETY.md`. Circuit values carried over from the main board are argued in `pcb/design.md` §2–§4. Only what changed is recorded here.
+- **Related docs:** signals and pins in `docs/interfaces.md` §2–§3; isolation in `pcb/SAFETY.md`. Circuit values carried over from the main board are argued in the old board's design notes §2–§4 (`git show b0cada4:pcb/design.md`; the old board was removed from the tree, D-061). Only what changed is recorded here.
 
 ## Status (2026-11-10)
 - **ERC:** 0 violations.
@@ -41,7 +41,7 @@ Carrier for the Waveshare ESP32-S3-Touch-LCD-3.5. It plugs into the board's 2×1
   - Q1 (AO3400A) holds the yellow speed line low unless U1 is lit.
   - Tach: U2. Presence: U3 is restored from the main board, with 10 kΩ from +10V_F and 22 kΩ to `+3V3`.
   - Fan-side draw is ≈ 6.3 mA max, against ≈ 9 mA available (Q-26).
-- **OCC (U4) and DC (U5).** Same circuit as `pcb/design.md` §3: J3 and J4, each 10 kΩ 1206 → MB10S → LTV-817, with a 47 kΩ / 1 µF output filter.
+- **OCC (U4) and DC (U5).** Same circuit as the old board's design notes §3 (`git show b0cada4:pcb/design.md`): J3 and J4, each 10 kΩ 1206 → MB10S → LTV-817, with a 47 kΩ / 1 µF output filter.
 - **SEN65.**
   - J5 is a GH-6 wired per SEN6x Table 17, on `+3V3` with 10 µF + 100 nF.
   - It shares the Waveshare I²C bus, which also carries FT6336 (0x38), ES8311 (0x18), PCF85063 (0x51), AXP2101 (0x34), TCA9554 (0x20/0x21) and QMI8658 (0x6A, SA0 tied to GND). The SEN65's 0x6B is free.

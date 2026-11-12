@@ -1,6 +1,6 @@
 # Mechanical concept: Waveshare 3.5 + carrier + SEN65 (D-056, D-057, D-058, D-059)
 
-**Status:** concept rev 2, 2026-11-10, after Andrew's review: no bezel, 1.6 mm walls with ribs, thinner stack. Model: `mech/concept.py`. Outputs: `mech/out/`. Geometry checks: `mech/tests/`, results in `mech/out/test-results.txt`. Waveshare geometry is read from its STEP (`mech/fetch_vendor.sh`) and never retyped. Terminal, LED, keep-flat and part positions come from the placed carrier board (`pcb/carrier/carrier-placed.kicad_pcb`, `pcb/carrier/reports/placed-parts.json`).
+**Status:** concept rev 2, 2026-11-10, after Andrew's review: no bezel, 1.6 mm walls with ribs, thinner stack. Model: `mech/concept.py`. Outputs: `mech/out/`. Geometry checks: `mech/tests/`, results in `mech/out/test-results.txt`. Waveshare geometry is read from its STEP (committed, `mech/vendor/`) and never retyped. Terminal, LED, keep-flat and part positions come from the placed carrier board (`pcb/carrier/carrier-placed.kicad_pcb`, `pcb/carrier/reports/placed-parts.json`).
 
 ## Frame and stack-up (frame E: +x right, +y up, +z out of the front; origin at the glass centre)
 
@@ -18,7 +18,7 @@
 
 **Outside:** 92.44 × 61.0 × 45.8 mm, about 258 cm³, which is the glass outline. The cleat adds a few mm.
 
-**Board-to-board:** only 5.1 mm between the boards. The 4.0 mm LTV-817S optos are packed into the one column the Waveshare back leaves clear (D-060). Margins are 0.2 to 0.76 mm, checked by the mech test against per-solid boxes.
+**Board-to-board:** only 5.1 mm between the boards. The 4.0 mm LTV-817S optos sit in the board-centre column the Waveshare back leaves clear (D-061). Margins are 0.26 mm or more, checked by the mech test against per-solid boxes.
 
 ## Layout (seen from the front)
 - **No bezel.** The cover glass is the front face, and its edges are exposed at the sides.
@@ -31,7 +31,7 @@
   3. The display and carrier come out through the front.
 - **Left wall:**
   - **USB-C:** a stepped pocket runs in to the receptacle mouth, 6.2 mm inside the outline. A standard plug clears the display solids (slab-probed in the tests).
-  - **Cable entry:** strain-relief slots for the fan, OCC and DC cables, centred on the placed terminals. The terminals sit inboard with their entries 7.6 mm in from the wall, leaving room to dress the wires (D-060).
+  - **Cable entry:** strain-relief slots for the fan, OCC and DC cables, centred on the placed terminals. The terminals sit mid-board with their entries 29.6 mm in from the wall, leaving room to dress the wires (D-061).
 - **Right wall, front to back:**
   - **LED diffuser slot** (51 × 6 mm) in the board-to-board gap. It ends 3.6 mm in front of the SEN65.
   - **SEN65 ports:** the module stands on end, port face to the wall through a 1 mm gasket. Inlet slot at the bottom, outlet circle above, with a 21 mm gasket rib between them.

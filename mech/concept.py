@@ -1,6 +1,6 @@
 """Concept enclosure and stack-up for the Waveshare 3.5 + carrier + SEN65 (D-056, D-057).
 
-Run: .venv/bin/python mech/concept.py  (needs mech/fetch_vendor.sh first)
+Run: .venv/bin/python mech/concept.py  (Waveshare STEP committed in mech/vendor/)
 Writes mech/out/: concept.step (our parts only), carrier_layout.json (outline, holes, J8, LED edge,
 keep-flat and keepout zones for pcb/carrier/layout), stackup.json, and SVG/PNG views.
 Frame E and every choice: params.py. Waveshare geometry: waveshare.py (from the STEP).
@@ -32,7 +32,7 @@ def carrier_positions():
     Empty if the board hasn't been placed yet."""
     if not os.path.exists(PLACED):
         return {}
-    sys.path.insert(0, os.path.join(os.path.dirname(HERE), "pcb", "layout"))
+    sys.path.insert(0, os.path.join(os.path.dirname(HERE), "pcb", "common"))
     import netlist
     root = netlist.parse_sexpr(open(PLACED).read())
     out = {}

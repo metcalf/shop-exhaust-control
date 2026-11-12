@@ -1,51 +1,33 @@
 # Project State
 
-**Updated:** 2026-11-10
-**Phase:** 3, detailed design (**G2 approved 2026-10-28**). **Architecture changed by D-054/D-056 (accepted 2026-11-10):** Waveshare ESP32-S3-Touch-LCD-3.5 + minimal carrier PCB. The custom board in `pcb/` (schematic and placement) is now reference only.
+**Updated:** 2026-11-11
+**Phase:** 3, detailed design (**G2 approved 2026-10-28**). **Architecture changed by D-054/D-056 (accepted 2026-11-10):** Waveshare ESP32-S3-Touch-LCD-3.5 + minimal carrier PCB. The custom board was removed from the tree (D-061; in git history up to `b0cada4`).
 **Waiting on:** nothing blocking.
 Blocked-on: none
 
 ## Next actions (D-056/D-058: Waveshare 3.5 + carrier)
-1. **Andrew:** review the re-placed carrier (D-060: optos packed into the Waveshare's clear column, 0.2 mm tightest margin; terminals inboard with 7.6 mm wire room) in `pcb/carrier/LAYOUT.md` and `pcb/carrier/reports/placed-{front,back}.png`. Concept rev 2 (D-059, 92.44 × 61.0 × 45.8 mm) is in `docs/mech-concept.md`. Also review the carrier schematic if not done.
+1. **Andrew:** review the re-placed carrier (D-061: optos in the board-centre column, field side lower-left, terminals mid-board with 29.6 mm wire room, test pads on the back at the bottom edge) in `pcb/carrier/LAYOUT.md` and `pcb/carrier/reports/placed-{front,back}.png`. Answer Q-49 (3D node↔field clearance). Before pushing: the Waveshare STEP is now committed and the repo is public.
 2. **Andrew, when the boards arrive:** `docs/bench-plan-routeB.md`.
-3. Route the carrier: Quilter, Freerouting (Q-38 jar permission applies), or by hand. Then silk cleanup, DRC, Gerbers/BOM/CPL, and the barrier screenshot in `pcb/SAFETY.md`.
+3. Route the carrier after Andrew's review:
+   - **Freerouting:** `pcb/carrier/layout/route_freerouting.sh` (jar allowed, 2026-11-11).
+   - **Quilter:** Andrew uploads `carrier-placed.kicad_pcb`. First confirm from Quilter's docs that locked footprints are what it treats as fixed; every footprint is written locked.
+   - **Then:** silk cleanup, DRC, Gerbers/BOM/CPL, the barrier mutation check and screenshot in `pcb/SAFETY.md`.
+   - **Also:** check the MB10S height (2.7 mm assumed) against the C2488 datasheet.
 4. Mech detail: cleat and lock screw, seam/lens/relief gaskets, SEN65 cradle, diffuser, rear-shell fasteners. Then firmware (ST7796 SPI, FT6336, AXP2101 init, RMT LED, FanPort with presence).
 
-## Previous route-B actions (2.8B, superseded by D-056)
-- Carrier schematic for the 2.8B is in `pcb/carrier/` (ERC 0, assertions pass); it becomes the starting point for step 3.
-
-## Superseded custom-board actions (kept for reference)
-1. **Andrew:** upload `pcb/exhaust-placed.kicad_pcb` (with its `.kicad_pro` and `.kicad_dru`) to Quilter, then drop the routed board in as `pcb/exhaust-quilter.kicad_pcb`. Answer Q-38 and Q-39 (`pcb/LAYOUT.md` §3 lists the assumptions A1–A8).
-2. **Freerouting candidate:** once Q-38 allows the jar, run `pcb/layout/route_freerouting.sh`. It routes, adds GND pours and writes DRC and renders for `pcb/exhaust-freerouting.kicad_pcb`. The jar is already in `pcb/tools/bin/` (gitignored); the script header has the download line.
-3. **Each routed candidate:** `kicad-cli pcb drc --refill-zones` against `exhaust.kicad_dru` (copy the `.kicad_pro`/`.kicad_dru` next to it under its basename). Both must pass; Andrew picks one. Then: silk cleanup, Gerbers/BOM/CPL, the barrier screenshot and record in `pcb/SAFETY.md`, and the chosen board becomes `pcb/exhaust.kicad_pcb`.
-4. If Q-39 moves parts: edit `POS` in `pcb/layout/place.py`, rerun `pcb/layout/run.sh`, and re-export for both routers.
-5. **Mech** (build123d) starts from the locked placement once Q-39 is answered, since mirroring or moving parts changes the enclosure. Read positions from the `.kicad_pcb`. Then the firmware host-tested logic.
-   - At bring-up, confirm O-6 with `espefuse.py summary` (VDD_SPI 3.3 V).
-6. **Firmware backlog, for implementation later (not now):**
-   - G2 review items: S-3 overspeed / tach at 0 %; S-6 frozen-sequence DC frames (record in D-021 when the DC project starts); S-7 SprayRunOn upper bound while occupied (an FR-08 change, ask Andrew then); S-8, S-9, S-10, S-11, S-12, S-15; S-16 MQTT keepalive ≤ 30 s (check `BaseMqttClient`).
-   - S-14 boot config: TWDT panic, RTC WDT, LEDC at duty 0 before routing.
-   - SEN65 reset-and-retry at startup; I²C bus recovery and module reset on `sensor_no_data` (D-047).
-   - Touch UI (`docs/control-logic.md` §8): FT6336G on its own 100 kHz I²C bus (D-048).
-
-## Layout status (where it stopped)
-- `pcb/layout/run.sh`: schematic netlist → `check.py` (passes) → project footprints → locked placement → DRC: **0 errors**. 96 silk warnings, 2 intentional TP footprint mismatches, 203 unrouted. Renders: `pcb/reports/render/placed-{front,back}.png`.
-- `pcb/exhaust.kicad_sch` is the source now (D-035, D-051). `pcb/gen/run.sh` checks it and only regenerates with `REGENERATE=1`. Don't edit `build.py`.
-- Barrier: netclasses, plus clearance and creepage rules, plus keepouts; mutation-checked (`pcb/LAYOUT.md` §4). Placement minimums: 6.16 mm node↔field, 2.18 mm field↔field.
-- A KiCad lock file (`pcb/~exhaust.kicad_sch.lck`, 20:36) was present at the start of this run. If the schematic was open in the GUI, reload it before saving, or the footprint-field changes (D-051) get overwritten.
-
-## Schematic status (where it stopped)
-- `pcb/gen/run.sh` regenerates `pcb/exhaust.kicad_sch`, runs ERC (0 violations) and the netlist assertions (all pass), and exports the SVG and raw BOM to `pcb/reports/`. 100 parts, 28 unique LCSC parts.
-- G2 review hardware items folded in: S-2 (fan side ≤ 4.1 mA at datasheet max), S-4 (`pcb/SAFETY.md`, every crossing asserted), S-5 (D-036), S-14 (EN RC, BOOT/EN recovery pads per D-041, strapping pins asserted unconnected), S-13 and S-17 (already applied). Interfaces §2.2–2.3 still name the LTV-814; D-036 supersedes it, and the doc gets updated at layout.
-- Generator draws wires within blocks and power symbols for GND/+3V3/+5V (D-038, at Andrew's request during his schematic review). Netlist unchanged.
-- Known cosmetic issues: field text on rotated parts needs GUI touch-up; placement wasn't laid out for wiring, so some blocks are still label-heavy.
+## Firmware backlog (for implementation later, not now)
+- G2 review items: S-3 overspeed / tach at 0 %; S-6 frozen-sequence DC frames (record in D-021 when the DC project starts); S-7 SprayRunOn upper bound while occupied (an FR-08 change, ask Andrew then); S-8, S-9, S-10, S-11, S-12, S-15; S-16 MQTT keepalive ≤ 30 s (check `BaseMqttClient`).
+- S-14 boot config: TWDT panic, RTC WDT, LEDC at duty 0 before routing.
+- SEN65 reset-and-retry at startup; I²C bus recovery and module reset on `sensor_no_data` (D-047).
+- Touch UI (`docs/control-logic.md` §8): FT6336G on its own I²C bus (D-048).
 
 ## Notes for an unattended run
-- Everything left is waiting on Andrew (Quilter upload, Q-38, Q-39). Don't hand-route a final board or upload anything to Quilter. Mech waits for Q-39.
+- Don't upload anything to Quilter (Andrew does). Freerouting is allowed.
 - CLAUDE.md's phase table still puts sourcing after the full detailed design. D-029 (Andrew) overrides that for this project. Don't edit CLAUDE.md.
 - No mains anywhere (D-018), so G3 is light: receptacle, the listing of Andrew's own supply (Q-36) and the 24 VAC hookup.
 
 ## Blockers
-- Freerouting can't run unattended until Q-38 is answered. Quilter is Andrew's upload.
+- None. Routing waits for Andrew's review of the D-061 placement.
 
 ## Log
 - 2026-10-22: Repo created from the kickoff conversation. See `docs/context.md`.
@@ -115,3 +97,4 @@ Blocked-on: none
 - 2026-11-10 (late, cont.): J8 header back to normal fitting. Andrew: soldering from the front leaves fillets that block insertion, and 1.2 mm isn't worth it. A short-post header is needed (Q-47). Depth is 48.3 mm, and 17 mech tests pass. Smaller carrier rejected: no fab-cost gain under JLC's 100 × 100 mm tier.
 - 2026-11-10 (late, cont.): Camera module excluded (not shipped). J8 joint final: J1 DNP, loose pins, carrier flush on the socket face, giving 45.8 mm deep. The USB pocket now lands on the carrier edge. The clearance test now checks actual Waveshare solids. It fails on U2 and U5 (LTV-817S, 4.0 mm) against Waveshare back-side parts, logged as Q-48; 17 of 18 mech tests pass.
 - 2026-11-11: Q-48 answered (b). The five LTV-817S are packed at a 5.6 mm pitch into the one column the Waveshare back leaves clear (margins 0.2 to 0.76 mm). Terminals moved inboard (pins x 11, entries 7.6 mm from the wall) with field parts on the front, left of them; OCC|DC gap is now Z-shaped (D-060). The clearance test now uses per-solid boxes plus FPC tails; new wire-room test. DRC: 0 errors (125 unrouted, 70 silk warnings).
+- 2026-11-11 (later): D-061. Optos moved to the Waveshare's board-centre clear column, so the field side is the lower-left; terminals mid-board (29.6 mm wire room); test pads at the bottom edge of the back; MB10S height corrected to 2.7 mm (D3 moved). Old custom board removed from `pcb/`; shared code in `pcb/common/`; Freerouting script retargeted to the carrier; SAFETY.md rewritten for the carrier. Waveshare STEP committed with a pinned hash. New Q-49 (3D node↔field clearance). DRC: 0 errors (125 unrouted, 65 silk warnings).

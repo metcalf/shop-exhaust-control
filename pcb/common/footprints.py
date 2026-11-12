@@ -1,6 +1,6 @@
 """Build pcb/lib/exhaust.pretty: project footprints checked against the LCSC drawings (design.md O-3).
 
-Run with KiCad's bundled Python (pcb/layout/run.sh does). Sources:
+Run with KiCad's bundled Python. Sources:
 - pcb/lib/lcsc.pretty: easyeda2kicad output by LCSC number (fetched 2026-11-09), kept verbatim.
 - KiCad 10 stock libraries where the stock footprint matches the LCSC drawing pad for pad.
 

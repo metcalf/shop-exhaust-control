@@ -1,4 +1,0 @@
-(fp_lib_table
-  (version 7)
-  (lib (name "exhaust")(type "KiCad")(uri "${KIPRJMOD}/lib/exhaust.pretty")(options "")(descr "Project footprints checked against LCSC drawings (pcb/layout/footprints.py)"))
-)

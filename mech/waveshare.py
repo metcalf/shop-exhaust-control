@@ -1,6 +1,6 @@
 """Waveshare ESP32-S3-Touch-LCD-3.5 features in frame E, read from the vendor STEP (never retyped, D-011).
 
-Run `mech/fetch_vendor.sh` first. Labels are the STEP's own part names.
+The STEP is committed in mech/vendor/ (fetch_vendor.sh checks upstream for a revision). Labels are the STEP's own part names.
 """
 import functools
 import json
@@ -17,7 +17,7 @@ STEP = os.path.join(HERE, "vendor", "ESP32-S3-Touch-LCD-3_5.stp")
 @functools.lru_cache(maxsize=1)
 def model():
     if not os.path.exists(STEP):
-        raise SystemExit("missing STEP: run mech/fetch_vendor.sh")
+        raise SystemExit("missing STEP: mech/vendor/ESP32-S3-Touch-LCD-3_5.stp is committed; check out the full repo")
     return import_step(STEP)
 
 

@@ -22,7 +22,8 @@ J8_PIN_PROTRUDE = 1.5   # loose pin past the carrier back after soldering (trimm
 # Display-side part heights (max, datasheets) by reference prefix; anything unlisted uses PART_H_DEFAULT
 PART_H = {"U": 4.0,     # LTV-817S SMD-4: 4.0 max
           "D4": 2.0, "D5": 2.0, "D6": 2.0, "D7": 2.0, "D8": 2.0, "D9": 2.0,   # SK6812SIDE-A
-          "Q": 1.2, "D": 1.35}
+          "D2": 2.7, "D3": 2.7,   # MB10S, MBS/TO-269AA: ASSUME 2.7 max until checked against the C2488 datasheet
+          "Q": 1.2, "D": 1.35}    # D: SOD-323 (D1)
 PART_H_DEFAULT = 1.4    # 0603/0805 R and C, worst case 0805 10 uF at 1.4
 
 # --- carrier outline (frame E) -------------------------------------------------------------------

@@ -5,7 +5,7 @@
 
 Run with KiCad's bundled Python. The barrier keepouts (place.py) go into the DSN as keepouts, so the
 router can't cross them; the 3.0 / 1.5 mm domain rules are then checked by kicad-cli DRC
-(exhaust.kicad_dru), which the router never stands in for.
+(the board's .kicad_dru), which the router never stands in for.
 """
 import sys
 

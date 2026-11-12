@@ -1,5 +1,5 @@
 (version 1)
-# Isolation barriers from pcb/SAFETY.md (S-4, D-028, D-050). Domains are netclasses set in carrier.kicad_pro (copied from the main board, pcb/exhaust.kicad_dru):
+# Isolation barriers from pcb/SAFETY.md (S-4, D-028, D-050). Domains are netclasses set in carrier.kicad_pro (copied from the old main board, in git history):
 # FAN, OCC, DCI; everything else with a net is the node domain.
 # Node <-> field: >= 3.0 mm clearance and creepage (basic insulation, <= 150 V, pollution degree 2).
 # Field <-> field: >= 1.5 mm (functional; all SELV).
@@ -24,4 +24,4 @@
   (constraint creepage (min 1.5mm))
   (condition "(A.hasNetclass('FAN') && (B.hasNetclass('OCC') || B.hasNetclass('DCI'))) || (A.hasNetclass('OCC') && B.hasNetclass('DCI'))"))
 
-# JLC 2-layer standard capability (pcb/design.md): 0.15 mm track/space used as the floor.
+# JLC 2-layer standard capability: 0.15 mm track/space used as the floor.

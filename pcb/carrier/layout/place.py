@@ -16,7 +16,7 @@ import pcbnew
 HERE = os.path.dirname(os.path.abspath(__file__))
 CARRIER = os.path.dirname(HERE)
 ROOT = os.path.dirname(os.path.dirname(CARRIER))
-sys.path.insert(0, os.path.join(ROOT, "pcb", "layout"))
+sys.path.insert(0, os.path.join(ROOT, "pcb", "common"))
 import netlist  # noqa: E402
 
 STOCK = "/Applications/KiCad/KiCad.app/Contents/SharedSupport/footprints/"
@@ -49,30 +49,21 @@ def j8_pin_xy(n):
     return k(M["j8_pin1_x"] + col * PITCH, ye)
 
 
-# --- barrier geometry (pcb/SAFETY.md, D-050) -------------------------------------------------------
-OPTO_X = 21.0                 # opto centre; field pads at x - 5, node pads at x + 5 (LTV-817S, LS10.3)
-BARRIER_X0, BARRIER_X1 = 18.5, 23.5
-# Optos in the one column the Waveshare back leaves clear for a 4.0 mm part (Q-48 option b): frame E
-# y -8.4 (1.0 mm part below) to +19.69 (J8 socket). 5.6 mm pitch keeps courtyards apart and the field
-# pads of adjacent groups 1.56 mm apart (>= 1.5 functional). Checked by mech/tests (part heights).
-OPTO_Y0, OPTO_PITCH = 11.55, 5.6
-OPTO_Y = [OPTO_Y0 + i * OPTO_PITCH for i in range(5)]
-# Terminals inboard, wire entry facing the left wall (Andrew: room to dress the wires). Pin column x is
-# as far right as the OCC|DC gap allows: J3 pads | 1.5 mm gap | U5 field pads.
-TERM_X = 11.0
-# Field-field gaps (>= 1.5 mm functional). fan|OCC runs straight; OCC|DC leaves the opto gap, drops down
-# between J3 and U5, and runs out to the left edge between the OCC and DC parts.
-_FO = (OPTO_Y[2] + 2.05, OPTO_Y[3] - 2.05)
-_OD = (OPTO_Y[3] + 2.05, OPTO_Y[4] - 2.05)
-FIELD_GAPS = [
-    [(0.0, _FO[0]), (BARRIER_X0, _FO[0]), (BARRIER_X0, _FO[1]), (0.0, _FO[1])],
-    [(BARRIER_X0, _OD[0]), (12.4, _OD[0]), (12.4, 40.0), (0.0, 40.0), (0.0, 41.5), (13.9, 41.5),
-     (13.9, _OD[1]), (BARRIER_X0, _OD[1])],
-]
+# --- barrier geometry (pcb/SAFETY.md, D-050, D-061) ---------------------------------------------------
+# The optos (4.0 mm) go in the column the Waveshare back leaves clear for a 13 mm wide, 4.0 mm part over
+# the longest run: frame E x -2..11, y -19.25..+19.69 (J8 socket above). Field side left, node side right,
+# so the whole left half is field and the terminals sit mid-board (Andrew, D-061). mech/tests check heights.
+OPTO_X = k(4.5, 0)[0]          # opto centre; field pads at x - 5, node pads at x + 5 (LTV-817S, LS10.3)
+BARRIER_X0, BARRIER_X1 = OPTO_X - 2.5, OPTO_X + 2.5
+J8_BAND = (8.5, 13.5)          # barrier under J8: J1 pads end at y 8.48; field starts 5 mm lower
+# Field groups are horizontal bands, fan | OCC | DC, split by straight 1.5 mm gaps (functional).
+FIELD_GAPS = [(29.65, 31.15), (41.0, 42.5)]
+OPTO_Y = [15.9, 21.5, 27.1, 33.7, 44.6]   # U1..U5; U5's courtyard ends 0.4 mm above the column's end
+# Terminals inboard, wire entry facing the left wall; field parts on the front either side of the pins
+TERM_X = OPTO_X - 15.6
 
 HOLES = [k(x, y) for x, y in M["holes"]]
 # Anchors so groups move with what they serve when the outline changes (D-058 rev 2)
-J1X = J1_POS[0]                       # PWRON one-shot sits by J8 pin 23
 KF = k(M["keep_flat_back"][0], 0)[0]  # left edge of the SEN65 keep-flat zone
 LED_X = W - 1.44 - 0.2        # SK6812SIDE-A body reaches +1.44 from its origin toward the light face
 LED_Y = sorted(k(0, y)[1] for y in M["led_y"])
@@ -81,24 +72,23 @@ LED_Y = sorted(k(0, y)[1] for y in M["led_y"])
 POS = {
     # Waveshare J8 (male header on the display side)
     "J1": (J1_POS[0], J1_POS[1], 90, "F"),
-    # --- field: terminals on the back, inboard, wire entry toward the left wall (ASSUME: KF128L entry side) ---
-    "J2": (TERM_X, 10.75, "entry-left", "B"),    # fan GND (BLK) / +10V (RED)
-    "J7": (TERM_X, 18.25, "entry-left", "B"),    # fan SPD (YEL) / TACH (WHT)
-    "J3": (TERM_X, 29.6, "entry-left", "B"),     # OCC 24 VAC: pads clear the fan|OCC gap
-    "J4": (TERM_X, 46.0, "entry-left", "B"),     # DC backup: below the OCC|DC gap, clear of the H1 screw head
-    # field parts on the front, left of the terminal pins (USB pocket edge x < 3.6 kept clear)
-    # fan island
-    "R5": (6.5, 8.6, 90, "F"),       # Q_FAN_G pull-up 2.2k
-    "Q1": (6.0, 12.6, 0, "F"),
-    "C2": (6.5, 16.6, 90, "F"),
-    "R8": (4.0, 16.6, 90, "F"),      # presence LED 10k
-    "R6": (6.5, 20.4, 90, "F"),      # tach LED 10k
+    # --- field: terminals on the back, mid-board, wire entry toward the left wall (ASSUME: KF128L entry side) ---
+    "J2": (TERM_X, 17.5, "entry-left", "B"),    # fan GND (BLK) / +10V (RED)
+    "J7": (TERM_X, 25.0, "entry-left", "B"),    # fan SPD (YEL) / TACH (WHT)
+    "J3": (TERM_X, 36.0, "entry-left", "B"),    # OCC 24 VAC
+    "J4": (TERM_X, 47.5, "entry-left", "B"),    # DC backup
+    # fan island (front, between the terminal pins and the opto field pads)
+    "R5": (TERM_X + 3.8, 15.5, 90, "F"),    # Q_FAN_G pull-up 2.2k
+    "Q1": (TERM_X + 7.0, 16.0, 0, "F"),
+    "C2": (TERM_X + 3.8, 19.5, 90, "F"),
+    "R6": (TERM_X + 7.0, 21.0, 90, "F"),    # tach LED 10k
+    "R8": (TERM_X + 3.8, 23.5, 90, "F"),    # presence LED 10k
     # OCC island
-    "R10": (7.0, 29.6, 90, "F"),
-    "D2": (7.9, 36.9, 0, "F"),
+    "D2": (TERM_X + 5.8, 36.0, 90, "F"),
+    "R10": (TERM_X - 5.0, 36.0, 90, "F"),   # left of the pins (front)
     # DC island
-    "D3": (5.0, 45.0, 0, "F"),
-    "R12": (15.5, 45.0, 0, "F"),
+    "D3": (TERM_X - 9.0, 47.0, 90, "F"),    # left of the pins: the Waveshare part above TERM_X + 5.8 is too low for 2.7 mm
+    "R12": (TERM_X - 4.4, 47.5, 90, "F"),
     # --- barrier optos ---
     "U1": (OPTO_X, OPTO_Y[0], 90, "F"),   # LED on the node side (PWM)
     "U2": (OPTO_X, OPTO_Y[1], 270, "F"),
@@ -106,20 +96,20 @@ POS = {
     "U4": (OPTO_X, OPTO_Y[3], 270, "F"),
     "U5": (OPTO_X, OPTO_Y[4], 270, "F"),
     # --- node: opto partners ---
-    "R3": (30.5, OPTO_Y[0] - 0.6, 0, "F"),   # 390 into U1's LED
-    "R4": (30.5, OPTO_Y[0] + 2.0, 0, "F"),   # FAN_PWM pull-down
-    "R7": (30.5, OPTO_Y[1], 0, "F"),         # FAN_TACH 22k
-    "R9": (30.5, OPTO_Y[2], 0, "F"),         # FAN_PRESENT 22k
-    "R11": (30.5, OPTO_Y[3] - 0.8, 0, "F"),
-    "C3": (30.5, OPTO_Y[3] + 1.8, 0, "F"),
-    "R13": (30.5, OPTO_Y[4] - 0.8, 0, "F"),
-    "C4": (30.5, OPTO_Y[4] + 1.8, 0, "F"),
-    # --- PWRON one-shot (DNP) near J8 pin 23 ---
-    "Q2": (J1X + 27.86, 11.5, 0, "F"),
-    "C1": (J1X + 23.86, 11.5, 90, "F"),
-    "R1": (J1X + 23.86, 15.0, 90, "F"),
-    "R2": (J1X + 25.86, 15.0, 90, "F"),
-    "D1": (J1X + 28.36, 15.0, 0, "F"),
+    "R3": (OPTO_X + 9.5, OPTO_Y[0] - 0.6, 0, "F"),   # 390 into U1's LED
+    "R4": (OPTO_X + 9.5, OPTO_Y[0] + 2.0, 0, "F"),   # FAN_PWM pull-down
+    "R7": (OPTO_X + 9.5, OPTO_Y[1], 0, "F"),         # FAN_TACH 22k
+    "R9": (OPTO_X + 9.5, OPTO_Y[2], 0, "F"),         # FAN_PRESENT 22k
+    "R11": (OPTO_X + 9.5, OPTO_Y[3] - 0.8, 0, "F"),
+    "C3": (OPTO_X + 9.5, OPTO_Y[3] + 1.8, 0, "F"),
+    "R13": (OPTO_X + 9.5, OPTO_Y[4] - 0.8, 0, "F"),
+    "C4": (OPTO_X + 9.5, OPTO_Y[4] + 1.8, 0, "F"),
+    # --- PWRON one-shot (DNP), node side right of the opto partners ---
+    "C1": (KF - 3.4, 15.5, 90, "F"),
+    "R1": (KF - 1.4, 15.5, 90, "F"),
+    "R2": (KF + 0.6, 15.5, 90, "F"),
+    "Q2": (KF - 1.4, 20.0, 0, "F"),
+    "D1": (KF + 3.0, 20.0, 0, "F"),
     # --- SEN65: connector on the back, left of the keep-flat zone; decoupling on the front ---
     "J5": (KF - 7.1, 18.5, None, "B"),  # rotation chosen below so the plug entry faces the SEN65 (+x)
     "C5": (KF - 9.6, 11.5, 90, "F"),
@@ -139,9 +129,10 @@ for i, y in enumerate(LED_Y):
     POS[f"C{8 + i}"] = (W - 4.94, y, 90, "F")
 for i, (x, y) in enumerate(HOLES):
     POS[f"H{i + 1}"] = (x, y, 0, "F")
-# Test pads on the back, clear of the SEN65 keep-flat zone and the terminals
+# Test pads on the back (reachable with the back panel off), node side, bottom edge, left of the SEN65
+# keep-flat zone and clear of the field wiring
 for i in range(10):
-    POS[f"TP{i + 1}"] = (36.0 + 4.0 * (i % 5), 40.0 + 5.0 * (i // 5), 0, "B")
+    POS[f"TP{i + 1}"] = (KF - 11.4 + 3.0 * (i % 4), 45.5 + 3.5 * (i // 4), 0, "B")
 
 LAYER = {"F.Cu": pcbnew.F_Cu, "B.Cu": pcbnew.B_Cu, "F.SilkS": pcbnew.F_SilkS, "B.SilkS": pcbnew.B_SilkS,
          "F.Fab": pcbnew.F_Fab, "Edge.Cuts": pcbnew.Edge_Cuts, "User.Drawings": pcbnew.Dwgs_User}
@@ -223,7 +214,7 @@ def entry_rotation(fp, want):
 def terminal_rotation(fp, want):
     """Rotation that points a screw terminal's wire entry along `want`. The KF128L footprint marks the
     wire openings with short silk segments on the entry side (the long ones are the body outline), the
-    side the old board pointed at its top wall (pcb/layout/place.py, rotation 180)."""
+    side the old board pointed at its top wall (old pcb/layout/place.py in git history, rotation 180)."""
     for rot in (0, 90, 180, 270):
         fp.SetOrientationDegrees(rot)
         c = fp.GetPosition()
@@ -303,9 +294,10 @@ def build(net_path, out_path):
             raise SystemExit(f"D{4 + i}: light face not at the right edge")
 
     # Barrier keepouts: no tracks, vias or pour across the band; field-field gaps
-    add_rule_area(board, rect(BARRIER_X0, 0.0, BARRIER_X1, H), "barrier: field-node")
-    for i, pts in enumerate(FIELD_GAPS):
-        add_rule_area(board, pts, f"gap: field-field {('fan|OCC', 'OCC|DC')[i]}")
+    add_rule_area(board, [(0.0, J8_BAND[0]), (BARRIER_X1, J8_BAND[0]), (BARRIER_X1, H), (BARRIER_X0, H),
+                          (BARRIER_X0, J8_BAND[1]), (0.0, J8_BAND[1])], "barrier: field-node")
+    for (y0, y1), name in zip(FIELD_GAPS, ("fan|OCC", "OCC|DC")):
+        add_rule_area(board, rect(0.0, y0, BARRIER_X0, y1), f"gap: field-field {name}")
     # Back face behind the SEN65 stays flat: no parts on B (Andrew, D-057)
     x0, y0, x1, y1 = M["keep_flat_back"]
     (bx0, by1), (bx1, by0) = k(x0, y0), k(x1, y1)
@@ -330,6 +322,7 @@ def build(net_path, out_path):
         add_text(board, txt, px + 6.0, py, "B.SilkS", 0.8)
     add_text(board, "SEN65", KF - 7.1, 18.5, "B.SilkS", 0.8)
     add_text(board, "FIELD | NODE  >= 3 mm", (BARRIER_X0 + BARRIER_X1) / 2, H - 1.5, "F.SilkS", 0.8)
+    add_text(board, "FIELD  (barrier under J8)", 12.0, (J8_BAND[0] + J8_BAND[1]) / 2, "F.SilkS", 0.8)
 
     pcbnew.SaveBoard(out_path, board)
     export_parts(board, os.path.join(os.path.dirname(out_path), "reports", "placed-parts.json"))

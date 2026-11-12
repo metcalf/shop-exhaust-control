@@ -2,13 +2,13 @@
 
 Carrier PCB for the Waveshare ESP32-S3-Touch-LCD-3.5 (D-054, D-055, D-056). Source of truth for the
 schematic until layout starts. Signals, pins and values: docs/interfaces.md §2, pcb/carrier/DESIGN.md.
-Reuses the schematic-as-code layer in pcb/gen (sch.py, route.py).
+Reuses the schematic-as-code layer in pcb/common (sch.py, route.py, parts.py).
 """
 import os
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, os.path.join(HERE, "..", "..", "gen"))
+sys.path.insert(0, os.path.join(HERE, "..", "..", "common"))
 import sch  # noqa: E402
 from parts import P as OLD  # noqa: E402
 
@@ -16,7 +16,7 @@ sch.PROJECT = "carrier"
 Sheet = sch.Sheet
 
 # key -> (lib_id, footprint, LCSC, value, ref prefix). Footprints from the shared project library where
-# the old board already checked them against LCSC drawings (pcb/layout/footprints.py).
+# the old board already checked them against LCSC drawings (pcb/common/footprints.py).
 P = {
     "R0603": OLD["R0603"], "R1206": OLD["R1206"], "C0603": OLD["C0603"], "C0805": OLD["C0805"],
     "PC817": ("Isolator:PC817", "exhaust:SOP-4_LTV-817S_LS10.3", "C109227", "LTV-817S-TA1-C", "U"),

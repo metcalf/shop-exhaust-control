@@ -48,14 +48,14 @@ P = {
                    "Pin_5": "GND", "Pin_6": "+3V3"},
     "SEN_NC": (),
 
-    # indicator series resistors, ~15 mA per colour at 5 V (pcb/design.md §6)
+    # indicator series resistors, ~15 mA per colour at 5 V (old board design notes §6, git history)
     "R_RED": "200",
     "R_GB": "120",
 }
 
 # 3.3 V buck: AP63203WU-7, fixed 3.3 V, 35 V abs max VIN (D-040; datasheet DS41326 Rev. 2-2).
 # FB goes straight to the output, EN to VIN (Fig. 21). 2.2 uH rather than Table 2's 3.9 uH: see
-# pcb/design.md §1. The 10 uF is the only capacitance allowed on +5V (USB sink limit; check.py).
+# Old board design notes §1 (git history). The 10 uF is the only capacitance allowed on +5V (USB sink limit; check.py).
 P["REG33"] = ("Regulator_Switching:AP63203WU", "Package_TO_SOT_SMD:TSOT-23-6", "C780769", "AP63203WU-7", "U")
 P["REG33_NETS"] = {"IN": "+5V", "EN": "+5V", "SW": "BUCK_LX", "FB": "+3V3", "BST": "BUCK_BST", "GND": "GND"}
 P["REG33_NC"] = ()

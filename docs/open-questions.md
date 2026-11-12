@@ -7,6 +7,7 @@ Claude batches questions here. Each has an ID, why it matters, and the default C
 
 | ID | Question | Why it matters | Default if unanswered | Blocks | Answer |
 |----|----------|----------------|-----------------------|--------|--------|
+| Q-49 | Node↔field 3.0 mm in 3D: the carrier's field side faces the Waveshare's back (node domain) across the 5.1 mm board gap. Conservatively, treating every Waveshare part as metal, field metal comes within 0.6–2.9 mm of them: the terminal pin tails under the 30-pin FPC connector, and the opto field leads. Accept with (a) polyimide tape on the Waveshare back over the field zone (solid insulation replaces the air gap); (b) a measured 3D check of the actual metal (most of those parts are plastic bodies); or (c) relax the 3D rule to functional for these SELV-to-SELV gaps? | 3.0 mm is our own basic-insulation rule (pcb/SAFETY.md), checked in 2D only so far. The old layout had the same exposure. | (a), plus clipping the terminal tails flush, and recording it in SAFETY.md before G3 | G3 | |
 | Q-37 | Nightly no-ops: 2026-11-01 and 2026-11-05 both found only Q-33/Q-35 open and changed nothing. Want me to add the skip to this repo's `scripts/nightly.sh` now (skip when STATE.md has `Blocked-on: andrew` and nothing has been committed since the last nightly), rather than waiting for the DC repo? | Each blocked run costs a session start and usage for nothing. | No change: runs continue nightly and no-op until you answer Q-33/Q-35. | Nothing (tooling only) | |
 
 ## Answered

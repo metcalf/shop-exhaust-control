@@ -1,5 +1,5 @@
 (fp_lib_table
   (version 7)
-  (lib (name "exhaust")(type "KiCad")(uri "${KIPRJMOD}/../lib/exhaust.pretty")(options "")(descr "Shared project footprints checked against LCSC drawings (pcb/layout/footprints.py)"))
+  (lib (name "exhaust")(type "KiCad")(uri "${KIPRJMOD}/../lib/exhaust.pretty")(options "")(descr "Shared project footprints checked against LCSC drawings (pcb/common/footprints.py)"))
   (lib (name "carrier")(type "KiCad")(uri "${KIPRJMOD}/lib/carrier.pretty")(options "")(descr "Carrier-only footprints (pcb/carrier/gen/footprints.py)"))
 )

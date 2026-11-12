@@ -552,7 +552,7 @@ Template:
 
 ## D-060: Optos packed into the Waveshare's clear column; terminals inboard
 - Date: 2026-11-11
-- Status: Accepted (Andrew, 2026-11-11: Q-48 option (b), shuffle the LTV-817S into gaps; terminals inboard facing left with room on the left to dress the wires).
+- Status: Accepted (Andrew, 2026-11-11: Q-48 option (b), shuffle the LTV-817S into gaps; terminals inboard facing left with room on the left to dress the wires). Placement superseded by D-061 the same day.
 - Context: with the carrier flush on J8 (D-059), 5.1 mm separates the boards. A 4.0 mm opto needs every Waveshare part above it to be no more than 0.9 mm tall, keeping a 0.2 mm margin. A map of the Waveshare back from the STEP's per-solid boxes shows one clear column for a 13 mm wide opto footprint: frame E x −29.6 to −16.6 (the existing barrier band), y −8.4 to +19.69.
   - **Right of it:** the 2.2 mm LCD FPC connector and the touch FPC tail block a move.
   - **Below it:** three 1.0 mm parts and the switches block a move.
@@ -573,3 +573,26 @@ Template:
 - Consequences:
   - **Tight margins:** 0.2 mm at U2/U3 against a 0.9 mm Waveshare part. That's at the LTV-817S maximum height and the vendor STEP's modelled heights, so a Waveshare revision could eat it. The mech test is the guard. If the rev changes or a fit check is tight, fall back to (a).
   - **Slots:** cable slots stay centred on the terminals: fan 14.5, OCC 29.6, DC 46.0 (board y).
+
+## D-061: Optos in the board-centre column, field side lower-left, terminals mid-board; old board removed
+- Date: 2026-11-11
+- Status: Accepted (Andrew, 2026-11-11). He asked for the terminals further toward the middle, facing x = 0. He suggested turning the optos 180° and shifting them in +y. He also asked for the test points on the bottom, and for the old design to be removed from `pcb/` because it's in git history.
+- Context:
+  - **Rotation:** turning the optos in their D-060 column puts the top opto's field pads about 1 mm from J8's node pads, short of the 3.0 mm barrier. That column also has no slack in y.
+  - **Better column:** a scan of the Waveshare back (per-solid boxes) finds a longer clear column at the board centre: frame E x −2…11, y −19.25…+19.69 (38.9 mm, against 28.1 mm for the D-060 column).
+- Decision:
+  - **Optos:** in the centre column (board x 48.6), in their normal orientation: field left, node right.
+  - **Barrier band:** runs down the column and turns left under J8. The whole lower-left of the board is the field side.
+  - **Terminals:** pins at board x 33.0, entries facing the left wall, with 29.6 mm of wire room to the inner wall (was 7.6). Field groups are horizontal bands (fan | OCC | DC) with straight 1.5 mm gaps.
+  - **Node side:** the opto partners, the PWRON one-shot (now anchored to the keep-flat edge) and the test pads move to the right of the column.
+  - **Test pads:** they were already on the back (B.Cu). They now sit at the bottom edge, node side, left of the SEN65, clear of the field wiring.
+  - **MB10S height:** taken as 2.7 mm (MBS/TO-269AA, ASSUME until checked against the C2488 datasheet). It was previously caught by the 1.35 mm "D" prefix meant for D1. D3 moved left of J4 to clear the Waveshare part above.
+  - **Old board:** removed from the tree (schematic, placement, reports, design notes, old layout scripts; history up to `b0cada4`). Shared code moves to `pcb/common/`: schematic-as-code (`sch.py`, `route.py`, `parts.py`), `netlist.py`, the footprint builder and `dsn.py`. The Freerouting script is retargeted to the carrier (`pcb/carrier/layout/route_freerouting.sh`). `pcb/SAFETY.md` is rewritten for the carrier.
+  - **Waveshare STEP:** committed (`mech/vendor/`, 23 MB; GitHub's limits are 50 MB warn and 100 MB hard), so the model doesn't depend on Waveshare's download staying up. `mech/fetch_vendor.sh` now compares upstream with the committed copy by SHA-256.
+- Alternatives:
+  - Turning the optos 180° in the D-060 column: fails the J8 spacing.
+  - Keeping D-060: only 7.6 mm of wire room.
+- Consequences:
+  - **Margins:** the smallest opto margin to the Waveshare is 0.26 mm (U4). The bridges have 1.1 mm.
+  - **Repo:** it's public, so the STEP is redistributed from there. Waveshare publishes it as a free download with no stated licence (Andrew's call before pushing).
+  - **Open:** the 3D node↔field air clearance to the Waveshare's back-side parts (Q-49).

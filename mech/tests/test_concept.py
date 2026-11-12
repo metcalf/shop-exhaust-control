@@ -218,7 +218,7 @@ def test_terminals_line_up_with_cable_slots():
 
 
 def test_terminals_inboard_with_wire_room():
-    """Andrew: terminals inboard facing the left wall, the back's left strip clear to dress the wires.
+    """Andrew: terminals mid-board facing the left wall, the back left of them clear to dress the wires.
     Only the screw heads at the left holes sit in that strip."""
     import json, os
     path = os.path.join(os.path.dirname(C.PLACED), "reports", "placed-parts.json")
@@ -228,7 +228,7 @@ def test_terminals_inboard_with_wire_room():
     s = C.stackup()
     entry = min(placed[r]["bbox_e"][0] for r in ("J2", "J7", "J3", "J4"))
     room = entry - s["inner_x"][0]
-    assert room >= 7.0, f"only {room:.1f} mm from the left wall to the terminal entries"
+    assert room >= 20.0, f"only {room:.1f} mm from the left wall to the terminal entries"   # mid-board (D-061)
     left = [r for r, p in placed.items() if p["side"] == "B" and p["bbox_e"][0] < entry - 0.5]
     assert not left, f"parts on the back left of the terminals: {left}"
 
